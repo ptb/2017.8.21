@@ -193,6 +193,93 @@ install_brewfile_cask_args () {
   sed -e "$ s/,/\n/" -i "${HOMEBREW_CACHE}/Brewfile"
 }
 
+# Add Homebrew Casks to Brewfile
+
+_casks='java
+xquartz
+adium
+alfred
+arduino
+atom
+autodmg
+bbedit
+caffeine
+carbon-copy-cloner
+charles
+dash
+docker-toolbox
+dropbox
+duet
+exifrenamer
+firefox
+flux
+github-desktop
+gitup
+google-chrome
+handbrake
+hermes
+imageoptim
+inkscape
+integrity
+istat-menus
+iterm2
+jubler
+little-snitch
+machg
+makemkv
+menubar-countdown
+meteorologist
+moom
+mp4tools
+munki
+musicbrainz-picard
+namechanger
+nvalt
+nzbget
+nzbvortex
+openemu
+opera
+pacifist
+platypus
+plex-media-server
+qlstephen
+quitter
+rescuetime
+scrivener
+sizeup
+sketch
+sketchup
+skitch
+skype
+slack
+sonarr
+sonarr-menu
+sourcetree
+steermouse
+subler
+sublime-text
+the-unarchiver
+time-sink
+torbrowser
+tower
+unrarx
+vimr
+vlc
+vmware-fusion
+wireshark
+xld
+caskroom/fonts/font-inconsolata-lgc
+caskroom/fonts/font-skola-sans
+railwaycat/emacsmacport/emacs-mac-spacemacs-icon'
+
+install_brewfile_cask_pkgs () {
+  printf "%b\n" "${_casks}" | \
+  while IFS="$(printf '%b\n' '\t')" read cask; do
+    printf 'cask "%s"\n' "${cask}" >> "${HOMEBREW_CACHE}/Brewfile"
+  done
+  printf "\n" >> "${HOMEBREW_CACHE}/Brewfile"
+}
+
 # Configure Z-Shell
 
 config_zsh () {
