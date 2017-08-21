@@ -268,7 +268,7 @@ install_brewfile_brew_pkgs () {
 |-----------------------+------------------------------------------|
 
 *** Add Caskroom Options to Brewfile
-#+begin_src sh :var _args=_args[3:-3,0:1]
+#+begin_src sh :var _args=_args[3:8,0:1]
 
 install_brewfile_cask_args () {
   printf 'cask_args \%s' "\n" >> "${BREWFILE}"
@@ -292,7 +292,6 @@ install_brewfile_cask_args () {
 | prefpanedir     | /Library/PreferencePanes |
 | qlplugindir     | /Library/QuickLook       |
 | screen_saverdir | /Library/Screen Savers   |
-| brew --prefix   | /usr/local               |
 |-----------------+--------------------------|
 
 *** Add Homebrew Casks to Brewfile
@@ -393,7 +392,7 @@ install_brewfile_cask_pkgs () {
 ** Configuration
 
 *** Configure Z-Shell
-#+begin_src sh
+#+begin_src sh :noweb tangle
 config_zsh () {
   case $SHELL in
     (*zsh) ;;
@@ -402,6 +401,14 @@ config_zsh () {
 
   if test ! -f "/etc/zshenv"; then
     sudo tee /etc/zshenv << EOF > /dev/null
+<<zshenv>>
+EOF
+  fi
+}
+#+end_src
+
+**** =/etc/zshenv=
+#+begin_src sh :noweb-ref zshenv :tangle no
 #!/bin/sh
 
 export ZDOTDIR="${HOME}/.zsh"
@@ -413,9 +420,6 @@ else
   export HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
   export BREWFILE="${HOME}/Library/Caches/Homebrew/Brewfile"
 fi
-EOF
-  fi
-}
 #+end_src
 
 #+begin_src sh
