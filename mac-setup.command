@@ -108,6 +108,7 @@ if test -n "${1}"; then
     install_brewfile_taps
     install_brewfile_brew_pkgs
     install_brewfile_cask_args
+    install_brewfile_cask_pkgs
   }
   printf "\n$(which install_sw)\n"
 fi
