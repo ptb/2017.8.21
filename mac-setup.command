@@ -112,8 +112,10 @@ fi
 # Install Homebrew Package Manager
 
 install_brew () {
-  ruby -e \
-    "$(curl -Ls 'https://github.com/Homebrew/install/raw/master/install')"
+  if ! which brew > /dev/null; then
+    ruby -e \
+      "$(curl -Ls 'https://github.com/Homebrew/install/raw/master/install')"
+  fi
   brew analytics off
   brew update
   brew doctor
