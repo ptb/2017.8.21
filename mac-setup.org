@@ -120,7 +120,7 @@ init_sudo () {
 }
 #+end_src
 
-**** sudo_props
+**** _sudo
 #+name: _sudo
 |-------------+--------------------------------------|
 | Filename    | Policy                               |
