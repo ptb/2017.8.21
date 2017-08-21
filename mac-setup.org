@@ -16,7 +16,7 @@ From zero to fully installed and configured, in an hour.
 #+begin_example sh :tangle no
 curl --location --silent \
   "https://github.com/ptb/2017.8.21/raw/master/mac-setup.command" | \
-  . /dev/stdin 0
+  source /dev/stdin 0
 #+end_example
 
 *** License
@@ -48,7 +48,7 @@ EOF
 fi
 #+end_src
 
-***** =new-terminal.applescript=
+**** =new-terminal.applescript=
 #+begin_src applescript :noweb-ref new-terminal.applescript
     on run { _this }
       tell app "Terminal" to do script "source " & quoted form of _this & " 0"
@@ -177,7 +177,10 @@ init_updates () {
 #+begin_src sh
 if test -n "${1}"; then
   install_sw () {
-    install_brew
+    install_brew "/Volumes/Cache/Homebrew"
+    install_brewfile_taps
+    install_brewfile_brew_pkgs
+    install_brewfile_cask_args
   }
   printf "\n$(which install_sw)\n"
 fi
@@ -186,9 +189,12 @@ fi
 *** Install Homebrew Package Manager
 #+begin_src sh
 install_brew () {
+  test -d "${1}" && export HOMEBREW_CACHE="${1}"
+
   if ! which brew > /dev/null; then
     ruby -e \
       "$(curl -Ls 'https://github.com/Homebrew/install/raw/master/install')"
+    printf "" > "${HOMEBREW_CACHE}/Brewfile"
   fi
   brew analytics off
   brew update
@@ -196,6 +202,96 @@ install_brew () {
   brew tap "homebrew/bundle"
 }
 #+end_src
+
+*** Add Homebrew Taps to Brewfile
+#+begin_src sh :var _taps=_taps[3:-2,0]
+
+install_brewfile_taps () {
+  printf "%b\n" "${_taps}" | \
+  while IFS="$(printf '%b' '\t')" read tap; do
+    printf 'tap "%s"\n' "${tap}" >> "${HOMEBREW_CACHE}/Brewfile"
+  done
+  printf "\n" >> "${HOMEBREW_CACHE}/Brewfile"
+}
+#+end_src
+
+**** _taps
+#+name: _taps
+|----------------------------+--------------------------------------------------------|
+| Homebrew Tap Name          | Reference URL                                          |
+|----------------------------+--------------------------------------------------------|
+| caskroom/cask              | https://github.com/caskroom/homebrew-cask              |
+| caskroom/fonts             | https://github.com/caskroom/homebrew-fonts             |
+| caskroom/versions          | https://github.com/caskroom/homebrew-versions          |
+| homebrew/bundle            | https://github.com/Homebrew/homebrew-bundle            |
+| homebrew/command-not-found | https://github.com/Homebrew/homebrew-command-not-found |
+| homebrew/nginx             | https://github.com/Homebrew/homebrew-nginx             |
+| homebrew/php               | https://github.com/Homebrew/homebrew-php                                                       |
+| homebrew/services          | https://github.com/Homebrew/homebrew-services          |
+| ptb/custom                 | https://github.com/ptb/homebrew-custom                 |
+| railwaycat/emacsmacport    | https://github.com/railwaycat/homebrew-emacsmacport    |
+|----------------------------+--------------------------------------------------------|
+
+*** Add Homebrew Packages to Brewfile
+#+begin_src sh :var _pkgs=_pkgs[3:-2,0]
+
+install_brewfile_brew_pkgs () {
+  printf "%b\n" "${_pkgs}" | \
+  while IFS="$(printf '%b' '\t')" read pkg; do
+    printf 'brew "%s"\n' "${pkg}" >> "${HOMEBREW_CACHE}/Brewfile"
+  done
+  printf "\n" >> "${HOMEBREW_CACHE}/Brewfile"
+}
+#+end_src
+
+**** _pkgs
+#+name: _pkgs
+|-----------------------+------------------------------------------|
+| Homebrew Package Name | Reference URL                            |
+|-----------------------+------------------------------------------|
+| git                   | https://git-scm.com/                     |
+| gnupg                 | https://www.gnupg.org/                   |
+| mas                   | https://github.com/argon/mas             |
+| nodenv                | https://github.com/nodenv/nodenv         |
+| openssl               | https://www.openssl.org/                 |
+| perl-build            | https://github.com/tokuhirom/Perl-Build  |
+| php71                 | https://github.com/Homebrew/homebrew-php |
+| pinentry-mac          | https://github.com/GPGTools/pinentry-mac |
+| plenv                 | https://github.com/tokuhirom/plenv       |
+| pyenv                 | https://github.com/pyenv/pyenv           |
+| rbenv                 | https://github.com/rbenv/rbenv           |
+| rsync                 | https://rsync.samba.org/                 |
+| shellcheck            | https://github.com/koalaman/shellcheck   |
+| vim                   | https://vim.sourceforge.io/              |
+| zsh                   | https://www.zsh.org/                     |
+|-----------------------+------------------------------------------|
+
+*** Add Caskroom Options to Brewfile
+#+begin_src sh :var _args=_args[3:-3,0:1]
+
+install_brewfile_cask_args () {
+  printf 'cask_args \%s' "\n" >> "${HOMEBREW_CACHE}/Brewfile"
+  printf "%b\n" "${_args}" | \
+  while IFS="$(printf '%b' '\t')" read arg dir; do
+    printf '  %s: "%s",\n' "${arg}" "${dir}" >> "${HOMEBREW_CACHE}/Brewfile"
+  done
+  sed -e "$ s/,/\n/" -i "${HOMEBREW_CACHE}/Brewfile"
+}
+#+end_src
+
+**** _args
+#+name: _args
+|-----------------+--------------------------|
+| Location        | Install Path             |
+|-----------------+--------------------------|
+| fontdir         | /Library/Fonts           |
+| colorpickerdir  | /Library/ColorPickers    |
+| input_methoddir | /Library/Input Methods   |
+| prefpanedir     | /Library/PreferencePanes |
+| qlplugindir     | /Library/QuickLook       |
+| screen_saverdir | /Library/Screen Savers   |
+| brew --prefix   | /usr/local               |
+|-----------------+--------------------------|
 
 ** Configuration
 

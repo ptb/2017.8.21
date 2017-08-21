@@ -104,7 +104,10 @@ init_updates () {
 
 if test -n "${1}"; then
   install_sw () {
-    install_brew
+    install_brew "/Volumes/Cache/Homebrew"
+    install_brewfile_taps
+    install_brewfile_brew_pkgs
+    install_brewfile_cask_args
   }
   printf "\n$(which install_sw)\n"
 fi
@@ -112,14 +115,82 @@ fi
 # Install Homebrew Package Manager
 
 install_brew () {
+  test -d "${1}" && export HOMEBREW_CACHE="${1}"
+
   if ! which brew > /dev/null; then
     ruby -e \
       "$(curl -Ls 'https://github.com/Homebrew/install/raw/master/install')"
+    printf "" > "${HOMEBREW_CACHE}/Brewfile"
   fi
   brew analytics off
   brew update
   brew doctor
   brew tap "homebrew/bundle"
+}
+
+# Add Homebrew Taps to Brewfile
+
+_taps='caskroom/cask
+caskroom/fonts
+caskroom/versions
+homebrew/bundle
+homebrew/command-not-found
+homebrew/nginx
+homebrew/php
+homebrew/services
+ptb/custom
+railwaycat/emacsmacport'
+
+install_brewfile_taps () {
+  printf "%b\n" "${_taps}" | \
+  while IFS="$(printf '%b' '\t')" read tap; do
+    printf 'tap "%s"\n' "${tap}" >> "${HOMEBREW_CACHE}/Brewfile"
+  done
+  printf "\n" >> "${HOMEBREW_CACHE}/Brewfile"
+}
+
+# Add Homebrew Packages to Brewfile
+
+_pkgs='git
+gnupg
+mas
+nodenv
+openssl
+perl-build
+php71
+pinentry-mac
+plenv
+pyenv
+rbenv
+rsync
+shellcheck
+vim
+zsh'
+
+install_brewfile_brew_pkgs () {
+  printf "%b\n" "${_pkgs}" | \
+  while IFS="$(printf '%b' '\t')" read pkg; do
+    printf 'brew "%s"\n' "${pkg}" >> "${HOMEBREW_CACHE}/Brewfile"
+  done
+  printf "\n" >> "${HOMEBREW_CACHE}/Brewfile"
+}
+
+# Add Caskroom Options to Brewfile
+
+_args='fontdir	/Library/Fonts
+colorpickerdir	/Library/ColorPickers
+input_methoddir	/Library/Input Methods
+prefpanedir	/Library/PreferencePanes
+qlplugindir	/Library/QuickLook
+screen_saverdir	/Library/Screen Savers'
+
+install_brewfile_cask_args () {
+  printf 'cask_args \%s' "\n" >> "${HOMEBREW_CACHE}/Brewfile"
+  printf "%b\n" "${_args}" | \
+  while IFS="$(printf '%b' '\t')" read arg dir; do
+    printf '  %s: "%s",\n' "${arg}" "${dir}" >> "${HOMEBREW_CACHE}/Brewfile"
+  done
+  sed -e "$ s/,/\n/" -i "${HOMEBREW_CACHE}/Brewfile"
 }
 
 # Configure Z-Shell
