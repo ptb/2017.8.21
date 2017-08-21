@@ -1,0 +1,61 @@
+* Mac Setup
+:properties:
+:header-args: :cache yes :comments org :padline yes :results silent
+:header-args:sh: :shebang "#!/bin/sh" :tangle mac-setup.command
+:end:
+#+startup: showall nohideblocks hidestars indent
+
+#+begin_quote
+From zero to fully installed and configured, in an hour.
+#+end_quote
+
+** Overview
+
+*** Quick Start
+
+#+begin_example sh :tangle no
+curl --location --silent \
+  "https://github.com/ptb/2017.8.21/raw/master/mac-setup.command" | \
+  . /dev/stdin 0
+#+end_example
+
+*** License
+
+#+begin_quote :noweb-ref license.txt
+Copyright 2017 [[https://github.com/ptb][Peter T Bosse II]]
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#+end_quote
+
+** Initialization
+
+*** Initialize New Terminal
+#+begin_src sh :noweb tangle
+if test -z $1; then
+  case $SHELL in
+    (*zsh) ;;
+    (*) chsh -s "$(which zsh)" ;;
+  esac
+
+  osascript - $0 << EOF > /dev/null 2>&1
+<<new-terminal.applescript>>
+EOF
+fi
+#+end_src
+
+***** =new-terminal.applescript=
+#+begin_src applescript :noweb-ref new-terminal.applescript
+    on run { this }
+      tell app "Terminal" to do script "source " & quoted form of this & " 0"
+    end run
+#+end_src
