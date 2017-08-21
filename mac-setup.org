@@ -50,8 +50,8 @@ fi
 
 ***** =new-terminal.applescript=
 #+begin_src applescript :noweb-ref new-terminal.applescript
-    on run { this }
-      tell app "Terminal" to do script "source " & quoted form of this & " 0"
+    on run { _this }
+      tell app "Terminal" to do script "source " & quoted form of _this & " 0"
     end run
 #+end_src
 
