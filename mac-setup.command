@@ -65,8 +65,8 @@ init_sudo () {
 # Set Defaults for Sleep
 
 init_no_sleep () {
-  sudo systemsetup -setcomputersleep "Never"
-  sudo systemsetup -setharddisksleep "Never"
+  sudo systemsetup -setcomputersleep "Never" > /dev/null
+  sudo systemsetup -setharddisksleep "Never" > /dev/null
 }
 
 # Set Hostname from DNS
@@ -83,9 +83,12 @@ init_hostname () {
 
 init_devtools () {
   p="${1}/Command Line Tools (macOS High Sierra version 10.13).pkg"
+  i="com.apple.pkg.CLTools_SDK_macOS1013"
 
   if test -f "${p}"; then
-    sudo installer -pkg "${p}" -target /
+    if ! pkgutil --pkg-info "${i}" > /dev/null; then
+      sudo installer -pkg "${p}" -target /
+    fi
   else
     xcode-select --install
   fi
@@ -103,7 +106,7 @@ if test -n "${1}"; then
   install_sw () {
     install_brew
   }
-  printf "$(which install_sw)\n"
+  printf "\n$(which install_sw)\n"
 fi
 
 # Install Homebrew Package Manager

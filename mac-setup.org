@@ -132,8 +132,8 @@ init_sudo () {
 *** Set Defaults for Sleep
 #+begin_src sh
 init_no_sleep () {
-  sudo systemsetup -setcomputersleep "Never"
-  sudo systemsetup -setharddisksleep "Never"
+  sudo systemsetup -setcomputersleep "Never" > /dev/null
+  sudo systemsetup -setharddisksleep "Never" > /dev/null
 }
 #+end_src
 
@@ -152,9 +152,12 @@ init_hostname () {
 #+begin_src sh
 init_devtools () {
   p="${1}/Command Line Tools (macOS High Sierra version 10.13).pkg"
+  i="com.apple.pkg.CLTools_SDK_macOS1013"
 
   if test -f "${p}"; then
-    sudo installer -pkg "${p}" -target /
+    if ! pkgutil --pkg-info "${i}" > /dev/null; then
+      sudo installer -pkg "${p}" -target /
+    fi
   else
     xcode-select --install
   fi
@@ -176,7 +179,7 @@ if test -n "${1}"; then
   install_sw () {
     install_brew
   }
-  printf "$(which install_sw)\n"
+  printf "\n$(which install_sw)\n"
 fi
 #+end_src
 
