@@ -104,7 +104,7 @@ init_updates () {
 
 if test -n "${1}"; then
   install_sw () {
-    install_brew "/Volumes/Cache/Homebrew"
+    install_brew
     install_brewfile_taps
     install_brewfile_brew_pkgs
     install_brewfile_cask_args
@@ -116,12 +116,10 @@ fi
 # Install Homebrew Package Manager
 
 install_brew () {
-  test -d "${1}" && export HOMEBREW_CACHE="${1}"
-
   if ! which brew > /dev/null; then
     ruby -e \
       "$(curl -Ls 'https://github.com/Homebrew/install/raw/master/install')"
-    printf "" > "${HOMEBREW_CACHE}/Brewfile"
+    printf "" > "${BREWFILE}"
   fi
   brew analytics off
   brew update
@@ -145,9 +143,9 @@ railwaycat/emacsmacport'
 install_brewfile_taps () {
   printf "%b\n" "${_taps}" | \
   while IFS="$(printf '%b' '\t')" read tap; do
-    printf 'tap "%s"\n' "${tap}" >> "${HOMEBREW_CACHE}/Brewfile"
+    printf 'tap "%s"\n' "${tap}" >> "${BREWFILE}"
   done
-  printf "\n" >> "${HOMEBREW_CACHE}/Brewfile"
+  printf "\n" >> "${BREWFILE}"
 }
 
 # Add Homebrew Packages to Brewfile
@@ -171,9 +169,9 @@ zsh'
 install_brewfile_brew_pkgs () {
   printf "%b\n" "${_pkgs}" | \
   while IFS="$(printf '%b' '\t')" read pkg; do
-    printf 'brew "%s"\n' "${pkg}" >> "${HOMEBREW_CACHE}/Brewfile"
+    printf 'brew "%s"\n' "${pkg}" >> "${BREWFILE}"
   done
-  printf "\n" >> "${HOMEBREW_CACHE}/Brewfile"
+  printf "\n" >> "${BREWFILE}"
 }
 
 # Add Caskroom Options to Brewfile
@@ -186,12 +184,13 @@ qlplugindir	/Library/QuickLook
 screen_saverdir	/Library/Screen Savers'
 
 install_brewfile_cask_args () {
-  printf 'cask_args \%s' "\n" >> "${HOMEBREW_CACHE}/Brewfile"
+  printf 'cask_args \%s' "\n" >> "${BREWFILE}"
   printf "%b\n" "${_args}" | \
   while IFS="$(printf '%b' '\t')" read arg dir; do
-    printf '  %s: "%s",\n' "${arg}" "${dir}" >> "${HOMEBREW_CACHE}/Brewfile"
+    printf '  %s: "%s",\n' "${arg}" "${dir}" >> "${BREWFILE}"
   done
-  sed -e "$ s/,/\n/" -i "${HOMEBREW_CACHE}/Brewfile"
+  sed -ie "$ s/,//" "${BREWFILE}"
+  printf "\n" >> "${BREWFILE}"
 }
 
 # Add Homebrew Casks to Brewfile
@@ -276,9 +275,9 @@ railwaycat/emacsmacport/emacs-mac-spacemacs-icon'
 install_brewfile_cask_pkgs () {
   printf "%b\n" "${_casks}" | \
   while IFS="$(printf '%b\n' '\t')" read cask; do
-    printf 'cask "%s"\n' "${cask}" >> "${HOMEBREW_CACHE}/Brewfile"
+    printf 'cask "%s"\n' "${cask}" >> "${BREWFILE}"
   done
-  printf "\n" >> "${HOMEBREW_CACHE}/Brewfile"
+  printf "\n" >> "${BREWFILE}"
 }
 
 # Configure Z-Shell
@@ -288,6 +287,22 @@ config_zsh () {
     (*zsh) ;;
     (*) chsh -s "$(which zsh)" ;;
   esac
+
+  if test ! -f "/etc/zshenv"; then
+    sudo tee /etc/zshenv << EOF > /dev/null
+#!/bin/sh
+
+export ZDOTDIR="${HOME}/.zsh"
+
+if test -d "/Volumes/Caches/Homebrew"; then
+  export HOMEBREW_CACHE="/Volumes/Caches/Homebrew"
+  export BREWFILE="/Volumes/Caches/Homebrew/Brewfile"
+else
+  export HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
+  export BREWFILE="${HOME}/Library/Caches/Homebrew/Brewfile"
+fi
+EOF
+  fi
 }
 
 config_zsh
