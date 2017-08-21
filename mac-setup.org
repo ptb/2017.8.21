@@ -41,13 +41,8 @@ limitations under the License.
 
 *** Initialize New Terminal
 #+begin_src sh :noweb tangle
-if test -z $1; then
-  case $SHELL in
-    (*zsh) ;;
-    (*) chsh -s "$(which zsh)" ;;
-  esac
-
-  osascript - $0 << EOF > /dev/null 2>&1
+if test -z "${1}"; then
+  osascript - "${0}" << EOF > /dev/null 2>&1
 <<new-terminal.applescript>>
 EOF
 fi
@@ -58,4 +53,157 @@ fi
     on run { this }
       tell app "Terminal" to do script "source " & quoted form of this & " 0"
     end run
+#+end_src
+
+*** Define Function =ask=
+#+begin_src sh :noweb tangle
+ask () {
+  osascript - "${1}" "${2}" "${3}" << EOF 2> /dev/null
+<<ask.applescript>>
+EOF
+}
+#+end_src
+
+**** =ask.applescript=
+#+begin_src applescript :noweb-ref ask.applescript :tangle no
+    on run { _title, _action, _default }
+      tell app "System Events" to return text returned of (display dialog _title with title _title buttons { "Cancel", _action } default answer _default)
+    end run
+#+end_src
+
+*** Define Function =run=
+#+begin_src sh :noweb tangle
+run () {
+  osascript - "${1}" "${2}" "${3}" << EOF 2> /dev/null
+<<run.applescript>>
+EOF
+}
+#+end_src
+
+**** =run.applescript=
+#+begin_src applescript :noweb-ref run.applescript :tangle no
+    on run { _title, _cancel, _action }
+      tell app "System Events" to return button returned of (display dialog _title with title _title buttons { _cancel, _action } cancel button 1 default button 2 giving up after 5)
+    end run
+#+end_src
+
+*** Define Function =init=
+#+begin_src sh
+if test -n "${1}"; then
+  init () {
+    init_sudo
+    init_no_sleep
+    init_hostname
+    init_devtools "/Volumes/Install"
+    init_updates
+  }
+  printf "\n$(which init)\n"
+fi
+#+end_src
+
+*** Eliminate Prompts for Password
+#+begin_src sh :var _sudo=_sudo[3:-2,0:1]
+
+init_sudo () {
+  sudo -v
+
+  while true; do
+    sudo -n true
+    sleep 60
+  done &
+
+  printf "%b\n" "${_sudo}" | \
+  while IFS="$(printf '%b' '\t')" read filename policy; do
+    printf "%b\n" "${policy}" | \
+    sudo tee "/etc/sudoers.d/${filename}" > /dev/null
+  done
+}
+#+end_src
+
+**** sudo_props
+#+name: _sudo
+|-------------+--------------------------------------|
+| Filename    | Policy                               |
+|-------------+--------------------------------------|
+| timeout     | Defaults:%admin timestamp_timeout=-1 |
+| tty_tickets | Defaults:%admin !tty_tickets         |
+|-------------+--------------------------------------|
+
+*** Set Defaults for Sleep
+#+begin_src sh
+init_no_sleep () {
+  sudo systemsetup -setcomputersleep "Never"
+  sudo systemsetup -setharddisksleep "Never"
+}
+#+end_src
+
+*** Set Hostname from DNS
+#+begin_src sh
+init_hostname () {
+  h="$(hostname -s)"
+
+  sudo systemsetup -setcomputername \
+    "$(ruby -e "print '${h}'.capitalize")" > /dev/null
+  sudo systemsetup -setlocalsubnetname "${h}" > /dev/null
+}
+#+end_src
+
+*** Install Developer Tools
+#+begin_src sh
+init_devtools () {
+  p="${1}/Command Line Tools (macOS High Sierra version 10.13).pkg"
+
+  if test -f "${p}"; then
+    sudo installer -pkg "${p}" -target /
+  else
+    xcode-select --install
+  fi
+}
+#+end_src
+
+*** Install macOS Updates
+#+begin_src sh
+init_updates () {
+  sudo softwareupdate --install --all
+}
+#+end_src
+
+** Installation
+
+*** Define Function =install_sw=
+#+begin_src sh
+if test -n "${1}"; then
+  install_sw () {
+    install_brew
+  }
+  printf "$(which install_sw)\n"
+fi
+#+end_src
+
+*** Install Homebrew Package Manager
+#+begin_src sh
+install_brew () {
+  ruby -e \
+    "$(curl -Ls 'https://github.com/Homebrew/install/raw/master/install')"
+  brew analytics off
+  brew update
+  brew doctor
+  brew tap "homebrew/bundle"
+}
+#+end_src
+
+** Configuration
+
+*** Configure Z-Shell
+#+begin_src sh
+config_zsh () {
+  case $SHELL in
+    (*zsh) ;;
+    (*) chsh -s "$(which zsh)" ;;
+  esac
+}
+#+end_src
+
+#+begin_src sh
+config_zsh
 #+end_src
