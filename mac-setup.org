@@ -634,6 +634,7 @@ install_ruby_sw () {
 config () {
   config_bbedit
   config_desktop
+  config_dovecot
   config_zsh
 
   which custom
@@ -668,7 +669,7 @@ config_bbedit () {
     ln /Applications/BBEdit.app/Contents/Helpers/bbdiff /usr/local/bin/bbdiff && \
     ln /Applications/BBEdit.app/Contents/Helpers/bbedit_tool /usr/local/bin/bbedit && \
     ln /Applications/BBEdit.app/Contents/Helpers/bbfind /usr/local/bin/bbfind && \
-    ln /Applications/BBEdit.app/Contents/Helpers/bbresults /usr/local/bin/bbresults && \
+    ln /Applications/BBEdit.app/Contents/Helpers/bbresults /usr/local/bin/bbresults
   fi
 }
 #+end_src
@@ -687,6 +688,190 @@ EOF
 **** =black.png.b64=
 #+begin_src base64 :noweb-ref black.png.b64 :tangle no
 iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAQAAAADrRVxmAAAAGElEQVR4AWOgMxgFo2AUjIJRMApGwSgAAAiAAAH3bJXBAAAAAElFTkSuQmCC
+#+end_src
+
+*** Configure Dovecot
+#+begin_src sh :noweb tangle
+config_dovecot () {
+  if ! run "Configure Dovecot Email Server?" "Configure Server" "Cancel"; then
+    cat << EOF > "/usr/local/etc/dovecot/dovecot.conf"
+<<dovecot.conf>>
+EOF
+
+    MAILADM="$(ask 'Email Administrator Address' 'Set Email' '$(whoami)@$(hostname)')"
+    MAILSVR="$(ask 'Email Server DNS Hostname' 'Set Hostname' '$(hostname)')"
+    SSL="$(brew --prefix openssl)"
+    printf "%s\n" \
+      "postmaster_address = '${MAILADM}'" \
+      "ssl_cert = <${SSL}/certs/${MAILSVR}/${MAILSVR}.crt" \
+      "ssl_key = <${SSL}/certs/${MAILSVR}/${MAILSVR}.key" | \
+    tee -a "/usr/local/etc/dovecot/dovecot.conf" > /dev/null
+
+    if test ! -f "/usr/local/etc/dovecot/cram-md5.pwd"; then
+      while true; do
+        MAILUSR="$(ask 'Username for New Email Account?' 'Create Account' '$(whoami)')"
+        test -n "${MAILUSR}" || break
+        doveadm pw | \
+        sed -e "s/^/${MAILUSR}:/" | \
+        sudo tee -a "/usr/local/etc/dovecot/cram-md5.pwd"
+      done
+      sudo chown _dovecot "/usr/local/etc/dovecot/cram-md5.pwd"
+      sudo chmod go= "/usr/local/etc/dovecot/cram-md5.pwd"
+    fi
+
+    sudo tee "/etc/pam.d/dovecot" << EOF > /dev/null
+<<dovecot.pam>>
+EOF
+
+    grep -Fq "${MAILSVR}" "/etc/hosts" || \
+    printf "%s\t%s\n" "127.0.0.1" "${MAILSVR}" | \
+    sudo tee -a "/etc/hosts" > /dev/null
+
+    sudo brew services start dovecot
+
+    cat << EOF > "/usr/local/bin/imaptimefix.py"
+<<imaptimefix.py>>
+EOF
+    chmod +x /usr/local/bin/imaptimefix.py
+  fi
+}
+#+end_src
+
+**** =/usr/local/etc/dovecot/dovecot.conf=
+#+begin_src conf :noweb-ref dovecot.conf :tangle no
+auth_mechanisms = cram-md5
+default_internal_user = _dovecot
+default_login_user = _dovenull
+log_path = /dev/stderr
+mail_location = maildir:~/.mail:INBOX=~/.mail/Inbox:LAYOUT=fs
+mail_plugins = zlib
+maildir_copy_with_hardlinks = no
+namespace {
+  inbox = yes
+  mailbox Drafts {
+    auto = subscribe
+    special_use = \Drafts
+  }
+  mailbox Junk {
+    auto = subscribe
+    special_use = \Junk
+  }
+  mailbox Sent {
+    auto = subscribe
+    special_use = \Sent
+  }
+  mailbox "Sent Messages" {
+    special_use = \Sent
+  }
+  mailbox Trash {
+    auto = subscribe
+    special_use = \Trash
+  }
+  separator = .
+  type = private
+}
+passdb {
+  args = scheme=cram-md5 /usr/local/etc/dovecot/cram-md5.pwd
+  driver = passwd-file
+
+  # driver = pam
+
+  # args = nopassword=y
+  # driver = static
+}
+plugin {
+  sieve = file:/Users/%u/.sieve
+  sieve_plugins = sieve_extprograms
+  zlib_save = bz2
+  zlib_save_level = 9
+}
+protocols = imap
+service imap-login {
+  inet_listener imap {
+    port = 0
+  }
+}
+ssl = required
+ssl_cipher_list = AES128+EECDH:AES128+EDH
+ssl_dh_parameters_length = 4096
+ssl_prefer_server_ciphers = yes
+ssl_protocols = !SSLv2 !SSLv3
+userdb {
+  driver = passwd
+}
+protocol lda {
+  mail_plugins = sieve zlib
+}
+
+# auth_debug = yes
+# auth_debug_passwords = yes
+# auth_verbose = yes
+# auth_verbose_passwords = plain
+# mail_debug = yes
+# verbose_ssl = yes
+#+end_src
+
+**** =/etc/pam.d/dovecot=
+#+begin_src conf :noweb-ref dovecot.pam :tangle no
+auth	required	pam_opendirectory.so	try_first_pass
+account	required	pam_nologin.so
+account	required	pam_opendirectory.so
+password	required	pam_opendirectory.so
+#+end_src
+
+**** =/usr/local/bin/imaptimefix.py=
+#+begin_src python :noweb-ref imaptimefix.py :tangle no
+#!/usr/bin/env python
+
+# Author: Zachary Cutlip <@zcutlip>
+# http://shadow-file.blogspot.com/2012/06/parsing-email-and-fixing-timestamps-in.html
+# Updated: Peter T Bosse II <@ptb>
+# Purpose: A program to fix sorting of mail messages that have been POPed or
+#          IMAPed in the wrong order. Compares time stamp sent and timestamp
+#          received on an RFC822-formatted email message, and renames the
+#          message file using the most recent timestamp that is no more than
+#          24 hours after the date sent. Updates the file's atime/mtime with
+#          the timestamp, as well. Does not modify the headers or contents of
+#          the message.
+
+from bz2 import BZ2File
+from email import message_from_string
+from email.utils import mktime_tz, parsedate_tz
+from os import rename, utime, walk
+from os.path import abspath, isdir, isfile, join
+from re import compile, match
+from sys import argv
+
+if isdir(argv[1]):
+  e = compile("([0-9]+)(\..*$)")
+
+  for a, b, c in walk(argv[1]):
+    for d in c:
+      if e.match(d):
+        f = message_from_string(BZ2File(join(a, d)).read())
+        g = mktime_tz(parsedate_tz(f.get("Date")))
+
+        h = 0
+        for i in f.get_all("Received", []):
+          j = i.split(";")[-1]
+          if parsedate_tz(j):
+            k = mktime_tz(parsedate_tz(j))
+            if (k - g) > (60*60*24):
+              continue
+
+            h = k
+          break
+
+        if (h < 1):
+          h = g
+
+        l = e.match(d)
+
+        if len(l.groups()) == 2:
+          m = str(int(h)) + l.groups()[1]
+          if not isfile(join(a, m)):
+            rename(join(a, d), join(a, m))
+          utime(join(a, m), (h, h))
 #+end_src
 
 *** Configure Z-Shell
