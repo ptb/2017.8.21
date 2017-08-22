@@ -502,6 +502,7 @@ install_ruby_sw () {
 # Define Function =config=
 
 config () {
+  config_bbedit
   config_desktop
   config_zsh
 
@@ -525,6 +526,17 @@ config_plist () {
     ${4} /usr/libexec/PlistBuddy "${2}" \
       -c "${command} '${3}${entry}' ${type} '${value}'" > /dev/null
   done
+}
+
+# Configure BBEdit
+
+config_bbedit () {
+  if test -d "/Applications/BBEdit.app"; then
+    ln /Applications/BBEdit.app/Contents/Helpers/bbdiff /usr/local/bin/bbdiff && \
+    ln /Applications/BBEdit.app/Contents/Helpers/bbedit_tool /usr/local/bin/bbedit && \
+    ln /Applications/BBEdit.app/Contents/Helpers/bbfind /usr/local/bin/bbfind && \
+    ln /Applications/BBEdit.app/Contents/Helpers/bbresults /usr/local/bin/bbresults && \
+  fi
 }
 
 # Configure Desktop Picture
