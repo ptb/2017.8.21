@@ -96,7 +96,7 @@ if test -n "${1}"; then
     init_sudo
     init_no_sleep
     init_hostname
-    init_devtools "/Volumes/Install"
+    init_devtools "${CACHES}"
     init_updates
   }
   printf "\n$(which init)\n"
