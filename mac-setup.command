@@ -39,8 +39,8 @@ EOF
 # Define Function =init=
 
 init () {
-  init_cache
   init_sudo
+  init_cache
   init_no_sleep
   init_hostname
   init_devtools "${CACHES}"
@@ -52,6 +52,14 @@ init () {
 if test "${1}" = 0; then
   printf "\n$(which init)\n"
 fi
+
+# Eliminate Prompts for Password
+
+init_sudo () {
+  printf "%s\n" "%wheel ALL=(ALL) NOPASSWD: ALL" | \
+  sudo tee "/etc/sudoers.d/wheel" > /dev/null && \
+  sudo dscl /Local/Default append /Groups/wheel GroupMembership "$(whoami)"
+}
 
 # Select Installation Cache Location
 
@@ -69,14 +77,6 @@ EOF
   export CACHES="${a}"
   export HOMEBREW_CACHE="${a}Homebrew"
   export BREWFILE="${a}Homebrew/Brewfile"
-}
-
-# Eliminate Prompts for Password
-
-init_sudo () {
-  printf "%s\n" "%wheel ALL=(ALL) NOPASSWD: ALL" | \
-  sudo tee "/etc/sudoers.d/wheel" > /dev/null && \
-  sudo dscl /Local/Default append /Groups/wheel GroupMembership "$(whoami)"
 }
 
 # Set Defaults for Sleep
@@ -124,11 +124,11 @@ install_sw () {
   install_brew
   install_brewfile_taps
   install_brewfile_brew_pkgs
-  install_brewfile_brew_built
   install_brewfile_cask_args
   install_brewfile_cask_pkgs
   install_brewfile_mas_apps
   install_brew_bundle
+  install_brew_built
   install_links
   install_node_sw
   install_perl_sw
@@ -137,10 +137,6 @@ install_sw () {
 
   which config
 }
-
-if test "${1}" = 0; then
-  printf "\n$(which install_sw)\n"
-fi
 
 # Add =/usr/local/bin/sbin= to Default Path
 
@@ -211,23 +207,6 @@ install_brewfile_brew_pkgs () {
   printf "\n" >> "${BREWFILE}"
 }
 
-# Add Compiled Packages to Brewfile
-
-_built='aspell	[ "lang=en" ]
-dovecot	[ "with-pam", "with-pigeonhole" ]
-gnu-sed	[ "with-default-names" ]
-yarn	[ "ignore-dependencies" ]
-homebrew/nginx/nginx-full	[ "with-dav-ext-module", "with-fancyindex-module", "with-gzip-static", "with-http2", "with-mp4-h264-module", "with-passenger", "with-push-stream-module", "with-secure-link", "with-webdav" ]
-ptb/custom/ffmpeg	[ "with-chromaprint", "with-fdk-aac", "with-fontconfig", "with-freetype", "with-frei0r", "with-game-music-emu", "with-lame", "with-libass", "with-libbluray", "with-libbs2b", "with-libcaca", "with-libgsm", "with-libmodplug", "with-libsoxr", "with-libssh", "with-libvidstab", "with-libvorbis", "with-libvpx", "with-opencore-amr", "with-openh264", "with-openjpeg", "with-openssl", "with-opus", "with-pkg-config", "with-rtmpdump", "with-rubberband", "with-schroedinger", "with-sdl2", "with-snappy", "with-speex", "with-tesseract", "with-texi2html", "with-theora", "with-tools", "with-two-lame", "with-wavpack", "with-webp", "with-x264", "with-x265", "with-xvid", "with-xz", "with-yasm", "with-zeromq", "with-zimg" ]'
-
-install_brewfile_brew_built () {
-  printf "%b\n" "${_built}" | \
-  while IFS="$(printf '%b' '\t')" read pkg args; do
-    printf 'brew "%s", args: %s\n' "${pkg}" "${args}" >> "${BREWFILE}"
-  done
-  printf "\n" >> "${BREWFILE}"
-}
-
 # Add Caskroom Options to Brewfile
 
 _args='fontdir	/Library/Fonts
@@ -243,8 +222,7 @@ install_brewfile_cask_args () {
   while IFS="$(printf '%b' '\t')" read arg dir; do
     printf '\n  %s: "%s",' "${arg}" "${dir}" >> "${BREWFILE}"
   done
-  sed -i -e "$ s/,/\'$(printf '%b' '\n')/" "${BREWFILE}"
-  # sed -i -e '$ s/,/\'$'\n/' "${BREWFILE}"
+  sed -i -e "$ s/,/$(printf '%b' '\n\n')/" "${BREWFILE}"
 }
 
 # Add Homebrew Casks to Brewfile
@@ -322,7 +300,6 @@ vmware-fusion
 wireshark
 xld
 caskroom/fonts/font-inconsolata-lgc
-caskroom/fonts/font-skola-sans
 caskroom/versions/transmit4
 ptb/custom/adobe-creative-cloud-2014
 ptb/custom/blankscreen
@@ -331,7 +308,6 @@ ptb/custom/ipmenulet
 ptb/custom/pcalc-3
 ptb/custom/sketchup-pro
 ptb/custom/synergy
-caskroom/fonts/font-inconsolata-lgc
 railwaycat/emacsmacport/emacs-mac-spacemacs-icon'
 
 install_brewfile_cask_pkgs () {
@@ -353,11 +329,14 @@ I Love Stars	402642760
 Icon Slate	439697913
 Justnotes	511230166
 Keynote	409183694
+Metanota Pro	515250764
 Numbers	409203825
 Pages	409201541
 WiFi Explorer	494803304'
 
 install_brewfile_mas_apps () {
+  open "/Applications/App Store.app"
+  run "Sign in to the App Store with your Apple ID" "Cancel" "OK"
   printf "%b\n" "${_mas}" | \
   while IFS="$(printf '%b' '\t')" read app id; do
     printf 'mas "%s", id: %s\n' "${app}" "${id}" >> "${BREWFILE}"
@@ -369,8 +348,26 @@ install_brewfile_mas_apps () {
 install_brew_bundle () {
   brew bundle --file="${BREWFILE}"
 
-  test -d /Applications/Xcode*.app && \
+  test -d /Applications/Xcode* && \
     sudo xcodebuild -license accept
+}
+
+# Add Compiled Packages to Brewfile
+
+_built='aspell	--lang=en
+dovecot	--with-pam --with-pigeonhole
+gnu-sed	--with-default-names
+yarn	--ignore-dependencies
+homebrew/nginx/nginx-full	--with-dav-ext-module --with-fancyindex-module --with-gzip-static --with-http2 --with-mp4-h264-module --with-passenger --with-push-stream-module --with-secure-link --with-webdav
+ptb/custom/ffmpeg	--with-chromaprint --with-fdk-aac --with-fontconfig --with-freetype --with-frei0r --with-game-music-emu --with-lame --with-libass --with-libbluray --with-libbs2b --with-libcaca --with-libgsm --with-libmodplug --with-libsoxr --with-libssh --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openh264 --with-openjpeg --with-openssl --with-opus --with-pkg-config --with-rtmpdump --with-rubberband --with-schroedinger --with-sdl2 --with-snappy --with-speex --with-tesseract --with-texi2html --with-theora --with-tools --with-two-lame --with-wavpack --with-webp --with-x264 --with-x265 --with-xvid --with-xz --with-yasm --with-zeromq --with-zimg'
+
+install_brew_built () {
+  printf "%b\n" "${_built}" | \
+  while IFS="$(printf '%b' '\t')" read pkg args; do
+    brew install --build-bottle "${pkg}" ${args}
+    brew bottle "${pkg}"
+    brew postinstall "${pkg}"
+  done
 }
 
 # Link System Utilities to Applications
@@ -381,7 +378,7 @@ install_links () {
   for a in /System/Library/CoreServices/Applications/*; do
     ln -s "../..$a" . 2> /dev/null
   done
-  if test -d /Applications/Xcode*.app; then
+  if test -d /Applications/Xcode*; then
     cd /Applications && \
     for b in /Applications/Xcode*.app/Contents/Applications/*; do
       ln -s "../..$b" . 2> /dev/null
@@ -396,6 +393,8 @@ install_links () {
 
 install_node_sw () {
   if which nodenv > /dev/null; then
+    sudo mkdir -p "/usr/local/node"
+    sudo chown -R "$(whoami):admin" "/usr/local/node"
     grep -q "NODENV_ROOT" "/etc/zshenv" || \
     printf "%s\n" \
       'export NODENV_ROOT="/usr/local/node"' | \
@@ -420,6 +419,8 @@ install_node_sw () {
 
 install_perl_sw () {
   if which plenv > /dev/null; then
+    sudo mkdir -p "/usr/local/perl"
+    sudo chown -R "$(whoami):admin" "/usr/local/perl"
     grep -q "PLENV_ROOT" "/etc/zshenv" || \
     printf "%s\n" \
       'export PLENV_ROOT="/usr/local/perl"' | \
@@ -432,8 +433,9 @@ install_perl_sw () {
     sudo tee -a "/etc/zshrc" > /dev/null
     . "/etc/zshrc"
 
-    plenv install --skip-existing 5.26.0
+    plenv install 5.26.0
     plenv global 5.26.0
+    rehash
 
     grep -q "${PLENV_ROOT}" "/etc/paths" || \
     sudo sed -i -e "1i ${PLENV_ROOT}/shims" "/etc/paths"
@@ -444,6 +446,11 @@ install_perl_sw () {
 
 install_python_sw () {
   if which pyenv > /dev/null; then
+    export CFLAGS="-I$(brew --prefix openssl)/include" \
+    export LDFLAGS="-L$(brew --prefix openssl)/lib" \
+
+    sudo mkdir -p "/usr/local/python"
+    sudo chown -R "$(whoami):admin" "/usr/local/python"
     grep -q "PYENV_ROOT" "/etc/zshenv" || \
     printf "%s\n" \
       'export PYENV_ROOT="/usr/local/python"' | \
@@ -471,6 +478,8 @@ install_python_sw () {
 
 install_ruby_sw () {
   if which rbenv > /dev/null; then
+    sudo mkdir -p "/usr/local/ruby"
+    sudo chown -R "$(whoami):admin" "/usr/local/ruby"
     grep -q "RBENV_ROOT" "/etc/zshenv" || \
     printf "%s\n" \
       'export RBENV_ROOT="/usr/local/ruby"' | \
@@ -488,7 +497,7 @@ install_ruby_sw () {
 
     printf "%s\n" \
       "gem: --no-document" | \
-    sudo tee -a "/etc/gemrc" > /dev/null
+    tee "${HOME}/.gemrc" > /dev/null
 
     gem update --system
     gem update
@@ -814,6 +823,10 @@ custom_atom () {
       test -d "${HOME}/.atom/packages/${pkg}" ||
       apm install "${pkg}"
     done
+
+    cat << EOF > "${HOME}/.atom/.apmrc"
+cache = ${CACHES}/apm
+EOF
 
     cat << EOF > "${HOME}/.atom/config.cson"
 "*":
