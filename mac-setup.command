@@ -128,6 +128,7 @@ install_sw () {
   install_brewfile_cask_args
   install_brewfile_cask_pkgs
   install_brewfile_mas_apps
+  install_links
 
   which config
 }
@@ -355,6 +356,25 @@ install_brewfile_mas_apps () {
   while IFS="$(printf '%b' '\t')" read app id; do
     printf 'mas "%s", id: %s\n' "${app}" "${id}" >> "${BREWFILE}"
   done
+}
+
+# Link System Utilities to Applications
+
+install_links () {
+  brew linkapps 2> /dev/null
+  cd /Applications && \
+  for a in /System/Library/CoreServices/Applications/*; do
+    ln -s "../..$a" . 2> /dev/null
+  done
+  if test -d /Applications/Xcode*.app; then
+    cd /Applications && \
+    for b in /Applications/Xcode*.app/Contents/Applications/*; do
+      ln -s "../..$b" . 2> /dev/null
+    done && \
+    for c in /Applications/Xcode*.app/Contents/Developer/Applications/*; do
+      ln -s "../..$c" . 2> /dev/null
+    done
+  fi
 }
 
 # Define Function =config=

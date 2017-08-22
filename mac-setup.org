@@ -199,6 +199,7 @@ install_sw () {
   install_brewfile_cask_args
   install_brewfile_cask_pkgs
   install_brewfile_mas_apps
+  install_links
 
   which config
 }
@@ -478,6 +479,26 @@ install_brewfile_mas_apps () {
 | Pages           | 409201541 | https://itunes.apple.com/app/id409201541 |
 | WiFi Explorer   | 494803304 | https://itunes.apple.com/app/id494803304 |
 |-----------------+-----------+------------------------------------------|
+
+*** Link System Utilities to Applications
+#+begin_src sh
+install_links () {
+  brew linkapps 2> /dev/null
+  cd /Applications && \
+  for a in /System/Library/CoreServices/Applications/*; do
+    ln -s "../..$a" . 2> /dev/null
+  done
+  if test -d /Applications/Xcode*.app; then
+    cd /Applications && \
+    for b in /Applications/Xcode*.app/Contents/Applications/*; do
+      ln -s "../..$b" . 2> /dev/null
+    done && \
+    for c in /Applications/Xcode*.app/Contents/Developer/Applications/*; do
+      ln -s "../..$c" . 2> /dev/null
+    done
+  fi
+}
+#+end_src
 
 ** Configure
 
