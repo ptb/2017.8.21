@@ -238,7 +238,8 @@ install_brewfile_cask_args () {
   while IFS="$(printf '%b' '\t')" read arg dir; do
     printf '\n  %s: "%s",' "${arg}" "${dir}" >> "${BREWFILE}"
   done
-  sed -i -e '$ s/,/\'$'\n/' "${BREWFILE}"
+  sed -i -e "$ s/,/\'$(printf '%b' '\n')/" "${BREWFILE}"
+  # sed -i -e '$ s/,/\'$'\n/' "${BREWFILE}"
 }
 
 # Add Homebrew Casks to Brewfile
@@ -439,7 +440,7 @@ export LESS="-egiMQRS -x2 -z-2"
 EOF
   fi
   sudo chmod +x "/etc/zshenv"
-  source "/etc/zshenv"
+  . "/etc/zshenv"
 }
 
 config_zsh
@@ -834,7 +835,7 @@ custom_zsh () {
 
 curl --location --silent \
   "https://github.com/ptb/2017.8.21/raw/master/mac-setup.command" | \
-  source /dev/stdin 1
+  . /dev/stdin 1
 EOF
   chmod +x "${HOME}/.zsh/.zshrc"
 }
