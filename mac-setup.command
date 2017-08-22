@@ -291,6 +291,7 @@ install_brewfile_cask_pkgs () {
 
 config () {
   config_desktop
+  config_zsh
 }
 
 # Configure Desktop Picture
@@ -301,6 +302,41 @@ config_desktop () {
   base64 -D << EOF > "/Library/Caches/com.apple.desktop.admin.png"
 iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAQAAAADrRVxmAAAAGElEQVR4AWOgMxgFo2AUjIJRMApGwSgAAAiAAAH3bJXBAAAAAElFTkSuQmCC
 EOF
+}
+
+# Configure Z-Shell
+
+config_zsh () {
+  if test ! -f "/etc/zshenv"; then
+    sudo tee /etc/zshenv << EOF > /dev/null
+#!/bin/sh
+
+export ZDOTDIR="${HOME}/.zsh"
+
+export EDITOR="vi"
+export VISUAL="vi"
+export PAGER="less"
+
+test -z "${LANG}" && \
+  export LANG="en_US.UTF-8"
+
+# Ensure path arrays do not contain duplicates.
+typeset -gU cdpath fpath mailpath path
+
+# Set the default Less options.
+export LESS="-egiMQRS -x2 -z-2"
+
+if test -d "/Volumes/Caches"; then
+  export CACHES="/Volumes/Caches"
+  export HOMEBREW_CACHE="/Volumes/Caches/Homebrew"
+  export BREWFILE="/Volumes/Caches/Homebrew/Brewfile"
+else
+  export CACHES="${HOME}/Library/Caches"
+  export HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
+  export BREWFILE="${HOME}/Library/Caches/Homebrew/Brewfile"
+fi
+EOF
+  fi
 }
 
 # Define Function =custom=
@@ -666,45 +702,3 @@ custom_terminal () {
     "$HOME/Library/Preferences/com.apple.Terminal.plist"
   set_prefs "Terminal" "${_term2}"
 }
-
-# Customize Z-Shell
-
-custom_zsh () {
-  case $SHELL in
-    (*zsh) ;;
-    (*) chsh -s "$(which zsh)" ;;
-  esac
-
-  if test ! -f "/etc/zshenv"; then
-    sudo tee /etc/zshenv << EOF > /dev/null
-#!/bin/sh
-
-export ZDOTDIR="${HOME}/.zsh"
-
-export EDITOR="vi"
-export VISUAL="vi"
-export PAGER="less"
-
-test -z "${LANG}" && \
-  export LANG="en_US.UTF-8"
-
-# Ensure path arrays do not contain duplicates.
-typeset -gU cdpath fpath mailpath path
-
-# Set the default Less options.
-export LESS="-egiMQRS -x2 -z-2"
-
-if test -d "/Volumes/Caches"; then
-  export CACHES="/Volumes/Caches"
-  export HOMEBREW_CACHE="/Volumes/Caches/Homebrew"
-  export BREWFILE="/Volumes/Caches/Homebrew/Brewfile"
-else
-  export CACHES="${HOME}/Library/Caches"
-  export HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
-  export BREWFILE="${HOME}/Library/Caches/Homebrew/Brewfile"
-fi
-EOF
-  fi
-}
-
-custom_zsh

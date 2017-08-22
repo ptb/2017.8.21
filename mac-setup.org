@@ -13,9 +13,14 @@ From zero to fully installed and configured, in an hour.
 
 *** Quick Start
 
-#+begin_example sh :tangle no
-zsh
+#+begin_example sh
+case "${SHELL}" in
+  (*zsh) ;;
+  (*) chsh -s "$(which zsh)"; exit 1 ;;
+esac
+#+end_example
 
+#+begin_example sh :tangle no
 curl --location --silent \
   "https://github.com/ptb/2017.8.21/raw/master/mac-setup.command" | \
   source /dev/stdin 0
@@ -403,6 +408,7 @@ install_brewfile_cask_pkgs () {
 #+begin_src sh
 config () {
   config_desktop
+  config_zsh
 }
 #+end_src
 
@@ -420,6 +426,17 @@ EOF
 **** =black.png.b64=
 #+begin_src base64 :noweb-ref black.png.b64 :tangle no
 iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAQAAAADrRVxmAAAAGElEQVR4AWOgMxgFo2AUjIJRMApGwSgAAAiAAAH3bJXBAAAAAElFTkSuQmCC
+#+end_src
+
+*** Configure Z-Shell
+#+begin_src sh :noweb tangle
+config_zsh () {
+  if test ! -f "/etc/zshenv"; then
+    sudo tee /etc/zshenv << EOF > /dev/null
+<<zshenv>>
+EOF
+  fi
+}
 #+end_src
 
 ** Customize
@@ -835,22 +852,6 @@ custom_terminal () {
 |            | com.apple.Terminal | Default Window Settings | -string | ptb   |      |
 |------------+--------------------+-------------------------+---------+-------+------|
 
-*** Customize Z-Shell
-#+begin_src sh :noweb tangle
-custom_zsh () {
-  case $SHELL in
-    (*zsh) ;;
-    (*) chsh -s "$(which zsh)" ;;
-  esac
-
-  if test ! -f "/etc/zshenv"; then
-    sudo tee /etc/zshenv << EOF > /dev/null
-<<zshenv>>
-EOF
-  fi
-}
-#+end_src
-
 **** =/etc/zshenv=
 #+begin_src sh :noweb-ref zshenv :tangle no
 #!/bin/sh
@@ -879,8 +880,4 @@ else
   export HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
   export BREWFILE="${HOME}/Library/Caches/Homebrew/Brewfile"
 fi
-#+end_src
-
-#+begin_src sh
-custom_zsh
 #+end_src
