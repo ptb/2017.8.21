@@ -44,22 +44,10 @@ fi
 
 # Eliminate Prompts for Password
 
-_sudo='timeout	Defaults:%admin timestamp_timeout=-1
-tty_tickets	Defaults:%admin !tty_tickets'
-
 init_sudo () {
-  sudo -v
-
-  while true; do
-    sudo -n true
-    sleep 60
-  done &
-
-  printf "%b\n" "${_sudo}" | \
-  while IFS="$(printf '%b' '\t')" read filename policy; do
-    printf "%b\n" "${policy}" | \
-    sudo tee "/etc/sudoers.d/${filename}" > /dev/null
-  done
+  printf "%s\n" "%wheel ALL=(ALL) NOPASSWD: ALL" | \
+  sudo tee "/etc/sudoers.d/wheel" > /dev/null && \
+  sudo dscl /Local/Default append /Groups/wheel GroupMembership "$(whoami)"
 }
 
 # Set Defaults for Sleep

@@ -104,32 +104,13 @@ fi
 #+end_src
 
 *** Eliminate Prompts for Password
-#+begin_src sh :var _sudo=_sudo[3:-2,0:1]
-
+#+begin_src sh
 init_sudo () {
-  sudo -v
-
-  while true; do
-    sudo -n true
-    sleep 60
-  done &
-
-  printf "%b\n" "${_sudo}" | \
-  while IFS="$(printf '%b' '\t')" read filename policy; do
-    printf "%b\n" "${policy}" | \
-    sudo tee "/etc/sudoers.d/${filename}" > /dev/null
-  done
+  printf "%s\n" "%wheel ALL=(ALL) NOPASSWD: ALL" | \
+  sudo tee "/etc/sudoers.d/wheel" > /dev/null && \
+  sudo dscl /Local/Default append /Groups/wheel GroupMembership "$(whoami)"
 }
 #+end_src
-
-**** _sudo
-#+name: _sudo
-|-------------+--------------------------------------|
-| Filename    | Policy                               |
-|-------------+--------------------------------------|
-| timeout     | Defaults:%admin timestamp_timeout=-1 |
-| tty_tickets | Defaults:%admin !tty_tickets         |
-|-------------+--------------------------------------|
 
 *** Set Defaults for Sleep
 #+begin_src sh
