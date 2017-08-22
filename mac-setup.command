@@ -568,6 +568,7 @@ EOF
 
 custom () {
   custom_home
+  custom_atom
   custom_emacs
   custom_terminal
   custom_zsh
@@ -587,7 +588,7 @@ custom_home () {
   chmod -R go= "${HOME}" > /dev/null 2>&1
 }
 
-# Configure Atom
+# Customize Atom
 
 _atom='atom-beautify
 atom-css-comb
@@ -625,7 +626,7 @@ tree-view-open-files
 vim-mode-plus
 vim-mode-zz'
 
-config_atom () {
+custom_atom () {
   if which apm > /dev/null; then
     printf "%b\n" "${_atom}" | \
     while IFS="$(printf '%b' '\t')" read pkg; do

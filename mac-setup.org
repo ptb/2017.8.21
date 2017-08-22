@@ -715,6 +715,7 @@ export LESS="-egiMQRS -x2 -z-2"
 #+begin_src sh
 custom () {
   custom_home
+  custom_atom
   custom_emacs
   custom_terminal
   custom_zsh
@@ -736,10 +737,10 @@ custom_home () {
 }
 #+end_src
 
-*** Configure Atom
+*** Customize Atom
 #+begin_src sh :noweb tangle :var _atom=_atom[3:-2,0]
 
-config_atom () {
+custom_atom () {
   if which apm > /dev/null; then
     printf "%b\n" "${_atom}" | \
     while IFS="$(printf '%b' '\t')" read pkg; do
