@@ -276,7 +276,6 @@ vmware-fusion
 wireshark
 xld
 caskroom/fonts/font-inconsolata-lgc
-caskroom/fonts/font-skola-sans
 railwaycat/emacsmacport/emacs-mac-spacemacs-icon'
 
 install_brewfile_cask_pkgs () {
