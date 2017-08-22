@@ -413,10 +413,12 @@ EOF
 
 export ZDOTDIR="${HOME}/.zsh"
 
-if test -d "/Volumes/Caches/Homebrew"; then
+if test -d "/Volumes/Caches"; then
+  export CACHES="/Volumes/Caches"
   export HOMEBREW_CACHE="/Volumes/Caches/Homebrew"
   export BREWFILE="/Volumes/Caches/Homebrew/Brewfile"
 else
+  export CACHES="${HOME}/Library/Caches"
   export HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
   export BREWFILE="${HOME}/Library/Caches/Homebrew/Brewfile"
 fi
