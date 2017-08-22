@@ -128,7 +128,12 @@ install_sw () {
   install_brewfile_cask_args
   install_brewfile_cask_pkgs
   install_brewfile_mas_apps
+  install_brew_bundle
   install_links
+  install_node_sw
+  install_perl_sw
+  install_python_sw
+  install_ruby_sw
 
   which config
 }
@@ -359,6 +364,15 @@ install_brewfile_mas_apps () {
   done
 }
 
+# Install macOS Software with =brew bundle=
+
+install_brew_bundle () {
+  brew bundle --file="${BREWFILE}"
+
+  test -d /Applications/Xcode*.app && \
+    sudo xcodebuild -license accept
+}
+
 # Link System Utilities to Applications
 
 install_links () {
@@ -375,6 +389,113 @@ install_links () {
     for c in /Applications/Xcode*.app/Contents/Developer/Applications/*; do
       ln -s "../..$c" . 2> /dev/null
     done
+  fi
+}
+
+# Install Node Software with =nodenv=
+
+install_node_sw () {
+  if which nodenv > /dev/null; then
+    grep -q "NODENV_ROOT" "/etc/zshenv" || \
+    printf "%s\n" \
+      'export NODENV_ROOT="/usr/local/node"' | \
+    sudo tee -a "/etc/zshenv" > /dev/null
+    . "/etc/zshenv"
+
+    grep -q "nodenv" "/etc/zshrc" || \
+    printf "%s\n" \
+      'eval "$(nodenv init -)"' | \
+    sudo tee -a "/etc/zshrc" > /dev/null
+    . "/etc/zshrc"
+
+    nodenv install --skip-existing 8.3.0
+    nodenv global 8.3.0
+
+    grep -q "${NODENV_ROOT}" "/etc/paths" || \
+    sudo sed -i -e "1i ${NODENV_ROOT}/shims" "/etc/paths"
+  fi
+}
+
+# Install Perl Software with =plenv=
+
+install_perl_sw () {
+  if which plenv > /dev/null; then
+    grep -q "PLENV_ROOT" "/etc/zshenv" || \
+    printf "%s\n" \
+      'export PLENV_ROOT="/usr/local/perl"' | \
+    sudo tee -a "/etc/zshenv" > /dev/null
+    . "/etc/zshenv"
+
+    grep -q "plenv" "/etc/zshrc" || \
+    printf "%s\n" \
+      'eval "$(plenv init - zsh)"' | \
+    sudo tee -a "/etc/zshrc" > /dev/null
+    . "/etc/zshrc"
+
+    plenv install --skip-existing 5.26.0
+    plenv global 5.26.0
+
+    grep -q "${PLENV_ROOT}" "/etc/paths" || \
+    sudo sed -i -e "1i ${PLENV_ROOT}/shims" "/etc/paths"
+  fi
+}
+
+# Install Python Software with =pyenv=
+
+install_python_sw () {
+  if which pyenv > /dev/null; then
+    grep -q "PYENV_ROOT" "/etc/zshenv" || \
+    printf "%s\n" \
+      'export PYENV_ROOT="/usr/local/python"' | \
+    sudo tee -a "/etc/zshenv" > /dev/null
+    . "/etc/zshenv"
+
+    grep -q "pyenv" "/etc/zshrc" || \
+    printf "%s\n" \
+      'eval "$(pyenv init -)"' | \
+    sudo tee -a "/etc/zshrc" > /dev/null
+    . "/etc/zshrc"
+
+    pyenv install --skip-existing 2.7.13
+    pyenv install --skip-existing 3.6.2
+    pyenv global 2.7.13
+
+    pip install --upgrade "pip" "setuptools"
+
+    grep -q "${PYENV_ROOT}" "/etc/paths" || \
+    sudo sed -i -e "1i ${PYENV_ROOT}/shims" "/etc/paths"
+  fi
+}
+
+# Install Ruby Software with =rbenv=
+
+install_ruby_sw () {
+  if which rbenv > /dev/null; then
+    grep -q "RBENV_ROOT" "/etc/zshenv" || \
+    printf "%s\n" \
+      'export RBENV_ROOT="/usr/local/ruby"' | \
+    sudo tee -a "/etc/zshenv" > /dev/null
+    . "/etc/zshenv"
+
+    grep -q "rbenv" "/etc/zshrc" || \
+    printf "%s\n" \
+      'eval "$(rbenv init -)"' | \
+    sudo tee -a "/etc/zshrc" > /dev/null
+    . "/etc/zshrc"
+
+    rbenv install --skip-existing 2.4.1
+    rbenv global 2.4.1
+
+    printf "%s\n" \
+      "gem: --no-document" | \
+    sudo tee -a "/etc/gemrc" > /dev/null
+
+    gem update --system
+    gem update
+    gem install bundler
+
+    grep -q "${RBENV_ROOT}" "/etc/paths" || \
+    sudo sed -i -e "1i ${RBENV_ROOT}/shims" "/etc/paths"
   fi
 }
 
@@ -442,8 +563,6 @@ EOF
   sudo chmod +x "/etc/zshenv"
   . "/etc/zshenv"
 }
-
-config_zsh
 
 # Define Function =custom=
 
@@ -829,13 +948,13 @@ custom_terminal () {
 # Customize Z-Shell
 
 custom_zsh () {
-  mkdir -m go= "${HOME}/.zsh"
-  cat << EOF > "${HOME}/.zsh/.zshrc"
+  mkdir -m go= "${ZDOTDIR:-$HOME}"
+  cat << EOF > "${ZDOTDIR:-$HOME}/.zshrc"
 #!/bin/sh
 
 curl --location --silent \
   "https://github.com/ptb/2017.8.21/raw/master/mac-setup.command" | \
   . /dev/stdin 1
 EOF
-  chmod +x "${HOME}/.zsh/.zshrc"
+  chmod +x "${ZDOTDIR:-$HOME}/.zshrc"
 }
