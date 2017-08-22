@@ -49,7 +49,7 @@ init () {
   which install_sw
 }
 
-if "${1}" = 0; then
+if test "${1}" = 0; then
   printf "\n$(which init)\n"
 fi
 
@@ -130,7 +130,7 @@ install_sw () {
   which config
 }
 
-if "${1}" = 0; then
+if test "${1}" = 0; then
   printf "\n$(which install_sw)\n"
 fi
 
