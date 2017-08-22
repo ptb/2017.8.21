@@ -505,6 +505,19 @@ custom () {
 }
 #+end_src
 
+*** Customize Home
+#+begin_src sh
+custom_home () {
+  a=$(ask "Existing Home Remote Repository Path or URL" "Add Remote" "")
+
+  if test -n "${a}"; then
+    git init "${HOME}"
+    git --work-tree="${HOME}" remote add origin "${a}"
+    git --work-tree="${HOME}" pull origin master
+  fi
+}
+#+end_src
+
 *** Customize Emacs
 #+begin_src sh :noweb tangle
 custom_emacs () {
