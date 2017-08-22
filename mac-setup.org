@@ -439,6 +439,36 @@ EOF
 }
 #+end_src
 
+**** =/etc/zshenv=
+#+begin_src sh :noweb-ref zshenv :tangle no
+#!/bin/sh
+
+export ZDOTDIR="${HOME}/.zsh"
+
+export EDITOR="vi"
+export VISUAL="vi"
+export PAGER="less"
+
+test -z "${LANG}" && \
+  export LANG="en_US.UTF-8"
+
+# Ensure path arrays do not contain duplicates.
+typeset -gU cdpath fpath mailpath path
+
+# Set the default Less options.
+export LESS="-egiMQRS -x2 -z-2"
+
+if test -d "/Volumes/Caches"; then
+  export CACHES="/Volumes/Caches"
+  export HOMEBREW_CACHE="/Volumes/Caches/Homebrew"
+  export BREWFILE="/Volumes/Caches/Homebrew/Brewfile"
+else
+  export CACHES="${HOME}/Library/Caches"
+  export HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
+  export BREWFILE="${HOME}/Library/Caches/Homebrew/Brewfile"
+fi
+#+end_src
+
 ** Customize
 
 *** Define Function =custom=
@@ -851,33 +881,3 @@ custom_terminal () {
 |            | com.apple.Terminal | Startup Window Settings | -string | ptb   |      |
 |            | com.apple.Terminal | Default Window Settings | -string | ptb   |      |
 |------------+--------------------+-------------------------+---------+-------+------|
-
-**** =/etc/zshenv=
-#+begin_src sh :noweb-ref zshenv :tangle no
-#!/bin/sh
-
-export ZDOTDIR="${HOME}/.zsh"
-
-export EDITOR="vi"
-export VISUAL="vi"
-export PAGER="less"
-
-test -z "${LANG}" && \
-  export LANG="en_US.UTF-8"
-
-# Ensure path arrays do not contain duplicates.
-typeset -gU cdpath fpath mailpath path
-
-# Set the default Less options.
-export LESS="-egiMQRS -x2 -z-2"
-
-if test -d "/Volumes/Caches"; then
-  export CACHES="/Volumes/Caches"
-  export HOMEBREW_CACHE="/Volumes/Caches/Homebrew"
-  export BREWFILE="/Volumes/Caches/Homebrew/Brewfile"
-else
-  export CACHES="${HOME}/Library/Caches"
-  export HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
-  export BREWFILE="${HOME}/Library/Caches/Homebrew/Brewfile"
-fi
-#+end_src
