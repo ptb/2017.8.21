@@ -293,6 +293,25 @@ config () {
   config_zsh
 }
 
+# Define Function =config_defaults=
+
+config_defaults () {
+  printf "%b\n" "${1}" | \
+  while IFS="$(printf '%b' '\t')" read domain key type value host; do
+    ${2} defaults ${host} write ${domain} "${key}" ${type} "${value}"
+  done
+}
+
+# Define Function =config_plist=
+
+config_plist () {
+  printf "%b\n" "${1}" | \
+  while IFS="$(printf '%b' '\t')" read command entry type value; do
+    ${4} /usr/libexec/PlistBuddy "${2}" \
+      -c "${command} '${3}${entry}' ${type} '${value}'" > /dev/null
+  done
+}
+
 # Configure Desktop Picture
 
 config_desktop () {
@@ -349,11 +368,12 @@ custom () {
 # Customize Emacs
 
 custom_emacs () {
-  mkdir -m go= -p "${HOME}/.emacs.d" && \
+  mkdir -p "${HOME}/.emacs.d" && \
   curl --compressed --location --silent \
     "https://github.com/syl20bnr/spacemacs/archive/master.tar.gz" | \
   tar -C "${HOME}/.emacs.d" --strip-components 1 -xf -
-  mkdir -m go= -p "${HOME}/.emacs.d/private/ptb"
+  mkdir -p "${HOME}/.emacs.d/private/ptb"
+  chmod -R go= "${HOME}/.emacs.d"
 
   cat << EOF > "${HOME}/.spacemacs"
 (defun dotspacemacs/layers ()
@@ -613,7 +633,7 @@ EOF
 
 # Customize Terminal
 
-_term1='delete			
+_term_plist='delete			
 add		dict	
 add	:name	string	ptb
 add	:type	string	Window Settings
@@ -693,11 +713,12 @@ add	:BellBounceCritical	bool	false
 add	:CharacterEncoding	integer	4
 add	:SetLanguageEnvironmentVariables	bool	true
 add	:EastAsianAmbiguousWide	bool	false'
-_term2='com.apple.Terminal	Startup Window Settings	-string	ptb	
+_term_defaults='com.apple.Terminal	Startup Window Settings	-string	ptb	
 com.apple.Terminal	Default Window Settings	-string	ptb	'
 
 custom_terminal () {
-  set_plist "Terminal" ":Window Settings:ptb" "${_term1}" \
-    "$HOME/Library/Preferences/com.apple.Terminal.plist"
-  set_prefs "Terminal" "${_term2}"
+  config_plist "${_term_plist}" \
+    "${HOME}/Library/Preferences/com.apple.Terminal.plist" \
+    ":Window Settings:ptb"
+  config_defaults "${_term_defaults}"
 }
