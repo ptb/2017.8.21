@@ -191,11 +191,14 @@ init_updates () {
 *** Define Function =install_sw=
 #+begin_src sh
 install_sw () {
+  install_paths
   install_brew
   install_brewfile_taps
   install_brewfile_brew_pkgs
+  install_brewfile_brew_built
   install_brewfile_cask_args
   install_brewfile_cask_pkgs
+  install_brewfile_mas_apps
 
   which config
 }
@@ -203,6 +206,15 @@ install_sw () {
 if test "${1}" = 0; then
   printf "\n$(which install_sw)\n"
 fi
+#+end_src
+
+*** Add =/usr/local/bin/sbin= to Default Path
+#+begin_src sh
+install_paths () {
+  if ! grep -Fq "/usr/local/sbin" /etc/paths; then
+    sudo sed -i -e "/\/usr\/sbin/{x;s/$/\/usr\/local\/sbin/;G;}" /etc/paths
+  fi
+}
 #+end_src
 
 *** Install Homebrew Package Manager
@@ -284,10 +296,10 @@ install_brewfile_brew_pkgs () {
 |-----------------------+------------------------------------------|
 
 *** Add Compiled Packages to Brewfile
-#+begin_src sh :var _build=_build[3:-2,0:1]
+#+begin_src sh :var _built=_built[3:-2,0:1]
 
-install_brewfile_brew_custom () {
-  printf "%b\n" "${_build}" | \
+install_brewfile_brew_built () {
+  printf "%b\n" "${_built}" | \
   while IFS="$(printf '%b' '\t')" read pkg args; do
     printf 'brew "%s", args: %s\n' "${pkg}" "${args}" >> "${BREWFILE}"
   done
@@ -295,8 +307,8 @@ install_brewfile_brew_custom () {
 }
 #+end_src
 
-**** _build
-#+name: _build
+**** _built
+#+name: _built
 |---------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Homebrew Package Name     | Custom Build Arguments                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 |---------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -348,85 +360,124 @@ install_brewfile_cask_pkgs () {
 
 **** _casks
 #+name: _casks
-|--------------------------------------------------+-----------------------------------------------------|
-| Caskroom Package Name                            | Reference URL                                       |
-|--------------------------------------------------+-----------------------------------------------------|
-| java                                             | https://www.oracle.com/technetwork/java/javase/     |
-| xquartz                                          | https://www.xquartz.org/                            |
-| adium                                            | https://www.adium.im/                               |
-| alfred                                           | https://www.alfredapp.com/                          |
-| arduino                                          | https://www.arduino.cc/                             |
-| atom                                             | https://atom.io/                                    |
-| autodmg                                          | https://github.com/MagerValp/AutoDMG                |
-| bbedit                                           | https://www.barebones.com/products/bbedit/          |
-| caffeine                                         | http://lightheadsw.com/caffeine/                    |
-| carbon-copy-cloner                               | https://bombich.com/                                |
-| charles                                          | https://www.charlesproxy.com/                       |
-| dash                                             | https://kapeli.com/dash                             |
-| docker-toolbox                                   | https://www.docker.com/products/docker-toolbox      |
-| dropbox                                          | https://www.dropbox.com/                            |
-| duet                                             | https://www.duetdisplay.com/                        |
-| exifrenamer                                      | http://www.qdev.de/?location=mac/exifrenamer        |
-| firefox                                          | https://www.mozilla.org/firefox/                    |
-| flux                                             | https://justgetflux.com/                            |
-| github-desktop                                   | https://desktop.github.com/                         |
-| gitup                                            | http://gitup.co/                                    |
-| google-chrome                                    | https://www.google.com/chrome/                      |
-| handbrake                                        | https://handbrake.fr/                               |
-| hermes                                           | http://hermesapp.org/                               |
-| imageoptim                                       | https://imageoptim.com/mac                          |
-| inkscape                                         | https://inkscape.org/                               |
-| integrity                                        | http://peacockmedia.software/mac/integrity/         |
-| istat-menus                                      | https://bjango.com/mac/istatmenus/                  |
-| iterm2                                           | https://www.iterm2.com/                             |
-| jubler                                           | http://www.jubler.org/                              |
-| little-snitch                                    | https://www.obdev.at/products/littlesnitch/         |
-| machg                                            | http://jasonfharris.com/machg/                      |
-| makemkv                                          | https://www.makemkv.com/                            |
-| menubar-countdown                                | http://capablehands.net/menubarcountdown            |
-| meteorologist                                    | http://heat-meteo.sourceforge.net/                  |
-| moom                                             | https://manytricks.com/moom/                        |
-| mp4tools                                         | http://www.emmgunn.com/mp4tools-home/               |
-| munki                                            | https://www.munki.org/munki/                        |
-| musicbrainz-picard                               | https://picard.musicbrainz.org/                     |
-| namechanger                                      | https://mrrsoftware.com/namechanger/                |
-| nvalt                                            | http://brettterpstra.com/projects/nvalt/            |
-| nzbget                                           | https://nzbget.net/                                 |
-| nzbvortex                                        | https://www.nzbvortex.com/                          |
-| openemu                                          | http://openemu.org/                                 |
-| opera                                            | https://www.opera.com/                              |
-| pacifist                                         | https://www.charlessoft.com/                        |
-| platypus                                         | https://sveinbjorn.org/platypus                     |
-| plex-media-server                                | https://www.plex.tv/                                |
-| qlstephen                                        | https://whomwah.github.io/qlstephen/                |
-| quitter                                          | https://marco.org/apps#quitter                      |
-| rescuetime                                       | https://www.rescuetime.com/                         |
-| scrivener                                        | https://literatureandlatte.com/scrivener.php        |
-| sizeup                                           | https://www.irradiatedsoftware.com/sizeup/          |
-| sketch                                           | https://www.sketchapp.com/                          |
-| sketchup                                         | https://www.sketchup.com/                           |
-| skitch                                           | https://evernote.com/products/skitch                |
-| skype                                            | https://www.skype.com/                              |
-| slack                                            | https://slack.com/                                  |
-| sonarr                                           | https://sonarr.tv/                                  |
-| sonarr-menu                                      | https://github.com/jefbarn/Sonarr-Menu              |
-| sourcetree                                       | https://www.sourcetreeapp.com/                      |
-| steermouse                                       | http://plentycom.jp/en/steermouse/                  |
-| subler                                           | https://subler.org/                                 |
-| sublime-text                                     | https://www.sublimetext.com/3                       |
-| the-unarchiver                                   | https://theunarchiver.com/                          |
-| time-sink                                        | https://manytricks.com/timesink/                    |
-| torbrowser                                       | https://www.torproject.org/projects/torbrowser.html |
-| tower                                            | https://www.git-tower.com/                          |
-| unrarx                                           | http://www.unrarx.com/                              |
-| vimr                                             | http://vimr.org/                                    |
-| vlc                                              | https://www.videolan.org/vlc/                       |
-| vmware-fusion                                    | https://www.vmware.com/products/fusion.html         |
-| wireshark                                        | https://www.wireshark.org/                          |
-| xld                                              | http://tmkk.undo.jp/xld/index_e.html                |
-| caskroom/fonts/font-inconsolata-lgc              | https://github.com/DeLaGuardo/Inconsolata-LGC       |
-| railwaycat/emacsmacport/emacs-mac-spacemacs-icon | https://github.com/railwaycat/homebrew-emacsmacport |
-|--------------------------------------------------+-----------------------------------------------------|
+|--------------------------------------------------+---------------------------------------------------------------|
+| Caskroom Package Name                            | Reference URL                                                 |
+|--------------------------------------------------+---------------------------------------------------------------|
+| java                                             | https://www.oracle.com/technetwork/java/javase/               |
+| xquartz                                          | https://www.xquartz.org/                                      |
+| adium                                            | https://www.adium.im/                                         |
+| alfred                                           | https://www.alfredapp.com/                                    |
+| arduino                                          | https://www.arduino.cc/                                       |
+| atom                                             | https://atom.io/                                              |
+| autodmg                                          | https://github.com/MagerValp/AutoDMG                          |
+| bbedit                                           | https://www.barebones.com/products/bbedit/                    |
+| caffeine                                         | http://lightheadsw.com/caffeine/                              |
+| carbon-copy-cloner                               | https://bombich.com/                                          |
+| charles                                          | https://www.charlesproxy.com/                                 |
+| dash                                             | https://kapeli.com/dash                                       |
+| dropbox                                          | https://www.dropbox.com/                                      |
+| duet                                             | https://www.duetdisplay.com/                                  |
+| exifrenamer                                      | http://www.qdev.de/?location=mac/exifrenamer                  |
+| firefox                                          | https://www.mozilla.org/firefox/                              |
+| flux                                             | https://justgetflux.com/                                      |
+| github-desktop                                   | https://desktop.github.com/                                   |
+| gitup                                            | http://gitup.co/                                              |
+| google-chrome                                    | https://www.google.com/chrome/                                |
+| handbrake                                        | https://handbrake.fr/                                         |
+| hermes                                           | http://hermesapp.org/                                         |
+| imageoptim                                       | https://imageoptim.com/mac                                    |
+| inkscape                                         | https://inkscape.org/                                         |
+| integrity                                        | http://peacockmedia.software/mac/integrity/                   |
+| istat-menus                                      | https://bjango.com/mac/istatmenus/                            |
+| iterm2                                           | https://www.iterm2.com/                                       |
+| jubler                                           | http://www.jubler.org/                                        |
+| little-snitch                                    | https://www.obdev.at/products/littlesnitch/                   |
+| machg                                            | http://jasonfharris.com/machg/                                |
+| makemkv                                          | https://www.makemkv.com/                                      |
+| menubar-countdown                                | http://capablehands.net/menubarcountdown                      |
+| meteorologist                                    | http://heat-meteo.sourceforge.net/                            |
+| moom                                             | https://manytricks.com/moom/                                  |
+| mp4tools                                         | http://www.emmgunn.com/mp4tools-home/                         |
+| munki                                            | https://www.munki.org/munki/                                  |
+| musicbrainz-picard                               | https://picard.musicbrainz.org/                               |
+| namechanger                                      | https://mrrsoftware.com/namechanger/                          |
+| nvalt                                            | http://brettterpstra.com/projects/nvalt/                      |
+| nzbget                                           | https://nzbget.net/                                           |
+| nzbvortex                                        | https://www.nzbvortex.com/                                    |
+| openemu                                          | http://openemu.org/                                           |
+| opera                                            | https://www.opera.com/                                        |
+| pacifist                                         | https://www.charlessoft.com/                                  |
+| platypus                                         | https://sveinbjorn.org/platypus                               |
+| plex-media-server                                | https://www.plex.tv/                                          |
+| qlstephen                                        | https://whomwah.github.io/qlstephen/                          |
+| quitter                                          | https://marco.org/apps#quitter                                |
+| rescuetime                                       | https://www.rescuetime.com/                                   |
+| scrivener                                        | https://literatureandlatte.com/scrivener.php                  |
+| sizeup                                           | https://www.irradiatedsoftware.com/sizeup/                    |
+| sketch                                           | https://www.sketchapp.com/                                    |
+| sketchup                                         | https://www.sketchup.com/                                     |
+| skitch                                           | https://evernote.com/products/skitch                          |
+| skype                                            | https://www.skype.com/                                        |
+| slack                                            | https://slack.com/                                            |
+| sonarr                                           | https://sonarr.tv/                                            |
+| sonarr-menu                                      | https://github.com/jefbarn/Sonarr-Menu                        |
+| sourcetree                                       | https://www.sourcetreeapp.com/                                |
+| steermouse                                       | http://plentycom.jp/en/steermouse/                            |
+| subler                                           | https://subler.org/                                           |
+| sublime-text                                     | https://www.sublimetext.com/3                                 |
+| the-unarchiver                                   | https://theunarchiver.com/                                    |
+| time-sink                                        | https://manytricks.com/timesink/                              |
+| torbrowser                                       | https://www.torproject.org/projects/torbrowser.html           |
+| tower                                            | https://www.git-tower.com/                                    |
+| unrarx                                           | http://www.unrarx.com/                                        |
+| vimr                                             | http://vimr.org/                                              |
+| vlc                                              | https://www.videolan.org/vlc/                                 |
+| vmware-fusion                                    | https://www.vmware.com/products/fusion.html                   |
+| wireshark                                        | https://www.wireshark.org/                                    |
+| xld                                              | http://tmkk.undo.jp/xld/index_e.html                          |
+| caskroom/fonts/font-inconsolata-lgc              | https://github.com/DeLaGuardo/Inconsolata-LGC                 |
+| caskroom/fonts/font-skola-sans                   | https://www.behance.net/gallery/17504367/SkolaSans            |
+| caskroom/versions/transmit4                      | https://panic.com/transmit/                                   |
+| ptb/custom/adobe-creative-cloud-2014             | https://www.adobe.com/creativecloud.html                      |
+| ptb/custom/blankscreen                           | http://www.wurst-wasser.net/wiki/index.php/Blank_Screen_Saver |
+| ptb/custom/composer                              | https://www.jamf.com/products/jamf-composer/                  |
+| ptb/custom/ipmenulet                             | https://github.com/mcandre/IPMenulet                          |
+| ptb/custom/pcalc-3                               | http://www.pcalc.com/english/about.html                       |
+| ptb/custom/sketchup-pro                          | https://www.sketchup.com/products/sketchup-pro                |
+| ptb/custom/synergy                               | https://wincent.com/products/synergy                          |
+| caskroom/fonts/font-inconsolata-lgc              | https://github.com/DeLaGuardo/Inconsolata-LGC                 |
+| railwaycat/emacsmacport/emacs-mac-spacemacs-icon | https://github.com/railwaycat/homebrew-emacsmacport           |
+|--------------------------------------------------+---------------------------------------------------------------|
+
+*** Add App Store Packages to Brewfile
+#+begin_src sh :var _mas=_mas[3:-2,0:1]
+
+install_brewfile_mas_apps () {
+  printf "%b\n" "${_mas}" | \
+  while IFS="$(printf '%b' '\t')" read app id; do
+    printf 'mas "%s", id: %s\n' "${app}" "${id}" >> "${BREWFILE}"
+  done
+}
+#+end_src
+
+**** _mas
+#+name: _mas
+|-----------------+-----------+------------------------------------------|
+| App Name        |    App ID | App Store URL                            |
+|-----------------+-----------+------------------------------------------|
+| 1Password       | 443987910 | https://itunes.apple.com/app/id443987910 |
+| autoping        | 632347870 | https://itunes.apple.com/app/id632347870 |
+| Coffitivity     | 659901392 | https://itunes.apple.com/app/id659901392 |
+| Growl           | 467939042 | https://itunes.apple.com/app/id467939042 |
+| HardwareGrowler | 475260933 | https://itunes.apple.com/app/id475260933 |
+| I Love Stars    | 402642760 | https://itunes.apple.com/app/id402642760 |
+| Icon Slate      | 439697913 | https://itunes.apple.com/app/id439697913 |
+| Justnotes       | 511230166 | https://itunes.apple.com/app/id511230166 |
+| Keynote         | 409183694 | https://itunes.apple.com/app/id409183694 |
+| Numbers         | 409203825 | https://itunes.apple.com/app/id409203825 |
+| Pages           | 409201541 | https://itunes.apple.com/app/id409201541 |
+| WiFi Explorer   | 494803304 | https://itunes.apple.com/app/id494803304 |
+|-----------------+-----------+------------------------------------------|
 
 ** Configure
 

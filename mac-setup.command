@@ -120,11 +120,14 @@ init_updates () {
 # Define Function =install_sw=
 
 install_sw () {
+  install_paths
   install_brew
   install_brewfile_taps
   install_brewfile_brew_pkgs
+  install_brewfile_brew_built
   install_brewfile_cask_args
   install_brewfile_cask_pkgs
+  install_brewfile_mas_apps
 
   which config
 }
@@ -132,6 +135,14 @@ install_sw () {
 if test "${1}" = 0; then
   printf "\n$(which install_sw)\n"
 fi
+
+# Add =/usr/local/bin/sbin= to Default Path
+
+install_paths () {
+  if ! grep -Fq "/usr/local/sbin" /etc/paths; then
+    sudo sed -i -e "/\/usr\/sbin/{x;s/$/\/usr\/local\/sbin/;G;}" /etc/paths
+  fi
+}
 
 # Install Homebrew Package Manager
 
@@ -196,15 +207,15 @@ install_brewfile_brew_pkgs () {
 
 # Add Compiled Packages to Brewfile
 
-_build='aspell	[ "lang=en" ]
+_built='aspell	[ "lang=en" ]
 dovecot	[ "with-pam", "with-pigeonhole" ]
 gnu-sed	[ "with-default-names" ]
 yarn	[ "ignore-dependencies" ]
 homebrew/nginx/nginx-full	[ "with-dav-ext-module", "with-fancyindex-module", "with-gzip-static", "with-http2", "with-mp4-h264-module", "with-passenger", "with-push-stream-module", "with-secure-link", "with-webdav" ]
 ptb/custom/ffmpeg	[ "with-chromaprint", "with-fdk-aac", "with-fontconfig", "with-freetype", "with-frei0r", "with-game-music-emu", "with-lame", "with-libass", "with-libbluray", "with-libbs2b", "with-libcaca", "with-libgsm", "with-libmodplug", "with-libsoxr", "with-libssh", "with-libvidstab", "with-libvorbis", "with-libvpx", "with-opencore-amr", "with-openh264", "with-openjpeg", "with-openssl", "with-opus", "with-pkg-config", "with-rtmpdump", "with-rubberband", "with-schroedinger", "with-sdl2", "with-snappy", "with-speex", "with-tesseract", "with-texi2html", "with-theora", "with-tools", "with-two-lame", "with-wavpack", "with-webp", "with-x264", "with-x265", "with-xvid", "with-xz", "with-yasm", "with-zeromq", "with-zimg" ]'
 
-install_brewfile_brew_custom () {
-  printf "%b\n" "${_build}" | \
+install_brewfile_brew_built () {
+  printf "%b\n" "${_built}" | \
   while IFS="$(printf '%b' '\t')" read pkg args; do
     printf 'brew "%s", args: %s\n' "${pkg}" "${args}" >> "${BREWFILE}"
   done
@@ -243,7 +254,6 @@ caffeine
 carbon-copy-cloner
 charles
 dash
-docker-toolbox
 dropbox
 duet
 exifrenamer
@@ -305,6 +315,16 @@ vmware-fusion
 wireshark
 xld
 caskroom/fonts/font-inconsolata-lgc
+caskroom/fonts/font-skola-sans
+caskroom/versions/transmit4
+ptb/custom/adobe-creative-cloud-2014
+ptb/custom/blankscreen
+ptb/custom/composer
+ptb/custom/ipmenulet
+ptb/custom/pcalc-3
+ptb/custom/sketchup-pro
+ptb/custom/synergy
+caskroom/fonts/font-inconsolata-lgc
 railwaycat/emacsmacport/emacs-mac-spacemacs-icon'
 
 install_brewfile_cask_pkgs () {
@@ -313,6 +333,28 @@ install_brewfile_cask_pkgs () {
     printf 'cask "%s"\n' "${cask}" >> "${BREWFILE}"
   done
   printf "\n" >> "${BREWFILE}"
+}
+
+# Add App Store Packages to Brewfile
+
+_mas='1Password	443987910
+autoping	632347870
+Coffitivity	659901392
+Growl	467939042
+HardwareGrowler	475260933
+I Love Stars	402642760
+Icon Slate	439697913
+Justnotes	511230166
+Keynote	409183694
+Numbers	409203825
+Pages	409201541
+WiFi Explorer	494803304'
+
+install_brewfile_mas_apps () {
+  printf "%b\n" "${_mas}" | \
+  while IFS="$(printf '%b' '\t')" read app id; do
+    printf 'mas "%s", id: %s\n' "${app}" "${id}" >> "${BREWFILE}"
+  done
 }
 
 # Define Function =config=
