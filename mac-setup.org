@@ -12,13 +12,12 @@ From zero to fully installed and configured, in an hour.
 ** Overview
 
 *** Quick Start
-
-#+begin_example sh
+#+begin_src sh
 case "${SHELL}" in
   (*zsh) ;;
   (*) chsh -s "$(which zsh)"; exit 1 ;;
 esac
-#+end_example
+#+end_src
 
 #+begin_example sh :tangle no
 curl --location --silent \
@@ -170,6 +169,8 @@ install_sw () {
   install_brewfile_brew_pkgs
   install_brewfile_cask_args
   install_brewfile_cask_pkgs
+
+  which config
 }
 
 if test -n "${1}"; then
@@ -289,8 +290,7 @@ install_brewfile_cask_args () {
   while IFS="$(printf '%b' '\t')" read arg dir; do
     printf '\n  %s: "%s",' "${arg}" "${dir}" >> "${BREWFILE}"
   done
-  sed -e "$ s/,//" "${BREWFILE}"
-  printf "\n" >> "${BREWFILE}"
+  sed -i -e '$ s/,/\'$'\n/' "${BREWFILE}"
 }
 #+end_src
 
@@ -408,6 +408,8 @@ install_brewfile_cask_pkgs () {
 config () {
   config_desktop
   config_zsh
+
+  which custom
 }
 #+end_src
 
@@ -496,7 +498,6 @@ fi
 custom () {
   custom_emacs
   custom_terminal
-  custom_zsh
 }
 #+end_src
 

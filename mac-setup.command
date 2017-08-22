@@ -1,4 +1,11 @@
 #!/bin/sh
+# Quick Start
+
+case "${SHELL}" in
+  (*zsh) ;;
+  (*) chsh -s "$(which zsh)"; exit 1 ;;
+esac
+
 # Initialize New Terminal
 
 if test -z "${1}"; then
@@ -97,6 +104,8 @@ install_sw () {
   install_brewfile_brew_pkgs
   install_brewfile_cask_args
   install_brewfile_cask_pkgs
+
+  which config
 }
 
 if test -n "${1}"; then
@@ -196,8 +205,7 @@ install_brewfile_cask_args () {
   while IFS="$(printf '%b' '\t')" read arg dir; do
     printf '\n  %s: "%s",' "${arg}" "${dir}" >> "${BREWFILE}"
   done
-  sed -e "$ s/,//" "${BREWFILE}"
-  printf "\n" >> "${BREWFILE}"
+  sed -i -e '$ s/,/\'$'\n/' "${BREWFILE}"
 }
 
 # Add Homebrew Casks to Brewfile
@@ -291,6 +299,8 @@ install_brewfile_cask_pkgs () {
 config () {
   config_desktop
   config_zsh
+
+  which custom
 }
 
 # Define Function =config_defaults=
@@ -362,7 +372,6 @@ EOF
 custom () {
   custom_emacs
   custom_terminal
-  custom_zsh
 }
 
 # Customize Emacs
