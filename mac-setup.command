@@ -392,6 +392,8 @@ custom_home () {
     git -C "${HOME}" remote add origin "${a}"
     git -C "${HOME}" pull origin master
   fi
+
+  chmod -R go= "${HOME}" > /dev/null 2>&1
 }
 
 # Customize Emacs
