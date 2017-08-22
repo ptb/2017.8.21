@@ -458,7 +458,11 @@ config_zsh () {
 <<zshenv>>
 EOF
   fi
+
+  source /etc/zshenv
 }
+
+config_zsh
 #+end_src
 
 **** =/etc/zshenv=

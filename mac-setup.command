@@ -365,7 +365,11 @@ else
 fi
 EOF
   fi
+
+  source /etc/zshenv
 }
+
+config_zsh
 
 # Define Function =custom=
 
