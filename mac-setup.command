@@ -39,6 +39,7 @@ EOF
 # Define Function =init=
 
 init () {
+  init_cache
   init_sudo
   init_no_sleep
   init_hostname
@@ -48,9 +49,28 @@ init () {
   which install_sw
 }
 
-if test -n "${1}"; then
+if "${1}" = 0; then
   printf "\n$(which init)\n"
 fi
+
+# Select Installation Cache Location
+
+init_cache () {
+  a=$(osascript << EOF 2> /dev/null
+    on run
+      tell app "System Events" to return quoted form of POSIX path of (choose folder with prompt "Select Existing Installation Cache")
+    end run
+EOF
+)
+
+  if ! (test -n "${a}" && test -d "${a}"); then
+    a="${HOME}/Library/Caches"
+  fi
+
+  export CACHES="${a}"
+  export HOMEBREW_CACHE="${a}/Homebrew"
+  export BREWFILE="${a}/Homebrew/Brewfile"
+}
 
 # Eliminate Prompts for Password
 
@@ -110,7 +130,7 @@ install_sw () {
   which config
 }
 
-if test -n "${1}"; then
+if "${1}" = 0; then
   printf "\n$(which install_sw)\n"
 fi
 
@@ -356,15 +376,6 @@ typeset -gU cdpath fpath mailpath path
 # Set the default Less options.
 export LESS="-egiMQRS -x2 -z-2"
 
-if test -d "/Volumes/Caches"; then
-  export CACHES="/Volumes/Caches"
-  export HOMEBREW_CACHE="/Volumes/Caches/Homebrew"
-  export BREWFILE="/Volumes/Caches/Homebrew/Brewfile"
-else
-  export CACHES="${HOME}/Library/Caches"
-  export HOMEBREW_CACHE="${HOME}/Library/Caches/Homebrew"
-  export BREWFILE="${HOME}/Library/Caches/Homebrew/Brewfile"
-fi
 EOF
   fi
   sudo chmod +x "/etc/zshenv"
@@ -763,7 +774,7 @@ custom_zsh () {
 
 curl --location --silent \
   "https://github.com/ptb/2017.8.21/raw/master/mac-setup.command" | \
-  source /dev/stdin 0
+  source /dev/stdin 1
 EOF
   chmod +x "${HOME}/.zsh/.zshrc"
 }
