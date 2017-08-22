@@ -587,6 +587,86 @@ custom_home () {
   chmod -R go= "${HOME}" > /dev/null 2>&1
 }
 
+# Configure Atom
+
+_atom='atom-beautify
+atom-css-comb
+atom-jade
+atom-wallaby
+autoclose-html
+autocomplete-python
+busy-signal
+double-tag
+editorconfig
+ex-mode
+file-icons
+git-plus
+git-time-machine
+highlight-selected
+intentions
+language-docker
+language-jade
+language-javascript-jsx
+language-lisp
+language-slim
+linter
+linter-eslint
+linter-rubocop
+linter-shellcheck
+linter-ui-default
+MagicPython
+python-yapf
+react
+riot
+sort-lines
+term3
+tomorrow-night-eighties-syntax
+tree-view-open-files
+vim-mode-plus
+vim-mode-zz'
+
+config_atom () {
+  if which apm > /dev/null; then
+    printf "%b\n" "${_atom}" | \
+    while IFS="$(printf '%b' '\t')" read pkg; do
+      test -d "${HOME}/.atom/packages/${pkg}" ||
+      apm install "${pkg}"
+    done
+
+    cat << EOF > "${HOME}/.atom/config.cson"
+"*":
+  "autocomplete-python":
+    useKite: false
+  core:
+    telemetryConsent: "limited"
+    themes: [
+      "one-dark-ui"
+      "tomorrow-night-eighties-syntax"
+    ]
+  editor:
+    fontFamily: "Inconsolata LGC"
+    fontSize: 13
+  welcome:
+    showOnStartup: false
+EOF
+
+    cat << EOF > "${HOME}/.atom/packages/tomorrow-night-eighties-syntax/styles/colors.less"
+@background: #222222;
+@current-line: #333333;
+@selection: #4c4c4c;
+@foreground: #cccccc;
+@comment: #999999;
+@red: #f27f7f;
+@orange: #ff994c;
+@yellow: #ffcc66;
+@green: #99cc99;
+@aqua: #66cccc;
+@blue: #6699cc;
+@purple: #cc99cc;
+EOF
+  fi
+}
+
 # Customize Emacs
 
 custom_emacs () {

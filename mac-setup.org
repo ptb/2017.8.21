@@ -736,6 +736,104 @@ custom_home () {
 }
 #+end_src
 
+*** Configure Atom
+#+begin_src sh :noweb tangle :var _atom=_atom[3:-2,0]
+
+config_atom () {
+  if which apm > /dev/null; then
+    printf "%b\n" "${_atom}" | \
+    while IFS="$(printf '%b' '\t')" read pkg; do
+      test -d "${HOME}/.atom/packages/${pkg}" ||
+      apm install "${pkg}"
+    done
+
+    cat << EOF > "${HOME}/.atom/config.cson"
+<<config.cson>>
+EOF
+
+    cat << EOF > "${HOME}/.atom/packages/tomorrow-night-eighties-syntax/styles/colors.less"
+<<colors.less>>
+EOF
+  fi
+}
+#+end_src
+
+**** _atom
+#+name: _atom
+|--------------------------------+---------------------------------------------------------|
+| Atom Package Name              | Reference URL                                           |
+|--------------------------------+---------------------------------------------------------|
+| atom-beautify                  | https://atom.io/packages/atom-beautify                  |
+| atom-css-comb                  | https://atom.io/packages/atom-css-comb                  |
+| atom-jade                      | https://atom.io/packages/atom-jade                      |
+| atom-wallaby                   | https://atom.io/packages/atom-wallaby                   |
+| autoclose-html                 | https://atom.io/packages/autoclose-html                 |
+| autocomplete-python            | https://atom.io/packages/autocomplete-python            |
+| busy-signal                    | https://atom.io/packages/busy-signal                    |
+| double-tag                     | https://atom.io/packages/double-tag                     |
+| editorconfig                   | https://atom.io/packages/editorconfig                   |
+| ex-mode                        | https://atom.io/packages/ex-mode                        |
+| file-icons                     | https://atom.io/packages/file-icons                     |
+| git-plus                       | https://atom.io/packages/git-plus                       |
+| git-time-machine               | https://atom.io/packages/git-time-machine               |
+| highlight-selected             | https://atom.io/packages/highlight-selected             |
+| intentions                     | https://atom.io/packages/intentions                     |
+| language-docker                | https://atom.io/packages/language-docker                |
+| language-jade                  | https://atom.io/packages/language-jade                  |
+| language-javascript-jsx        | https://atom.io/packages/language-javascript-jsx        |
+| language-lisp                  | https://atom.io/packages/language-lisp                  |
+| language-slim                  | https://atom.io/packages/language-slim                  |
+| linter                         | https://atom.io/packages/linter                         |
+| linter-eslint                  | https://atom.io/packages/linter-eslint                  |
+| linter-rubocop                 | https://atom.io/packages/linter-rubocop                 |
+| linter-shellcheck              | https://atom.io/packages/linter-shellcheck              |
+| linter-ui-default              | https://atom.io/packages/linter-ui-default              |
+| MagicPython                    | https://atom.io/packages/MagicPython                    |
+| python-yapf                    | https://atom.io/packages/python-yapf                    |
+| react                          | https://atom.io/packages/react                          |
+| riot                           | https://atom.io/packages/riot                           |
+| sort-lines                     | https://atom.io/packages/sort-lines                     |
+| term3                          | https://atom.io/packages/term3                          |
+| tomorrow-night-eighties-syntax | https://atom.io/packages/tomorrow-night-eighties-syntax |
+| tree-view-open-files           | https://atom.io/packages/tree-view-open-files           |
+| vim-mode-plus                  | https://atom.io/packages/vim-mode-plus                  |
+| vim-mode-zz                    | https://atom.io/packages/vim-mode-zz                    |
+|--------------------------------+---------------------------------------------------------|
+
+**** =${HOME}/.atom/config.cson=
+#+begin_src cson :noweb-ref config.cson
+"*":
+  "autocomplete-python":
+    useKite: false
+  core:
+    telemetryConsent: "limited"
+    themes: [
+      "one-dark-ui"
+      "tomorrow-night-eighties-syntax"
+    ]
+  editor:
+    fontFamily: "Inconsolata LGC"
+    fontSize: 13
+  welcome:
+    showOnStartup: false
+#+end_src
+
+**** =${HOME}/.atom/packages/tomorrow-night-eighties-syntax/styles/colors.less=
+#+begin_src less :noweb-ref colors.less
+@background: #222222;
+@current-line: #333333;
+@selection: #4c4c4c;
+@foreground: #cccccc;
+@comment: #999999;
+@red: #f27f7f;
+@orange: #ff994c;
+@yellow: #ffcc66;
+@green: #99cc99;
+@aqua: #66cccc;
+@blue: #6699cc;
+@purple: #cc99cc;
+#+end_src
+
 *** Customize Emacs
 #+begin_src sh :noweb tangle
 custom_emacs () {
