@@ -31,14 +31,15 @@ EOF
 
 # Define Function =init=
 
+init () {
+  init_sudo
+  init_no_sleep
+  init_hostname
+  init_devtools "${CACHES}"
+  init_updates
+}
+
 if test -n "${1}"; then
-  init () {
-    init_sudo
-    init_no_sleep
-    init_hostname
-    init_devtools "${CACHES}"
-    init_updates
-  }
   printf "\n$(which init)\n"
 fi
 
@@ -90,14 +91,15 @@ init_updates () {
 
 # Define Function =install_sw=
 
+install_sw () {
+  install_brew
+  install_brewfile_taps
+  install_brewfile_brew_pkgs
+  install_brewfile_cask_args
+  install_brewfile_cask_pkgs
+}
+
 if test -n "${1}"; then
-  install_sw () {
-    install_brew
-    install_brewfile_taps
-    install_brewfile_brew_pkgs
-    install_brewfile_cask_args
-    install_brewfile_cask_pkgs
-  }
   printf "\n$(which install_sw)\n"
 fi
 
@@ -157,7 +159,24 @@ zsh'
 install_brewfile_brew_pkgs () {
   printf "%b\n" "${_pkgs}" | \
   while IFS="$(printf '%b' '\t')" read pkg; do
-    printf 'brew "%s"\n' "${pkg}" >> "${BREWFILE}"
+    printf 'brew "%s", args: [ "force-bottle" ]\n' "${pkg}" >> "${BREWFILE}"
+  done
+  printf "\n" >> "${BREWFILE}"
+}
+
+# Add Compiled Packages to Brewfile
+
+_build='aspell	[ "lang=en" ]
+dovecot	[ "with-pam", "with-pigeonhole" ]
+gnu-sed	[ "with-default-names" ]
+yarn	[ "ignore-dependencies" ]
+homebrew/nginx/nginx-full	[ "with-dav-ext-module", "with-fancyindex-module", "with-gzip-static", "with-http2", "with-mp4-h264-module", "with-passenger", "with-push-stream-module", "with-secure-link", "with-webdav" ]
+ptb/custom/ffmpeg	[ "with-chromaprint", "with-fdk-aac", "with-fontconfig", "with-freetype", "with-frei0r", "with-game-music-emu", "with-lame", "with-libass", "with-libbluray", "with-libbs2b", "with-libcaca", "with-libgsm", "with-libmodplug", "with-libsoxr", "with-libssh", "with-libvidstab", "with-libvorbis", "with-libvpx", "with-opencore-amr", "with-openh264", "with-openjpeg", "with-openssl", "with-opus", "with-pkg-config", "with-rtmpdump", "with-rubberband", "with-schroedinger", "with-sdl2", "with-snappy", "with-speex", "with-tesseract", "with-texi2html", "with-theora", "with-tools", "with-two-lame", "with-wavpack", "with-webp", "with-x264", "with-x265", "with-xvid", "with-xz", "with-yasm", "with-zeromq", "with-zimg" ]'
+
+install_brewfile_brew_custom () {
+  printf "%b\n" "${_build}" | \
+  while IFS="$(printf '%b' '\t')" read pkg args; do
+    printf 'brew "%s", args: %s\n' "${pkg}" "${args}" >> "${BREWFILE}"
   done
   printf "\n" >> "${BREWFILE}"
 }
@@ -172,12 +191,12 @@ qlplugindir	/Library/QuickLook
 screen_saverdir	/Library/Screen Savers'
 
 install_brewfile_cask_args () {
-  printf 'cask_args \%s' "\n" >> "${BREWFILE}"
+  printf 'cask_args \' >> "${BREWFILE}"
   printf "%b\n" "${_args}" | \
   while IFS="$(printf '%b' '\t')" read arg dir; do
-    printf '  %s: "%s",\n' "${arg}" "${dir}" >> "${BREWFILE}"
+    printf '\n  %s: "%s",' "${arg}" "${dir}" >> "${BREWFILE}"
   done
-  sed -ie "$ s/,//" "${BREWFILE}"
+  sed -e "$ s/,//" "${BREWFILE}"
   printf "\n" >> "${BREWFILE}"
 }
 
@@ -268,9 +287,389 @@ install_brewfile_cask_pkgs () {
   printf "\n" >> "${BREWFILE}"
 }
 
-# Configure Z-Shell
+# Define Function =config=
 
-config_zsh () {
+config () {
+  config_desktop
+}
+
+# Configure Desktop Picture
+
+config_desktop () {
+  sudo rm "/Library/Caches/com.apple.desktop.admin.png"
+
+  base64 -D << EOF > "/Library/Caches/com.apple.desktop.admin.png"
+iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAQAAAADrRVxmAAAAGElEQVR4AWOgMxgFo2AUjIJRMApGwSgAAAiAAAH3bJXBAAAAAElFTkSuQmCC
+EOF
+}
+
+# Define Function =custom=
+
+custom () {
+  custom_emacs
+  custom_terminal
+  custom_zsh
+}
+
+# Customize Emacs
+
+custom_emacs () {
+  mkdir -m go= -p "${HOME}/.emacs.d" && \
+  curl --compressed --location --silent \
+    "https://github.com/syl20bnr/spacemacs/archive/master.tar.gz" | \
+  tar -C "${HOME}/.emacs.d" --strip-components 1 -xf -
+  mkdir -m go= -p "${HOME}/.emacs.d/private/ptb"
+
+  cat << EOF > "${HOME}/.spacemacs"
+(defun dotspacemacs/layers ()
+  (setq-default
+    dotspacemacs-configuration-layers '(
+      auto-completion
+      (colors :variables
+        colors-colorize-identifiers 'variables)
+      dash
+      deft
+      docker
+      emacs-lisp
+      evil-cleverparens
+      git
+      github
+      helm
+      html
+      ibuffer
+      imenu-list
+      javascript
+      markdown
+      nginx
+      (org :variables
+        org-enable-github-support t)
+      (osx :variables
+        osx-use-option-as-meta nil)
+      ptb
+      react
+      ruby
+      ruby-on-rails
+      search-engine
+      semantic
+      shell-scripts
+      (spell-checking :variables
+        spell-checking-enable-by-default nil)
+      syntax-checking
+      (version-control :variables
+        version-control-diff-side 'left)
+      vim-empty-lines
+    )
+    dotspacemacs-excluded-packages '(org-bullets)
+  )
+)
+
+(defun dotspacemacs/init ()
+  (setq-default
+    dotspacemacs-startup-banner nil
+    dotspacemacs-startup-lists nil
+    dotspacemacs-scratch-mode 'org-mode
+    dotspacemacs-themes '(sanityinc-tomorrow-eighties)
+    dotspacemacs-default-font '(
+      "Inconsolata LGC"
+      :size 13
+      :weight normal
+      :width normal
+      :powerline-scale 1.1)
+    dotspacemacs-loading-progress-bar nil
+    dotspacemacs-active-transparency 100
+    dotspacemacs-inactive-transparency 100
+    dotspacemacs-line-numbers t
+    dotspacemacs-whitespace-cleanup 'all
+  )
+)
+
+(defun dotspacemacs/user-init ())
+(defun dotspacemacs/user-config ())
+EOF
+
+  cat << EOF > "${HOME}/.emacs.d/private/ptb/config.el"
+(setq
+  default-frame-alist '(
+    (top . 22)
+    (left . 1279)
+    (height . 48)
+    (width . 123)
+    (vertical-scroll-bars . right))
+  initial-frame-alist (copy-alist default-frame-alist)
+
+  deft-directory "~/Dropbox/Notes"
+  focus-follows-mouse t
+  mouse-wheel-follow-mouse t
+  mouse-wheel-scroll-amount '(1 ((shift) . 1))
+  org-src-preserve-indentation t
+  purpose-display-at-right 20
+  recentf-max-saved-items 5
+  scroll-step 1
+  system-uses-terminfo nil
+
+  ibuffer-formats '(
+    (mark modified read-only " "
+    (name 18 18 :left :elide)))
+
+  ibuffer-shrink-to-minimum-size t
+  ibuffer-always-show-last-buffer nil
+  ibuffer-sorting-mode 'recency
+  ibuffer-use-header-line nil
+  x-select-enable-clipboard nil)
+
+(global-linum-mode t)
+(recentf-mode t)
+(x-focus-frame nil)
+(with-eval-after-load 'org
+  (org-babel-do-load-languages
+    'org-babel-load-languages '(
+      (ruby . t)
+      (shell . t)
+    )
+  )
+)
+EOF
+
+  cat << EOF > "${HOME}/.emacs.d/private/ptb/funcs.el"
+(defun is-useless-buffer (buffer)
+  (let ((name (buffer-name buffer)))
+    (and (= ?* (aref name 0))
+        (string-match "^\\**" name))))
+
+(defun kill-useless-buffers ()
+  (interactive)
+  (loop for buffer being the buffers
+        do (and (is-useless-buffer buffer) (kill-buffer buffer))))
+
+(defun org-babel-tangle-hook ()
+  (add-hook 'after-save-hook 'org-babel-tangle))
+
+(add-hook 'org-mode-hook #'org-babel-tangle-hook)
+
+(defun ptb/new-untitled-buffer ()
+  "Create a new untitled buffer in the current frame."
+  (interactive)
+  (let
+    ((buffer "Untitled-") (count 1))
+    (while
+      (get-buffer (concat buffer (number-to-string count)))
+      (setq count (1+ count)))
+    (switch-to-buffer
+    (concat buffer (number-to-string count))))
+  (org-mode))
+
+(defun ptb/previous-buffer ()
+  (interactive)
+  (kill-useless-buffers)
+  (previous-buffer))
+
+(defun ptb/next-buffer ()
+  (interactive)
+  (kill-useless-buffers)
+  (next-buffer))
+
+(defun ptb/kill-current-buffer ()
+  (interactive)
+  (kill-buffer (current-buffer))
+  (kill-useless-buffers))
+EOF
+
+  cat << EOF > "${HOME}/.emacs.d/private/ptb/keybindings.el"
+(define-key evil-insert-state-map (kbd "<return>") 'newline)
+
+(define-key evil-normal-state-map (kbd "s-c") 'clipboard-kill-ring-save)
+(define-key evil-insert-state-map (kbd "s-c") 'clipboard-kill-ring-save)
+(define-key evil-visual-state-map (kbd "s-c") 'clipboard-kill-ring-save)
+
+(define-key evil-ex-completion-map (kbd "s-v") 'clipboard-yank)
+(define-key evil-ex-search-keymap (kbd "s-v") 'clipboard-yank)
+(define-key evil-insert-state-map (kbd "s-v") 'clipboard-yank)
+
+(define-key evil-normal-state-map (kbd "s-x") 'clipboard-kill-region)
+(define-key evil-insert-state-map (kbd "s-x") 'clipboard-kill-region)
+(define-key evil-visual-state-map (kbd "s-x") 'clipboard-kill-region)
+
+(define-key evil-normal-state-map (kbd "<S-up>") 'evil-previous-visual-line)
+(define-key evil-insert-state-map (kbd "<S-up>") 'evil-previous-visual-line)
+(define-key evil-visual-state-map (kbd "<S-up>") 'evil-previous-visual-line)
+
+(define-key evil-normal-state-map (kbd "<S-down>") 'evil-next-visual-line)
+(define-key evil-insert-state-map (kbd "<S-down>") 'evil-next-visual-line)
+(define-key evil-visual-state-map (kbd "<S-down>") 'evil-next-visual-line)
+
+(global-set-key (kbd "C-l") 'evil-search-highlight-persist-remove-all)
+
+(global-set-key (kbd "s-t") 'make-frame)
+(global-set-key (kbd "s-n") 'ptb/new-untitled-buffer)
+(global-set-key (kbd "s-w") 'ptb/kill-this-buffer)
+(global-set-key (kbd "s-{") 'ptb/previous-buffer)
+(global-set-key (kbd "s-}") 'ptb/next-buffer)
+EOF
+
+  cat << EOF > "${HOME}/.emacs.d/private/ptb/packages.el"
+(setq ptb-packages '(adaptive-wrap auto-indent-mode))
+
+(defun ptb/init-adaptive-wrap ()
+  "Load the adaptive wrap package"
+  (use-package adaptive-wrap
+    :init
+    (setq adaptive-wrap-extra-indent 2)
+    :config
+    (progn
+      ;; http://stackoverflow.com/questions/13559061
+      (when (fboundp 'adaptive-wrap-prefix-mode)
+        (defun ptb/activate-adaptive-wrap-prefix-mode ()
+          "Toggle 'visual-line-mode' and 'adaptive-wrap-prefix-mode' simultaneously."
+          (adaptive-wrap-prefix-mode (if visual-line-mode 1 -1)))
+        (add-hook 'visual-line-mode-hook 'ptb/activate-adaptive-wrap-prefix-mode)))))
+
+(defun ptb/init-auto-indent-mode ()
+  (use-package auto-indent-mode
+    :init
+    (setq
+      auto-indent-delete-backward-char t
+      auto-indent-fix-org-auto-fill t
+      auto-indent-fix-org-move-beginning-of-line t
+      auto-indent-fix-org-return t
+      auto-indent-fix-org-yank t
+      auto-indent-start-org-indent t
+    )
+  )
+)
+EOF
+
+  cat << EOF > "/usr/local/bin/vi"
+#!/bin/sh
+
+if [ -e "/Applications/Emacs.app" ]; then
+  t=()
+
+  if [ \${#@} -ne 0 ]; then
+    while IFS= read -r file; do
+      [ ! -f "\$file" ] && t+=("\$file") && /usr/bin/touch "\$file"
+      file=\$(echo \$(cd \$(dirname "\$file") && pwd -P)/\$(basename "\$file"))
+      \$(/usr/bin/osascript <<-END
+        if application "Emacs.app" is running then
+          tell application id (id of application "Emacs.app") to open POSIX file "\$file"
+        else
+          tell application ((path to applications folder as text) & "Emacs.app")
+            activate
+            open POSIX file "\$file"
+          end tell
+        end if
+END
+        ) &  # Note: END on the previous line may be indented with tabs but not spaces
+    done <<<"\$(printf '%s\n' "\$@")"
+  fi
+
+  if [ ! -z "\$t" ]; then
+    \$(/bin/sleep 10; for file in "\${t[@]}"; do
+      [ ! -s "\$file" ] && /bin/rm "\$file";
+    done) &
+  fi
+else
+  vim -No "\$@"
+fi
+EOF
+
+  chmod a+x /usr/local/bin/vi
+  rehash
+}
+
+# Customize Terminal
+
+_term1='delete			
+add		dict	
+add	:name	string	ptb
+add	:type	string	Window Settings
+add	:ProfileCurrentVersion	real	2.05
+add	:BackgroundColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC4xIDAuMSAwLjE=</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:BackgroundBlur	real	0
+add	:BackgroundSettingsForInactiveWindows	bool	false
+add	:BackgroundAlphaInactive	real	1
+add	:BackgroundBlurInactive	real	0
+add	:Font	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>3</integer></dict><key>NSName</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSSize</key><real>13</real><key>NSfFlags</key><integer>16</integer></dict><string>InconsolataLGC</string><dict><key>$classes</key><array><string>NSFont</string><string>NSObject</string></array><key>$classname</key><string>NSFont</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:FontWidthSpacing	real	1
+add	:FontHeightSpacing	real	1
+add	:FontAntialias	bool	true
+add	:UseBoldFonts	bool	true
+add	:BlinkText	bool	false
+add	:DisableANSIColor	bool	false
+add	:UseBrightBold	bool	false
+add	:TextColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC44IDAuOCAwLjg=</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:TextBoldColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC44IDAuOCAwLjg=</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:SelectionColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC4zIDAuMyAwLjM=</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSIBlackColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC4zIDAuMyAwLjM=</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSIRedColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC45NSAwLjUgMC41</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSIGreenColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC42IDAuOCAwLjY=</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSIYellowColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MSAwLjggMC40</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSIBlueColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC40IDAuNiAwLjg=</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSIMagentaColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC44IDAuNiAwLjg=</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSICyanColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC40IDAuOCAwLjg=</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSIWhiteColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC44IDAuOCAwLjg=</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSIBrightBlackColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC41IDAuNSAwLjU=</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSIBrightRedColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MSAwLjcgMC43</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSIBrightGreenColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC44IDEgMC44</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSIBrightYellowColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MSAxIDAuNg==</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSIBrightBlueColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC42IDAuOCAx</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSIBrightMagentaColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MSAwLjggMQ==</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSIBrightCyanColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC42IDEgMQ==</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ANSIBrightWhiteColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC45IDAuOSAwLjk=</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:CursorType	integer	0
+add	:CursorBlink	bool	false
+add	:CursorColor	data	<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>$archiver</key><string>NSKeyedArchiver</string><key>$objects</key><array><string>$null</string><dict><key>$class</key><dict><key>CF$UID</key><integer>2</integer></dict><key>NSColorSpace</key><integer>1</integer><key>NSRGB</key><data>MC43IDAuNyAwLjc=</data></dict><dict><key>$classes</key><array><string>NSColor</string><string>NSObject</string></array><key>$classname</key><string>NSColor</string></dict></array><key>$top</key><dict><key>root</key><dict><key>CF$UID</key><integer>1</integer></dict></dict><key>$version</key><integer>100000</integer></dict></plist>
+add	:ShowRepresentedURLInTitle	bool	true
+add	:ShowRepresentedURLPathInTitle	bool	true
+add	:ShowActiveProcessInTitle	bool	true
+add	:ShowActiveProcessArgumentsInTitle	bool	false
+add	:ShowShellCommandInTitle	bool	false
+add	:ShowWindowSettingsNameInTitle	bool	false
+add	:ShowTTYNameInTitle	bool	false
+add	:ShowDimensionsInTitle	bool	false
+add	:ShowCommandKeyInTitle	bool	false
+add	:columnCount	integer	124
+add	:rowCount	integer	20
+add	:ShouldLimitScrollback	integer	0
+add	:ScrollbackLines	integer	0
+add	:ShouldRestoreContent	bool	false
+add	:ShowRepresentedURLInTabTitle	bool	false
+add	:ShowRepresentedURLPathInTabTitle	bool	false
+add	:ShowActiveProcessInTabTitle	bool	true
+add	:ShowActiveProcessArgumentsInTabTitle	bool	false
+add	:ShowTTYNameInTabTitle	bool	false
+add	:ShowComponentsWhenTabHasCustomTitle	bool	true
+add	:ShowActivityIndicatorInTab	bool	true
+add	:shellExitAction	integer	1
+add	:warnOnShellCloseAction	integer	1
+add	:useOptionAsMetaKey	bool	false
+add	:ScrollAlternateScreen	bool	true
+add	:TerminalType	string	xterm-256color
+add	:deleteSendsBackspace	bool	false
+add	:EscapeNonASCIICharacters	bool	true
+add	:ConvertNewlinesOnPaste	bool	true
+add	:StrictVTKeypad	bool	true
+add	:scrollOnInput	bool	true
+add	:Bell	bool	false
+add	:VisualBell	bool	false
+add	:VisualBellOnlyWhenMuted	bool	false
+add	:BellBadge	bool	false
+add	:BellBounce	bool	false
+add	:BellBounceCritical	bool	false
+add	:CharacterEncoding	integer	4
+add	:SetLanguageEnvironmentVariables	bool	true
+add	:EastAsianAmbiguousWide	bool	false'
+_term2='com.apple.Terminal	Startup Window Settings	-string	ptb	
+com.apple.Terminal	Default Window Settings	-string	ptb	'
+
+custom_terminal () {
+  set_plist "Terminal" ":Window Settings:ptb" "${_term1}" \
+    "$HOME/Library/Preferences/com.apple.Terminal.plist"
+  set_prefs "Terminal" "${_term2}"
+}
+
+# Customize Z-Shell
+
+custom_zsh () {
   case $SHELL in
     (*zsh) ;;
     (*) chsh -s "$(which zsh)" ;;
@@ -281,6 +680,19 @@ config_zsh () {
 #!/bin/sh
 
 export ZDOTDIR="${HOME}/.zsh"
+
+export EDITOR="vi"
+export VISUAL="vi"
+export PAGER="less"
+
+test -z "${LANG}" && \
+  export LANG="en_US.UTF-8"
+
+# Ensure path arrays do not contain duplicates.
+typeset -gU cdpath fpath mailpath path
+
+# Set the default Less options.
+export LESS="-egiMQRS -x2 -z-2"
 
 if test -d "/Volumes/Caches"; then
   export CACHES="/Volumes/Caches"
@@ -295,4 +707,4 @@ EOF
   fi
 }
 
-config_zsh
+custom_zsh
