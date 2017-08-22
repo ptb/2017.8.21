@@ -58,18 +58,17 @@ fi
 init_cache () {
   a=$(osascript << EOF 2> /dev/null
     on run
-      tell app "System Events" to return quoted form of POSIX path of (choose folder with prompt "Select Existing Installation Cache")
+      return POSIX path of (choose folder with prompt "Select Existing Installation Cache")
     end run
 EOF
 )
 
-  if ! (test -n "${a}" && test -d "${a}"); then
-    a="${HOME}/Library/Caches"
-  fi
+  test -d "${a}" || \
+    a="${HOME}/Library/Caches/"
 
   export CACHES="${a}"
-  export HOMEBREW_CACHE="${a}/Homebrew"
-  export BREWFILE="${a}/Homebrew/Brewfile"
+  export HOMEBREW_CACHE="${a}Homebrew"
+  export BREWFILE="${a}Homebrew/Brewfile"
 }
 
 # Eliminate Prompts for Password
@@ -375,7 +374,6 @@ typeset -gU cdpath fpath mailpath path
 
 # Set the default Less options.
 export LESS="-egiMQRS -x2 -z-2"
-
 EOF
   fi
   sudo chmod +x "/etc/zshenv"

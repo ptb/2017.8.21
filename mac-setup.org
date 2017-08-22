@@ -119,20 +119,19 @@ init_cache () {
 EOF
 )
 
-  if ! (test -n "${a}" && test -d "${a}"); then
-    a="${HOME}/Library/Caches"
-  fi
+  test -d "${a}" || \
+    a="${HOME}/Library/Caches/"
 
   export CACHES="${a}"
-  export HOMEBREW_CACHE="${a}/Homebrew"
-  export BREWFILE="${a}/Homebrew/Brewfile"
+  export HOMEBREW_CACHE="${a}Homebrew"
+  export BREWFILE="${a}Homebrew/Brewfile"
 }
 #+end_src
 
 **** =select-cache.applescript=
 #+begin_src applescript :noweb-ref select-cache.applescript :tangle no
     on run
-      tell app "System Events" to return quoted form of POSIX path of (choose folder with prompt "Select Existing Installation Cache")
+      return POSIX path of (choose folder with prompt "Select Existing Installation Cache")
     end run
 #+end_src
 
@@ -511,7 +510,6 @@ typeset -gU cdpath fpath mailpath path
 
 # Set the default Less options.
 export LESS="-egiMQRS -x2 -z-2"
-
 #+end_src
 
 ** Customize
