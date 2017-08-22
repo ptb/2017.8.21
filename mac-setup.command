@@ -44,6 +44,8 @@ init () {
   init_hostname
   init_devtools "${CACHES}"
   init_updates
+
+  which install_sw
 }
 
 if test -n "${1}"; then
@@ -82,7 +84,7 @@ init_devtools () {
   i="com.apple.pkg.CLTools_SDK_macOS1013"
 
   if test -f "${p}"; then
-    if ! pkgutil --pkg-info "${i}" > /dev/null; then
+    if ! pkgutil --pkg-info "${i}" > /dev/null 2>&1; then
       sudo installer -pkg "${p}" -target /
     fi
   else
@@ -325,7 +327,7 @@ config_plist () {
 # Configure Desktop Picture
 
 config_desktop () {
-  sudo rm "/Library/Caches/com.apple.desktop.admin.png"
+  sudo rm -f "/Library/Caches/com.apple.desktop.admin.png"
 
   base64 -D << EOF > "/Library/Caches/com.apple.desktop.admin.png"
 iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAQAAAADrRVxmAAAAGElEQVR4AWOgMxgFo2AUjIJRMApGwSgAAAiAAAH3bJXBAAAAAElFTkSuQmCC
@@ -365,8 +367,8 @@ else
 fi
 EOF
   fi
-
-  source /etc/zshenv
+  sudo chmod +x "/etc/zshenv"
+  source "/etc/zshenv"
 }
 
 config_zsh
@@ -374,8 +376,10 @@ config_zsh
 # Define Function =custom=
 
 custom () {
+  custom_home
   custom_emacs
   custom_terminal
+  custom_zsh
 }
 
 # Customize Home
@@ -746,4 +750,18 @@ custom_terminal () {
     "${HOME}/Library/Preferences/com.apple.Terminal.plist" \
     ":Window Settings:ptb"
   config_defaults "${_term_defaults}"
+}
+
+# Customize Z-Shell
+
+custom_zsh () {
+  mkdir -m go= "${HOME}/.zsh"
+  cat << EOF > "${HOME}/.zsh/.zshrc"
+#!/bin/sh
+
+curl --location --silent \
+  "https://github.com/ptb/2017.8.21/raw/master/mac-setup.command" | \
+  source /dev/stdin 0
+EOF
+  chmod +x "${HOME}/.zsh/.zshrc"
 }
