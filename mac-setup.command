@@ -172,7 +172,7 @@ ptb/custom
 railwaycat/emacsmacport'
 
 install_brewfile_taps () {
-  printf "%b\n" "${_taps}" | \
+  printf "%s\n" "${_taps}" | \
   while IFS="$(printf '\t')" read tap; do
     printf 'tap "%s"\n' "${tap}" >> "${BREWFILE}"
   done
@@ -202,7 +202,7 @@ yarn
 zsh'
 
 install_brewfile_brew_pkgs () {
-  printf "%b\n" "${_pkgs}" | \
+  printf "%s\n" "${_pkgs}" | \
   while IFS="$(printf '\t')" read pkg; do
     printf 'brew "%s", args: [ "force-bottle" ]\n' "${pkg}" >> "${BREWFILE}"
   done
@@ -220,11 +220,11 @@ screen_saverdir	/Library/Screen Savers'
 
 install_brewfile_cask_args () {
   printf 'cask_args \' >> "${BREWFILE}"
-  printf "%b\n" "${_args}" | \
+  printf "%s\n" "${_args}" | \
   while IFS="$(printf '\t')" read arg dir; do
     printf '\n  %s: "%s",' "${arg}" "${dir}" >> "${BREWFILE}"
   done
-  sed -i -e "$ s/,/$(printf '%b' '\n\n')/" "${BREWFILE}"
+  sed -i -e "$ s/,/$(printf '\n\n')/" "${BREWFILE}"
 }
 
 # Add Homebrew Casks to Brewfile
@@ -313,7 +313,7 @@ ptb/custom/synergy
 railwaycat/emacsmacport/emacs-mac-spacemacs-icon'
 
 install_brewfile_cask_pkgs () {
-  printf "%b\n" "${_casks}" | \
+  printf "%s\n" "${_casks}" | \
   while IFS="$(printf '\t')" read cask; do
     printf 'cask "%s"\n' "${cask}" >> "${BREWFILE}"
   done
@@ -339,7 +339,7 @@ WiFi Explorer	494803304'
 install_brewfile_mas_apps () {
   open "/Applications/App Store.app"
   run "Sign in to the App Store with your Apple ID" "Cancel" "OK"
-  printf "%b\n" "${_mas}" | \
+  printf "%s\n" "${_mas}" | \
   while IFS="$(printf '\t')" read app id; do
     printf 'mas "%s", id: %s\n' "${app}" "${id}" >> "${BREWFILE}"
   done
@@ -362,7 +362,7 @@ homebrew/nginx/nginx-full	--with-dav-ext-module --with-fancyindex-module --with-
 ptb/custom/ffmpeg	--with-chromaprint --with-fdk-aac --with-fontconfig --with-freetype --with-frei0r --with-game-music-emu --with-libass --with-libbluray --with-libbs2b --with-libcaca --with-libgsm --with-libmodplug --with-libsoxr --with-libssh --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openh264 --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-rubberband --with-schroedinger --with-sdl2 --with-snappy --with-speex --with-tesseract --with-theora --with-tools --with-two-lame --with-wavpack --with-webp --with-x265 --with-xz --with-zimg'
 
 install_brew_built () {
-  printf "%b\n" "${_built}" | \
+  printf "%s\n" "${_built}" | \
   while IFS="$(printf '\t')" read pkg args; do
     brew install --build-bottle "${pkg}" ${args}
     brew bottle "${pkg}"
@@ -530,7 +530,7 @@ config () {
 # Define Function =config_defaults=
 
 config_defaults () {
-  printf "%b\n" "${1}" | \
+  printf "%s\n" "${1}" | \
   while IFS="$(printf '\t')" read domain key type value host; do
     ${2} defaults ${host} write ${domain} "${key}" ${type} "${value}"
   done
@@ -539,7 +539,7 @@ config_defaults () {
 # Define Function =config_plist=
 
 config_plist () {
-  printf "%b\n" "${1}" | \
+  printf "%s\n" "${1}" | \
   while IFS="$(printf '\t')" read command entry type value; do
     ${4} /usr/libexec/PlistBuddy "${2}" \
       -c "${command} '${3}${entry}' ${type} '${value}'" > /dev/null 2>&1
@@ -839,7 +839,7 @@ EOF
 cache = ${CACHES}/apm
 EOF
 
-    printf "%b\n" "${_atom}" | \
+    printf "%s\n" "${_atom}" | \
     while IFS="$(printf '\t')" read pkg; do
       test -d "${HOME}/.atom/packages/${pkg}" ||
       apm install "${pkg}"
