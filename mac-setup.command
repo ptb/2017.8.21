@@ -82,18 +82,16 @@ EOF
 # Set Defaults for Sleep
 
 init_no_sleep () {
-  sudo systemsetup -setcomputersleep "Never" > /dev/null
-  sudo systemsetup -setharddisksleep "Never" > /dev/null
+  sudo pmset -a sleep 0
+  sudo pmset -a disksleep 0
 }
 
 # Set Hostname from DNS
 
 init_hostname () {
-  h="$(hostname -s)"
-
   sudo systemsetup -setcomputername \
-    "$(ruby -e "print '${h}'.capitalize")" > /dev/null
-  sudo systemsetup -setlocalsubnetname "${h}" > /dev/null
+    $(ruby -e "print '$(hostname -s)'.capitalize") > /dev/null
+  sudo systemsetup -setlocalsubnetname $(hostname -s) > /dev/null
 }
 
 # Install Developer Tools
@@ -188,6 +186,7 @@ git
 gnu-sed
 gnupg
 mas
+node
 nodenv
 openssl
 perl-build
@@ -199,6 +198,7 @@ rbenv
 rsync
 shellcheck
 vim
+yarn
 zsh'
 
 install_brewfile_brew_pkgs () {
@@ -267,7 +267,6 @@ mp4tools
 munki
 musicbrainz-picard
 namechanger
-node
 nvalt
 nzbget
 nzbvortex
@@ -302,7 +301,6 @@ vlc
 vmware-fusion
 wireshark
 xld
-yarn
 caskroom/fonts/font-inconsolata-lgc
 caskroom/versions/transmit4
 ptb/custom/adobe-creative-cloud-2014
@@ -380,7 +378,7 @@ install_links () {
   for a in /System/Library/CoreServices/Applications/*; do
     ln -s "../..$a" . 2> /dev/null
   done
-  if test -d /Applications/Xcode*; then
+  if ls /Applications/Xcode* > /dev/null 2>&1; then
     cd /Applications && \
     for b in /Applications/Xcode*.app/Contents/Applications/*; do
       ln -s "../..$b" . 2> /dev/null
@@ -544,7 +542,7 @@ config_plist () {
   printf "%b\n" "${1}" | \
   while IFS="$(printf '%b' '\t')" read command entry type value; do
     ${4} /usr/libexec/PlistBuddy "${2}" \
-      -c "${command} '${3}${entry}' ${type} '${value}'" > /dev/null
+      -c "${command} '${3}${entry}' ${type} '${value}'" > /dev/null 2>&1
   done
 }
 
@@ -572,8 +570,9 @@ EOF
 # Configure Dovecot
 
 config_dovecot () {
-  if ! run "Configure Dovecot Email Server?" "Configure Server" "Cancel"; then
-    cat << EOF > "/usr/local/etc/dovecot/dovecot.conf"
+  if which dovecot > /dev/null; then
+    if ! run "Configure Dovecot Email Server?" "Configure Server" "Cancel"; then
+      cat << EOF > "/usr/local/etc/dovecot/dovecot.conf"
 auth_mechanisms = cram-md5
 default_internal_user = _dovecot
 default_login_user = _dovenull
@@ -646,41 +645,41 @@ protocol lda {
 # verbose_ssl = yes
 EOF
 
-    MAILADM="$(ask 'Email Administrator Address' 'Set Email' "$(whoami)@$(hostname)")"
-    MAILSVR="$(ask 'Email Server DNS Hostname' 'Set Hostname' "$(hostname)")"
-    SSL="$(brew --prefix openssl)"
-    printf "%s\n" \
-      "postmaster_address = '${MAILADM}'" \
-      "ssl_cert = <${SSL}/certs/${MAILSVR}/${MAILSVR}.crt" \
-      "ssl_key = <${SSL}/certs/${MAILSVR}/${MAILSVR}.key" | \
-    tee -a "/usr/local/etc/dovecot/dovecot.conf" > /dev/null
+      MAILADM="$(ask 'Email Administrator Address' 'Set Email' "$(whoami)@$(hostname)")"
+      MAILSVR="$(ask 'Email Server DNS Hostname' 'Set Hostname' "$(hostname)")"
+      SSL="$(brew --prefix openssl)"
+      printf "%s\n" \
+        "postmaster_address = '${MAILADM}'" \
+        "ssl_cert = <${SSL}/certs/${MAILSVR}/${MAILSVR}.crt" \
+        "ssl_key = <${SSL}/certs/${MAILSVR}/${MAILSVR}.key" | \
+      tee -a "/usr/local/etc/dovecot/dovecot.conf" > /dev/null
 
-    if test ! -f "/usr/local/etc/dovecot/cram-md5.pwd"; then
-      while true; do
-        MAILUSR="$(ask 'Username for New Email Account?' 'Create Account' "$(whoami)")"
-        test -n "${MAILUSR}" || break
-        doveadm pw | \
-        sed -e "s/^/${MAILUSR}:/" | \
-        sudo tee -a "/usr/local/etc/dovecot/cram-md5.pwd"
-      done
-      sudo chown _dovecot "/usr/local/etc/dovecot/cram-md5.pwd"
-      sudo chmod go= "/usr/local/etc/dovecot/cram-md5.pwd"
-    fi
+      if test ! -f "/usr/local/etc/dovecot/cram-md5.pwd"; then
+        while true; do
+          MAILUSR="$(ask 'Username for New Email Account?' 'Create Account' "$(whoami)")"
+          test -n "${MAILUSR}" || break
+          doveadm pw | \
+          sed -e "s/^/${MAILUSR}:/" | \
+          sudo tee -a "/usr/local/etc/dovecot/cram-md5.pwd"
+        done
+        sudo chown _dovecot "/usr/local/etc/dovecot/cram-md5.pwd"
+        sudo chmod go= "/usr/local/etc/dovecot/cram-md5.pwd"
+      fi
 
-    sudo tee "/etc/pam.d/dovecot" << EOF > /dev/null
+      sudo tee "/etc/pam.d/dovecot" << EOF > /dev/null
 auth	required	pam_opendirectory.so	try_first_pass
 account	required	pam_nologin.so
 account	required	pam_opendirectory.so
 password	required	pam_opendirectory.so
 EOF
 
-    grep -Fq "${MAILSVR}" "/etc/hosts" || \
-    printf "%s\t%s\n" "127.0.0.1" "${MAILSVR}" | \
-    sudo tee -a "/etc/hosts" > /dev/null
+      grep -Fq "${MAILSVR}" "/etc/hosts" || \
+      printf "%s\t%s\n" "127.0.0.1" "${MAILSVR}" | \
+      sudo tee -a "/etc/hosts" > /dev/null
 
-    sudo brew services start dovecot
+      sudo brew services start dovecot
 
-    cat << EOF > "/usr/local/bin/imaptimefix.py"
+      cat << EOF > "/usr/local/bin/imaptimefix.py"
 #!/usr/bin/env python
 
 # Author: Zachary Cutlip <@zcutlip>
@@ -733,7 +732,8 @@ if isdir(argv[1]):
             rename(join(a, d), join(a, m))
           utime(join(a, m), (h, h))
 EOF
-    chmod +x /usr/local/bin/imaptimefix.py
+      chmod +x /usr/local/bin/imaptimefix.py
+    fi
   fi
 }
 
@@ -745,6 +745,7 @@ config_zsh () {
 #!/bin/sh
 
 export ZDOTDIR="${HOME}/.zsh"
+export MASDIR="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
 
 export EDITOR="vi"
 export VISUAL="vi"

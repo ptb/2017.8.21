@@ -25,6 +25,10 @@ curl --location --silent \
   source /dev/stdin 0
 #+end_example
 
+#+begin_example sh :tangle no
+init && install_sw && config && custom
+#+end_example
+
 *** License
 
 #+begin_quote :noweb-ref license.txt
@@ -147,19 +151,17 @@ EOF
 *** Set Defaults for Sleep
 #+begin_src sh
 init_no_sleep () {
-  sudo systemsetup -setcomputersleep "Never" > /dev/null
-  sudo systemsetup -setharddisksleep "Never" > /dev/null
+  sudo pmset -a sleep 0
+  sudo pmset -a disksleep 0
 }
 #+end_src
 
 *** Set Hostname from DNS
 #+begin_src sh
 init_hostname () {
-  h="$(hostname -s)"
-
   sudo systemsetup -setcomputername \
-    "$(ruby -e "print '${h}'.capitalize")" > /dev/null
-  sudo systemsetup -setlocalsubnetname "${h}" > /dev/null
+    $(ruby -e "print '$(hostname -s)'.capitalize") > /dev/null
+  sudo systemsetup -setlocalsubnetname $(hostname -s) > /dev/null
 }
 #+end_src
 
@@ -257,7 +259,7 @@ install_brewfile_taps () {
 | homebrew/bundle            | https://github.com/Homebrew/homebrew-bundle            |
 | homebrew/command-not-found | https://github.com/Homebrew/homebrew-command-not-found |
 | homebrew/nginx             | https://github.com/Homebrew/homebrew-nginx             |
-| homebrew/php               | https://github.com/Homebrew/homebrew-php                                                       |
+| homebrew/php               | https://github.com/Homebrew/homebrew-php               |
 | homebrew/services          | https://github.com/Homebrew/homebrew-services          |
 | ptb/custom                 | https://github.com/ptb/homebrew-custom                 |
 | railwaycat/emacsmacport    | https://github.com/railwaycat/homebrew-emacsmacport    |
@@ -285,6 +287,7 @@ install_brewfile_brew_pkgs () {
 | gnu-sed               | https://www.gnu.org/software/sed/        |
 | gnupg                 | https://www.gnupg.org/                   |
 | mas                   | https://github.com/argon/mas             |
+| node                  | https://nodejs.org/                      |
 | nodenv                | https://github.com/nodenv/nodenv         |
 | openssl               | https://www.openssl.org/                 |
 | perl-build            | https://github.com/tokuhirom/Perl-Build  |
@@ -296,6 +299,7 @@ install_brewfile_brew_pkgs () {
 | rsync                 | https://rsync.samba.org/                 |
 | shellcheck            | https://github.com/koalaman/shellcheck   |
 | vim                   | https://vim.sourceforge.io/              |
+| yarn                  | https://yarnpkg.com/                     |
 | zsh                   | https://www.zsh.org/                     |
 |-----------------------+------------------------------------------|
 
@@ -380,7 +384,6 @@ install_brewfile_cask_pkgs () {
 | munki                                            | https://www.munki.org/munki/                                  |
 | musicbrainz-picard                               | https://picard.musicbrainz.org/                               |
 | namechanger                                      | https://mrrsoftware.com/namechanger/                          |
-| node                                             | https://nodejs.org/                                           |
 | nvalt                                            | http://brettterpstra.com/projects/nvalt/                      |
 | nzbget                                           | https://nzbget.net/                                           |
 | nzbvortex                                        | https://www.nzbvortex.com/                                    |
@@ -415,7 +418,6 @@ install_brewfile_cask_pkgs () {
 | vmware-fusion                                    | https://www.vmware.com/products/fusion.html                   |
 | wireshark                                        | https://www.wireshark.org/                                    |
 | xld                                              | http://tmkk.undo.jp/xld/index_e.html                          |
-| yarn                                             | https://yarnpkg.com/                                          |
 | caskroom/fonts/font-inconsolata-lgc              | https://github.com/DeLaGuardo/Inconsolata-LGC                 |
 | caskroom/versions/transmit4                      | https://panic.com/transmit/                                   |
 | ptb/custom/adobe-creative-cloud-2014             | https://www.adobe.com/creativecloud.html                      |
@@ -503,7 +505,7 @@ install_links () {
   for a in /System/Library/CoreServices/Applications/*; do
     ln -s "../..$a" . 2> /dev/null
   done
-  if test -d /Applications/Xcode*; then
+  if ls /Applications/Xcode* > /dev/null 2>&1; then
     cd /Applications && \
     for b in /Applications/Xcode*.app/Contents/Applications/*; do
       ln -s "../..$b" . 2> /dev/null
@@ -676,7 +678,7 @@ config_plist () {
   printf "%b\n" "${1}" | \
   while IFS="$(printf '%b' '\t')" read command entry type value; do
     ${4} /usr/libexec/PlistBuddy "${2}" \
-      -c "${command} '${3}${entry}' ${type} '${value}'" > /dev/null
+      -c "${command} '${3}${entry}' ${type} '${value}'" > /dev/null 2>&1
   done
 }
 #+end_src
@@ -712,46 +714,48 @@ iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAQAAAADrRVxmAAAAGElEQVR4AWOgMxgFo2AUjIJRMApGwSgA
 *** Configure Dovecot
 #+begin_src sh :noweb tangle
 config_dovecot () {
-  if ! run "Configure Dovecot Email Server?" "Configure Server" "Cancel"; then
-    cat << EOF > "/usr/local/etc/dovecot/dovecot.conf"
+  if which dovecot > /dev/null; then
+    if ! run "Configure Dovecot Email Server?" "Configure Server" "Cancel"; then
+      cat << EOF > "/usr/local/etc/dovecot/dovecot.conf"
 <<dovecot.conf>>
 EOF
 
-    MAILADM="$(ask 'Email Administrator Address' 'Set Email' "$(whoami)@$(hostname)")"
-    MAILSVR="$(ask 'Email Server DNS Hostname' 'Set Hostname' "$(hostname)")"
-    SSL="$(brew --prefix openssl)"
-    printf "%s\n" \
-      "postmaster_address = '${MAILADM}'" \
-      "ssl_cert = <${SSL}/certs/${MAILSVR}/${MAILSVR}.crt" \
-      "ssl_key = <${SSL}/certs/${MAILSVR}/${MAILSVR}.key" | \
-    tee -a "/usr/local/etc/dovecot/dovecot.conf" > /dev/null
+      MAILADM="$(ask 'Email Administrator Address' 'Set Email' "$(whoami)@$(hostname)")"
+      MAILSVR="$(ask 'Email Server DNS Hostname' 'Set Hostname' "$(hostname)")"
+      SSL="$(brew --prefix openssl)"
+      printf "%s\n" \
+        "postmaster_address = '${MAILADM}'" \
+        "ssl_cert = <${SSL}/certs/${MAILSVR}/${MAILSVR}.crt" \
+        "ssl_key = <${SSL}/certs/${MAILSVR}/${MAILSVR}.key" | \
+      tee -a "/usr/local/etc/dovecot/dovecot.conf" > /dev/null
 
-    if test ! -f "/usr/local/etc/dovecot/cram-md5.pwd"; then
-      while true; do
-        MAILUSR="$(ask 'Username for New Email Account?' 'Create Account' "$(whoami)")"
-        test -n "${MAILUSR}" || break
-        doveadm pw | \
-        sed -e "s/^/${MAILUSR}:/" | \
-        sudo tee -a "/usr/local/etc/dovecot/cram-md5.pwd"
-      done
-      sudo chown _dovecot "/usr/local/etc/dovecot/cram-md5.pwd"
-      sudo chmod go= "/usr/local/etc/dovecot/cram-md5.pwd"
-    fi
+      if test ! -f "/usr/local/etc/dovecot/cram-md5.pwd"; then
+        while true; do
+          MAILUSR="$(ask 'Username for New Email Account?' 'Create Account' "$(whoami)")"
+          test -n "${MAILUSR}" || break
+          doveadm pw | \
+          sed -e "s/^/${MAILUSR}:/" | \
+          sudo tee -a "/usr/local/etc/dovecot/cram-md5.pwd"
+        done
+        sudo chown _dovecot "/usr/local/etc/dovecot/cram-md5.pwd"
+        sudo chmod go= "/usr/local/etc/dovecot/cram-md5.pwd"
+      fi
 
-    sudo tee "/etc/pam.d/dovecot" << EOF > /dev/null
+      sudo tee "/etc/pam.d/dovecot" << EOF > /dev/null
 <<dovecot.pam>>
 EOF
 
-    grep -Fq "${MAILSVR}" "/etc/hosts" || \
-    printf "%s\t%s\n" "127.0.0.1" "${MAILSVR}" | \
-    sudo tee -a "/etc/hosts" > /dev/null
+      grep -Fq "${MAILSVR}" "/etc/hosts" || \
+      printf "%s\t%s\n" "127.0.0.1" "${MAILSVR}" | \
+      sudo tee -a "/etc/hosts" > /dev/null
 
-    sudo brew services start dovecot
+      sudo brew services start dovecot
 
-    cat << EOF > "/usr/local/bin/imaptimefix.py"
+      cat << EOF > "/usr/local/bin/imaptimefix.py"
 <<imaptimefix.py>>
 EOF
-    chmod +x /usr/local/bin/imaptimefix.py
+      chmod +x /usr/local/bin/imaptimefix.py
+    fi
   fi
 }
 #+end_src
@@ -911,6 +915,7 @@ EOF
 #!/bin/sh
 
 export ZDOTDIR="${HOME}/.zsh"
+export MASDIR="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
 
 export EDITOR="vi"
 export VISUAL="vi"
