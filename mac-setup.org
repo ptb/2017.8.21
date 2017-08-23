@@ -35,7 +35,9 @@ init && install_sw && config && custom
 
 **** Select the External Disk as Startup Disk
 
-**** Download [[https://itunes.apple.com/app/id1209167288][macOS Install]] from the App Store
+**** Download macOS Install from the App Store
+
+=macappstores://itunes.apple.com/app/id1209167288=
 
 **** Open /Applications/Utilities/Terminal.app
 #+begin_example sh
