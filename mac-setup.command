@@ -95,7 +95,7 @@ init_hostname () {
   sudo systemsetup -setlocalsubnetname $(hostname -s) > /dev/null
 }
 
-# Save Mac App Store Packages with =/usr/local/bin/mas_save=
+# Save Mac App Store Packages
 # - sudo lsof -c softwareupdated -F -r 2 | sed '/^n\//!d;/com.apple.SoftwareUpdate/!d;s/^n//'
 # - sudo lsof -c storedownloadd -F -r 2 | sed '/^n\//!d;/com.apple.appstore/!d;s/^n//'
 

@@ -1,7 +1,7 @@
 * Mac Setup
 :properties:
 :header-args: :cache yes :comments org :padline yes :results silent
-:header-args:sh: :shebang "#!/bin/sh" :tangle mac-setup.command
+:header-args:sh: :noweb tangle :shebang "#!/bin/sh" :tangle mac-setup.command
 :end:
 #+startup: showall nohideblocks hidestars indent
 
@@ -19,19 +19,19 @@ case "${SHELL}" in
 esac
 #+end_src
 
-#+begin_example sh :tangle no
+#+begin_example sh
 curl --location --silent \
   "https://github.com/ptb/2017.8.21/raw/master/mac-setup.command" | \
   source /dev/stdin 0
 #+end_example
 
-#+begin_example sh :tangle no
+#+begin_example sh
 init && install_sw && config && custom
 #+end_example
 
 *** License
 
-#+begin_quote :noweb-ref license.txt
+#+begin_quote
 Copyright 2017 [[https://github.com/ptb][Peter T Bosse II]]
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,23 +50,23 @@ limitations under the License.
 ** Initialize
 
 *** Initialize New Terminal
-#+begin_src sh :noweb tangle
+#+begin_src sh
 if test -z "${1}"; then
   osascript - "${0}" << EOF > /dev/null 2>&1
-<<new-terminal.applescript>>
+<<new_term.applescript>>
 EOF
 fi
 #+end_src
 
-**** =new-terminal.applescript=
-#+begin_src applescript :noweb-ref new-terminal.applescript
+**** =new_term.applescript=
+#+begin_src applescript :noweb-ref new_term.applescript
     on run { _this }
       tell app "Terminal" to do script "source " & quoted form of _this & " 0"
     end run
 #+end_src
 
 *** Define Function =ask=
-#+begin_src sh :noweb tangle
+#+begin_src sh
 ask () {
   osascript - "${1}" "${2}" "${3}" << EOF 2> /dev/null
 <<ask.applescript>>
@@ -75,14 +75,14 @@ EOF
 #+end_src
 
 **** =ask.applescript=
-#+begin_src applescript :noweb-ref ask.applescript :tangle no
+#+begin_src applescript :noweb-ref ask.applescript
     on run { _title, _action, _default }
       tell app "System Events" to return text returned of (display dialog _title with title _title buttons { "Cancel", _action } default answer _default)
     end run
 #+end_src
 
 *** Define Function =run=
-#+begin_src sh :noweb tangle
+#+begin_src sh
 run () {
   osascript - "${1}" "${2}" "${3}" << EOF 2> /dev/null
 <<run.applescript>>
@@ -91,7 +91,7 @@ EOF
 #+end_src
 
 **** =run.applescript=
-#+begin_src applescript :noweb-ref run.applescript :tangle no
+#+begin_src applescript :noweb-ref run.applescript
     on run { _title, _cancel, _action }
       tell app "System Events" to return button returned of (display dialog _title with title _title buttons { _cancel, _action } cancel button 1 default button 2 giving up after 5)
     end run
@@ -126,10 +126,10 @@ init_sudo () {
 #+end_src
 
 *** Select Installation Cache Location
-#+begin_src sh :noweb tangle
+#+begin_src sh
 init_cache () {
   a=$(osascript << EOF 2> /dev/null
-<<select-cache.applescript>>
+<<init_cache.applescript>>
 EOF
 )
 
@@ -142,8 +142,8 @@ EOF
 }
 #+end_src
 
-**** =select-cache.applescript=
-#+begin_src applescript :noweb-ref select-cache.applescript :tangle no
+**** =init_cache.applescript=
+#+begin_src applescript :noweb-ref init_cache.applescript
     on run
       return POSIX path of (choose folder with prompt "Select Existing Installation Cache")
     end run
@@ -166,14 +166,14 @@ init_hostname () {
 }
 #+end_src
 
-*** Save Mac App Store Packages with =/usr/local/bin/mas_save=
+*** Save Mac App Store Packages
 - sudo lsof -c softwareupdated -F -r 2 | sed '/^n\//!d;/com.apple.SoftwareUpdate/!d;s/^n//'
 - sudo lsof -c storedownloadd -F -r 2 | sed '/^n\//!d;/com.apple.appstore/!d;s/^n//'
-#+begin_src sh :noweb tangle :var _mas_save_plist=_mas_save_plist[3:-2,0:3]
+#+begin_src sh :var _mas_save_plist=_mas_save_plist[3:-2,0:3]
 
 function init_mas_save () {
   cat << EOF > "/usr/local/bin/mas_save"
-<<mas_save>>
+<<mas_save.sh>>
 EOF
 
   chmod a+x "/usr/local/bin/mas_save"
@@ -207,7 +207,7 @@ EOF
 |---------+------------+--------+-------------------------|
 
 **** =/usr/local/bin/mas_save=
-#+begin_src sh :noweb-ref mas_save :tangle no
+#+begin_src sh :noweb-ref mas_save.sh :tangle no
 #!/bin/sh
 
 asdir="/Users/Shared/storedownloadd"
@@ -794,7 +794,7 @@ config_bbedit () {
 #+end_src
 
 *** Configure Desktop Picture
-#+begin_src sh :noweb tangle
+#+begin_src sh
 config_desktop () {
   sudo rm -f "/Library/Caches/com.apple.desktop.admin.png"
 
@@ -805,12 +805,12 @@ EOF
 #+end_src
 
 **** =black.png.b64=
-#+begin_src base64 :noweb-ref black.png.b64 :tangle no
+#+begin_src base64 :noweb-ref black.png.b64
 iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAQAAAADrRVxmAAAAGElEQVR4AWOgMxgFo2AUjIJRMApGwSgAAAiAAAH3bJXBAAAAAElFTkSuQmCC
 #+end_src
 
 *** Configure Dovecot
-#+begin_src sh :noweb tangle
+#+begin_src sh
 config_dovecot () {
   if which dovecot > /dev/null; then
     if ! run "Configure Dovecot Email Server?" "Configure Server" "Cancel"; then
@@ -859,7 +859,7 @@ EOF
 #+end_src
 
 **** =/usr/local/etc/dovecot/dovecot.conf=
-#+begin_src conf :noweb-ref dovecot.conf :tangle no
+#+begin_src conf :noweb-ref dovecot.conf
 auth_mechanisms = cram-md5
 default_internal_user = _dovecot
 default_login_user = _dovenull
@@ -933,7 +933,7 @@ protocol lda {
 #+end_src
 
 **** =/etc/pam.d/dovecot=
-#+begin_src conf :noweb-ref dovecot.pam :tangle no
+#+begin_src conf :noweb-ref dovecot.pam
 auth	required	pam_opendirectory.so	try_first_pass
 account	required	pam_nologin.so
 account	required	pam_opendirectory.so
@@ -941,7 +941,7 @@ password	required	pam_opendirectory.so
 #+end_src
 
 **** =/usr/local/bin/imaptimefix.py=
-#+begin_src python :noweb-ref imaptimefix.py :tangle no
+#+begin_src python :noweb-ref imaptimefix.py
 #!/usr/bin/env python
 
 # Author: Zachary Cutlip <@zcutlip>
@@ -996,7 +996,7 @@ if isdir(argv[1]):
 #+end_src
 
 *** Configure Z-Shell
-#+begin_src sh :noweb tangle
+#+begin_src sh
 config_zsh () {
   sudo tee -a /etc/zshenv << EOF > /dev/null
 <<zshenv>>
@@ -1054,7 +1054,7 @@ custom_home () {
 #+end_src
 
 *** Customize Atom
-#+begin_src sh :noweb tangle :var _atom=_atom[3:-2,0]
+#+begin_src sh :var _atom=_atom[3:-2,0]
 
 custom_atom () {
   if which apm > /dev/null; then
@@ -1162,7 +1162,7 @@ EOF
 #+end_src
 
 *** Customize Emacs
-#+begin_src sh :noweb tangle
+#+begin_src sh
 custom_emacs () {
   mkdir -p "${HOME}/.emacs.d" && \
   curl --compressed --location --silent \
@@ -1201,7 +1201,7 @@ EOF
 #+end_src
 
 **** =~/.spacemacs=
-#+begin_src emacs-lisp :noweb-ref .spacemacs :tangle no
+#+begin_src emacs-lisp :noweb-ref .spacemacs
 (defun dotspacemacs/layers ()
   (setq-default
     dotspacemacs-configuration-layers '(
@@ -1269,7 +1269,7 @@ EOF
 #+end_src
 
 **** =~/.emacs.d/private/ptb/config.el=
-#+begin_src emacs-lisp :noweb-ref config.el :tangle no
+#+begin_src emacs-lisp :noweb-ref config.el
 (setq
   default-frame-alist '(
     (top . 22)
@@ -1313,7 +1313,7 @@ EOF
 #+end_src
 
 **** =~/.emacs.d/private/ptb/funcs.el=
-#+begin_src emacs-lisp :noweb-ref funcs.el :tangle no
+#+begin_src emacs-lisp :noweb-ref funcs.el
 (defun is-useless-buffer (buffer)
   (let ((name (buffer-name buffer)))
     (and (= ?* (aref name 0))
@@ -1358,7 +1358,7 @@ EOF
 #+end_src
 
 **** =~/.emacs.d/private/ptb/keybindings.el=
-#+begin_src emacs-lisp :noweb-ref keybindings.el :tangle no
+#+begin_src emacs-lisp :noweb-ref keybindings.el
 (define-key evil-insert-state-map (kbd "<return>") 'newline)
 
 (define-key evil-normal-state-map (kbd "s-c") 'clipboard-kill-ring-save)
@@ -1391,7 +1391,7 @@ EOF
 #+end_src
 
 **** =~/.emacs.d/private/ptb/packages.el=
-#+begin_src emacs-lisp :noweb-ref packages.el :tangle no
+#+begin_src emacs-lisp :noweb-ref packages.el
 (setq ptb-packages '(adaptive-wrap auto-indent-mode))
 
 (defun ptb/init-adaptive-wrap ()
@@ -1566,7 +1566,7 @@ custom_terminal () {
 |------------+--------------------+-------------------------+---------+-------+------|
 
 *** Customize Z-Shell
-#+begin_src sh :noweb tangle
+#+begin_src sh
 custom_zsh () {
   mkdir -m go= "${ZDOTDIR:-$HOME}"
   cat << EOF > "${ZDOTDIR:-$HOME}/.zshrc"
