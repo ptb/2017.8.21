@@ -433,6 +433,12 @@ WiFi Explorer	494803304'
 install_brewfile_mas_apps () {
   open "/Applications/App Store.app"
   run "Sign in to the App Store with your Apple ID" "Cancel" "OK"
+
+  export MASDIR="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
+  sudo chown -R "$(whoami)" "${MASDIR}"
+  rsync -a --delay-updates \
+    "${CACHE}/storedownloadd/" "${MASDIR}/
+
   printf "%s\n" "${_mas}" | \
   while IFS="$(printf '\t')" read app id; do
     printf 'mas "%s", id: %s\n' "${app}" "${id}" >> "${BREWFILE}"
@@ -868,12 +874,12 @@ EOF
   . "/etc/zshenv"
 }
 
-# Create Primary Account
+# Configure New Account
 
 config_new_account () {
   e="$(ask 'New Account Email Address' 'OK' '')"
-  curl "https://www.gravatar.com/avatar/$(md5 -qs $e).jpg?s=512" --silent \
-    --compressed --location --output "/Library/User Pictures/${e}.jpg"
+  curl --output "/Library/User Pictures/${e}.jpg" --silent \
+    "https://www.gravatar.com/avatar/$(md5 -qs ${e}).jpg?s=512"
 
   n="$(curl --location --silent \
     "https://api.github.com/search/users?q=${e}" | \
