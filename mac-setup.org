@@ -345,7 +345,6 @@ install_sw () {
   install_brewfile_cask_pkgs
   install_brewfile_mas_apps
   install_brew_bundle
-  # install_brew_built
   install_links
   install_node_sw
   install_perl_sw
@@ -424,29 +423,58 @@ install_brewfile_brew_pkgs () {
 
 **** _pkgs
 #+name: _pkgs
-|-----------------------+------------------------------------------|
-| Homebrew Package Name | Reference URL                            |
-|-----------------------+------------------------------------------|
-| aspell                | http://aspell.net/                       |
-| git                   | https://git-scm.com/                     |
-| gnu-sed               | https://www.gnu.org/software/sed/        |
-| gnupg                 | https://www.gnupg.org/                   |
-| mas                   | https://github.com/argon/mas             |
-| node                  | https://nodejs.org/                      |
-| nodenv                | https://github.com/nodenv/nodenv         |
-| openssl               | https://www.openssl.org/                 |
-| perl-build            | https://github.com/tokuhirom/Perl-Build  |
-| php71                 | https://github.com/Homebrew/homebrew-php |
-| pinentry-mac          | https://github.com/GPGTools/pinentry-mac |
-| plenv                 | https://github.com/tokuhirom/plenv       |
-| pyenv                 | https://github.com/pyenv/pyenv           |
-| rbenv                 | https://github.com/rbenv/rbenv           |
-| rsync                 | https://rsync.samba.org/                 |
-| shellcheck            | https://github.com/koalaman/shellcheck   |
-| vim                   | https://vim.sourceforge.io/              |
-| yarn                  | https://yarnpkg.com/                     |
-| zsh                   | https://www.zsh.org/                     |
-|-----------------------+------------------------------------------|
+|----------------------------+---------------------------------------------------------|
+| Homebrew Package Name      | Reference URL                                           |
+|----------------------------+---------------------------------------------------------|
+| aspell                     | http://aspell.net/                                      |
+| chromedriver               | https://sites.google.com/a/chromium.org/chromedriver/   |
+| coreutils                  | https://www.gnu.org/software/coreutils/                 |
+| duti                       | https://github.com/moretension/duti                     |
+| fasd                       | https://github.com/clvv/fasd                            |
+| fdupes                     | https://github.com/adrianlopezroche/fdupes              |
+| gawk                       | https://www.gnu.org/software/gawk/                      |
+| getmail                    | http://pyropus.ca/software/getmail/                     |
+| git                        | https://git-scm.com/                                    |
+| git-flow                   | http://nvie.com/posts/a-successful-git-branching-model/ |
+| git-lfs                    | https://git-lfs.github.com/                             |
+| gnu-sed                    | https://www.gnu.org/software/sed/                       |
+| gnupg                      | https://www.gnupg.org/                                  |
+| gpac                       | https://gpac.wp.imt.fr/                                 |
+| httpie                     | https://httpie.org/                                     |
+| hub                        | https://hub.github.com/                                 |
+| ievms                      | https://xdissent.github.io/ievms/                       |
+| imagemagick                | https://www.imagemagick.org/                            |
+| mas                        | https://github.com/argon/mas                            |
+| mercurial                  | https://www.mercurial-scm.org/                          |
+| mp4v2                      | https://code.google.com/archive/p/mp4v2/                |
+| mtr                        | https://www.bitwizard.nl/mtr/                           |
+| nmap                       | https://nmap.org/                                       |
+| node                       | https://nodejs.org/                                     |
+| nodenv                     | https://github.com/nodenv/nodenv                        |
+| openssl                    | https://www.openssl.org/                                |
+| p7zip                      | http://p7zip.sourceforge.net/                           |
+| perl-build                 | https://github.com/tokuhirom/Perl-Build                 |
+| php71                      | https://github.com/Homebrew/homebrew-php                |
+| pinentry-mac               | https://github.com/GPGTools/pinentry-mac                |
+| plenv                      | https://github.com/tokuhirom/plenv                      |
+| pyenv                      | https://github.com/pyenv/pyenv                          |
+| rbenv                      | https://github.com/rbenv/rbenv                          |
+| rsync                      | https://rsync.samba.org/                                |
+| selenium-server-standalone | http://www.seleniumhq.org/                              |
+| shellcheck                 | https://github.com/koalaman/shellcheck                  |
+| sqlite                     | https://sqlite.org                                      |
+| stow                       | https://www.gnu.org/software/stow/                      |
+| terminal-notifier          | https://github.com/julienXX/terminal-notifier           |
+| trash                      | http://hasseg.org/trash/                                |
+| unrar                      | http://www.rarlab.com/                                  |
+| vim                        | https://vim.sourceforge.io/                             |
+| yarn                       | https://yarnpkg.com/                                    |
+| youtube-dl                 | https://rg3.github.io/youtube-dl/                       |
+| zsh                        | https://www.zsh.org/                                    |
+| ptb/custom/dovecot         |                                                         |
+| ptb/custom/ffmpeg          |                                                         |
+| ptb/custom/nginx-full      |                                                         |
+|----------------------------+---------------------------------------------------------|
 
 *** Add Caskroom Options to Brewfile
 #+begin_src sh :var _args=_dest[4:9,0:1]
@@ -615,7 +643,7 @@ install_brew_bundle () {
 #+end_src
 
 *** Add Compiled Packages to Brewfile
-#+begin_src sh :var _built=_built[3:-2,0:1]
+#+begin_example sh :var _built=_built[3:-2,0:1]
 
 install_brew_built () {
   printf "%s\n" "${_built}" | \
@@ -625,7 +653,7 @@ install_brew_built () {
     brew postinstall "${pkg}"
   done
 }
-#+end_src
+#+end_example
 
 **** _built
 #+name: _built
@@ -633,7 +661,7 @@ install_brew_built () {
 | Homebrew Package Name     | Custom Build Arguments                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 |---------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | dovecot                   | --with-pam --with-pigeonhole                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| homebrew/nginx/nginx-full | --with-dav-ext-module --with-fancyindex-module --with-gzip-static --with-http2 --with-mp4-h264-module --with-passenger --with-push-stream-module --with-secure-link --with-webdav                                                                                                                                                                                                                                                                                                                                                                                                       |
+| homebrew/nginx/nginx-full | --with-dav-ext-module --with-fancyindex-module --with-gzip-static --with-http2 --with-mp4-h264-module --with-push-stream-module --with-secure-link --with-webdav                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ptb/custom/ffmpeg         | --with-chromaprint --with-fdk-aac --with-fontconfig --with-freetype --with-frei0r --with-game-music-emu --with-libass --with-libbluray --with-libbs2b --with-libcaca --with-libgsm --with-libmodplug --with-libsoxr --with-libssh --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openh264 --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-rubberband --with-schroedinger --with-sdl2 --with-snappy --with-speex --with-tesseract --with-theora --with-tools --with-two-lame --with-wavpack --with-webp --with-x265 --with-xz --with-zimg |
 |---------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 

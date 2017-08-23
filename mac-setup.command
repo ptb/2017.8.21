@@ -219,7 +219,6 @@ install_sw () {
   install_brewfile_cask_pkgs
   install_brewfile_mas_apps
   install_brew_bundle
-  # install_brew_built
   install_links
   install_node_sw
   install_perl_sw
@@ -276,13 +275,32 @@ install_brewfile_taps () {
 # Add Homebrew Packages to Brewfile
 
 _pkgs='aspell
+chromedriver
+coreutils
+duti
+fasd
+fdupes
+gawk
+getmail
 git
+git-flow
+git-lfs
 gnu-sed
 gnupg
+gpac
+httpie
+hub
+ievms
+imagemagick
 mas
+mercurial
+mp4v2
+mtr
+nmap
 node
 nodenv
 openssl
+p7zip
 perl-build
 php71
 pinentry-mac
@@ -290,10 +308,20 @@ plenv
 pyenv
 rbenv
 rsync
+selenium-server-standalone
 shellcheck
+sqlite
+stow
+terminal-notifier
+trash
+unrar
 vim
 yarn
-zsh'
+youtube-dl
+zsh
+ptb/custom/dovecot
+ptb/custom/ffmpeg
+ptb/custom/nginx-full'
 
 install_brewfile_brew_pkgs () {
   printf "%s\n" "${_pkgs}" | \
@@ -455,21 +483,6 @@ install_brew_bundle () {
     sudo xcode-select -s "${x}"
     sudo xcodebuild -license accept
   fi
-}
-
-# Add Compiled Packages to Brewfile
-
-_built='dovecot	--with-pam --with-pigeonhole
-homebrew/nginx/nginx-full	--with-dav-ext-module --with-fancyindex-module --with-gzip-static --with-http2 --with-mp4-h264-module --with-passenger --with-push-stream-module --with-secure-link --with-webdav
-ptb/custom/ffmpeg	--with-chromaprint --with-fdk-aac --with-fontconfig --with-freetype --with-frei0r --with-game-music-emu --with-libass --with-libbluray --with-libbs2b --with-libcaca --with-libgsm --with-libmodplug --with-libsoxr --with-libssh --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openh264 --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-rubberband --with-schroedinger --with-sdl2 --with-snappy --with-speex --with-tesseract --with-theora --with-tools --with-two-lame --with-wavpack --with-webp --with-x265 --with-xz --with-zimg'
-
-install_brew_built () {
-  printf "%s\n" "${_built}" | \
-  while IFS="$(printf '\t')" read pkg args; do
-    brew install --build-bottle "${pkg}" ${args}
-    brew bottle "${pkg}"
-    brew postinstall "${pkg}"
-  done
 }
 
 # Link System Utilities to Applications
