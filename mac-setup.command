@@ -96,8 +96,8 @@ init_hostname () {
 }
 
 # Save Mac App Store Packages
-# - sudo lsof -c softwareupdated -F -r 2 | sed '/^n\//!d;/com.apple.SoftwareUpdate/!d;s/^n//'
-# - sudo lsof -c storedownloadd -F -r 2 | sed '/^n\//!d;/com.apple.appstore/!d;s/^n//'
+# - ~sudo lsof -c softwareupdated -F -r 2 | sed '/^n\//!d;/com.apple.SoftwareUpdate/!d;s/^n//'~
+# - ~sudo lsof -c storedownloadd -F -r 2 | sed '/^n\//!d;/com.apple.appstore/!d;s/^n//'~
 
 _mas_save_plist='add	:KeepAlive	bool	false
 add	:Label	string	com.github.ptb.mas_save
