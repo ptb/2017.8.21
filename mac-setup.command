@@ -109,6 +109,10 @@ add	:RunAtLoad	bool	true
 add	:UserName	string	root'
 
 function init_mas_save () {
+  test -d "/usr/local/bin" || \
+    sudo mkdir -p /usr/local/bin && \
+    sudo chown /usr/local/bin
+
   cat << EOF > "/usr/local/bin/mas_save"
 #!/bin/sh
 
@@ -218,7 +222,8 @@ install_paths () {
 install_brew () {
   if ! which brew > /dev/null; then
     ruby -e \
-      "$(curl -Ls 'https://github.com/Homebrew/install/raw/master/install')"
+      "$(curl -Ls 'https://github.com/Homebrew/install/raw/master/install')" \
+      < /dev/null > /dev/null 2>&1
     printf "" > "${BREWFILE}"
   fi
   brew analytics off
@@ -509,7 +514,7 @@ install_perl_sw () {
     sudo tee -a "/etc/zshrc" > /dev/null
     . "/etc/zshrc"
 
-    plenv install 5.26.0 > /dev/null
+    plenv install 5.26.0 > /dev/null 2>&1
     plenv global 5.26.0
     rehash
 
