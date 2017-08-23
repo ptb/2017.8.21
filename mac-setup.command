@@ -130,9 +130,6 @@ add	:UserName	string	root'
 function init_mas_save () {
   sudo softwareupdate --reset-ignored > /dev/null
 
-    sudo chgrp -R "admin" "/usr/local/bin"
-    sudo chmod -R g+w "/usr/local/bin"
-
   cat << EOF > "/usr/local/bin/mas_save"
 #!/bin/sh
 
