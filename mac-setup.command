@@ -173,7 +173,7 @@ railwaycat/emacsmacport'
 
 install_brewfile_taps () {
   printf "%b\n" "${_taps}" | \
-  while IFS="$(printf '%b' '\t')" read tap; do
+  while IFS="$(printf '\t')" read tap; do
     printf 'tap "%s"\n' "${tap}" >> "${BREWFILE}"
   done
   printf "\n" >> "${BREWFILE}"
@@ -203,7 +203,7 @@ zsh'
 
 install_brewfile_brew_pkgs () {
   printf "%b\n" "${_pkgs}" | \
-  while IFS="$(printf '%b' '\t')" read pkg; do
+  while IFS="$(printf '\t')" read pkg; do
     printf 'brew "%s", args: [ "force-bottle" ]\n' "${pkg}" >> "${BREWFILE}"
   done
   printf "\n" >> "${BREWFILE}"
@@ -221,7 +221,7 @@ screen_saverdir	/Library/Screen Savers'
 install_brewfile_cask_args () {
   printf 'cask_args \' >> "${BREWFILE}"
   printf "%b\n" "${_args}" | \
-  while IFS="$(printf '%b' '\t')" read arg dir; do
+  while IFS="$(printf '\t')" read arg dir; do
     printf '\n  %s: "%s",' "${arg}" "${dir}" >> "${BREWFILE}"
   done
   sed -i -e "$ s/,/$(printf '%b' '\n\n')/" "${BREWFILE}"
@@ -314,7 +314,7 @@ railwaycat/emacsmacport/emacs-mac-spacemacs-icon'
 
 install_brewfile_cask_pkgs () {
   printf "%b\n" "${_casks}" | \
-  while IFS="$(printf '%b\n' '\t')" read cask; do
+  while IFS="$(printf '\t')" read cask; do
     printf 'cask "%s"\n' "${cask}" >> "${BREWFILE}"
   done
   printf "\n" >> "${BREWFILE}"
@@ -340,7 +340,7 @@ install_brewfile_mas_apps () {
   open "/Applications/App Store.app"
   run "Sign in to the App Store with your Apple ID" "Cancel" "OK"
   printf "%b\n" "${_mas}" | \
-  while IFS="$(printf '%b' '\t')" read app id; do
+  while IFS="$(printf '\t')" read app id; do
     printf 'mas "%s", id: %s\n' "${app}" "${id}" >> "${BREWFILE}"
   done
 }
@@ -363,7 +363,7 @@ ptb/custom/ffmpeg	--with-chromaprint --with-fdk-aac --with-fontconfig --with-fre
 
 install_brew_built () {
   printf "%b\n" "${_built}" | \
-  while IFS="$(printf '%b' '\t')" read pkg args; do
+  while IFS="$(printf '\t')" read pkg args; do
     brew install --build-bottle "${pkg}" ${args}
     brew bottle "${pkg}"
     brew postinstall "${pkg}"
@@ -531,7 +531,7 @@ config () {
 
 config_defaults () {
   printf "%b\n" "${1}" | \
-  while IFS="$(printf '%b' '\t')" read domain key type value host; do
+  while IFS="$(printf '\t')" read domain key type value host; do
     ${2} defaults ${host} write ${domain} "${key}" ${type} "${value}"
   done
 }
@@ -540,7 +540,7 @@ config_defaults () {
 
 config_plist () {
   printf "%b\n" "${1}" | \
-  while IFS="$(printf '%b' '\t')" read command entry type value; do
+  while IFS="$(printf '\t')" read command entry type value; do
     ${4} /usr/libexec/PlistBuddy "${2}" \
       -c "${command} '${3}${entry}' ${type} '${value}'" > /dev/null 2>&1
   done
@@ -840,7 +840,7 @@ cache = ${CACHES}/apm
 EOF
 
     printf "%b\n" "${_atom}" | \
-    while IFS="$(printf '%b' '\t')" read pkg; do
+    while IFS="$(printf '\t')" read pkg; do
       test -d "${HOME}/.atom/packages/${pkg}" ||
       apm install "${pkg}"
     done
