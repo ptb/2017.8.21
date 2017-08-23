@@ -109,6 +109,8 @@ add	:RunAtLoad	bool	true
 add	:UserName	string	root'
 
 function init_mas_save () {
+  sudo softwareupdate --reset-ignored > /dev/null
+
   test -d "/usr/local/bin" || \
     sudo mkdir -p /usr/local/bin && \
     sudo chown /usr/local/bin
