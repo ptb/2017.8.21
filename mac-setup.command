@@ -44,7 +44,7 @@ init () {
   init_no_sleep
   init_hostname
   init_mas_save
-  init_devtools "${CACHES}"
+  init_devtools
   init_updates
 
   which install_sw
@@ -95,6 +95,24 @@ init_hostname () {
   sudo systemsetup -setlocalsubnetname $(hostname -s) > /dev/null
 }
 
+# Set Permissions on Install Destinations
+
+_dest='/usr/local/bin
+/Library/Fonts
+/Library/ColorPickers
+/Library/Input Methods
+/Library/PreferencePanes
+/Library/QuickLook
+/Library/Screen Savers'
+
+init_perms () {
+  for d in "${_dest}"; do
+    test -d "${d}" || sudo mkdir -p "${d}"
+    sudo chgrp -R admin "${d}"
+    sudo chmod -R g+w "{d}"
+  done
+}
+
 # Save Mac App Store Packages
 # #+begin_example sh
 # sudo lsof -c softwareupdated -F -r 2 | sed '/^n\//!d;/com.apple.SoftwareUpdate/!d;s/^n//'
@@ -111,9 +129,8 @@ add	:UserName	string	root'
 function init_mas_save () {
   sudo softwareupdate --reset-ignored > /dev/null
 
-  test -d "/usr/local/bin" || \
-    sudo mkdir -p /usr/local/bin && \
-    sudo chown /usr/local/bin
+    sudo chgrp -R "admin" "/usr/local/bin"
+    sudo chmod -R g+w "/usr/local/bin"
 
   cat << EOF > "/usr/local/bin/mas_save"
 #!/bin/sh
@@ -172,7 +189,7 @@ EOF
 # Install Developer Tools
 
 init_devtools () {
-  p="${1}/Command Line Tools (macOS High Sierra version 10.13).pkg"
+  p="${CACHE}/Command Line Tools (macOS High Sierra version 10.13).pkg"
   i="com.apple.pkg.CLTools_SDK_macOS1013"
 
   if test -f "${p}"; then
