@@ -550,6 +550,7 @@ config_plist () {
 
 config_bbedit () {
   if test -d "/Applications/BBEdit.app"; then
+    test -f "/usr/local/bin/bbdiff" || \
     ln /Applications/BBEdit.app/Contents/Helpers/bbdiff /usr/local/bin/bbdiff && \
     ln /Applications/BBEdit.app/Contents/Helpers/bbedit_tool /usr/local/bin/bbedit && \
     ln /Applications/BBEdit.app/Contents/Helpers/bbfind /usr/local/bin/bbfind && \
