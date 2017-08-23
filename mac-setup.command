@@ -372,21 +372,19 @@ install_brew_built () {
 
 # Link System Utilities to Applications
 
+_links='/System/Library/CoreServices/Applications
+/Applications/Xcode.app/Contents/Applications
+/Applications/Xcode.app/Contents/Developer/Applications
+/Applications/Xcode-beta.app/Contents/Applications
+/Applications/Xcode-beta.app/Contents/Developer/Applications'
+
 install_links () {
   brew linkapps 2> /dev/null
-  cd /Applications && \
-  for a in /System/Library/CoreServices/Applications/*; do
-    ln -s "../..$a" . 2> /dev/null
+  printf "%s\n" "${_links}" | \
+  while IFS="$(printf '\t')" read link; do
+    find "${link}" -d 1 -name "*.app" -type d -print0 2> /dev/null | \
+    xargs -0 -I {} -L 1 ln -s "{}" "/Applications" 2> /dev/null
   done
-  if ls /Applications/Xcode* > /dev/null 2>&1; then
-    cd /Applications && \
-    for b in /Applications/Xcode*.app/Contents/Applications/*; do
-      ln -s "../..$b" . 2> /dev/null
-    done && \
-    for c in /Applications/Xcode*.app/Contents/Developer/Applications/*; do
-      ln -s "../..$c" . 2> /dev/null
-    done
-  fi
 }
 
 # Install Node Software with =nodenv=
