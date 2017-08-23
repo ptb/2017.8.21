@@ -29,6 +29,34 @@ curl --location --silent \
 init && install_sw && config && custom
 #+end_example
 
+*** Walkthrough
+
+**** Clone Internal Hard Disk to External Disk
+
+**** Select the External Disk as Startup Disk
+
+**** Download [[https://itunes.apple.com/app/id1209167288][macOS Install]] from the App Store
+
+**** Open /Applications/Utilities/Terminal.app
+#+begin_example sh
+diskx="$(diskutil list internal physical | sed '/^\//!d;s/^\(.*\)\ (.*):/\1/')"
+#+end_example
+
+#+begin_example sh
+diskutil zeroDisk $diskx
+diskutil partitionDisk $diskx 2 GPT \
+  jhfs+ "Install" 10G \
+  apfs $(ruby -e "print '$(hostname -s)'.capitalize") R
+#+end_example
+
+#+begin_example sh
+sudo "/Applications/Install macOS High Sierra.app/Contents/Resources/createinstallmedia" \
+  --applicationpath "/Applications/Install macOS High Sierra.app" --nointeraction \
+  --volume "/Volumes/Install"
+#+end_example
+
+**** Select the Install Disk as Startup Disk
+
 *** License
 
 #+begin_quote
