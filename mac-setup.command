@@ -103,7 +103,8 @@ _dest='/usr/local/bin
 /Library/Input Methods
 /Library/PreferencePanes
 /Library/QuickLook
-/Library/Screen Savers'
+/Library/Screen Savers
+/Library/User Pictures'
 
 init_perms () {
   for d in "${_dest}"; do
@@ -627,6 +628,7 @@ config () {
   config_desktop
   config_dovecot
   config_zsh
+  config_new_account
 
   which custom
 }
@@ -864,6 +866,35 @@ export LESS="-egiMQRS -x2 -z-2"
 EOF
   sudo chmod +x "/etc/zshenv"
   . "/etc/zshenv"
+}
+
+# Create Primary Account
+
+config_new_account () {
+  e="$(ask 'New Account Email Address' 'OK' '')"
+  curl "https://www.gravatar.com/avatar/$(md5 -qs $e).jpg?s=512" --silent \
+    --compressed --location --output "/Library/User Pictures/${e}.jpg"
+
+  n="$(curl --location --silent \
+    "https://api.github.com/search/users?q=${e}" | \
+    sed -n 's/^.*"name": "\(.*\)".*/\1/p')"
+  n="$(ask 'New Account Real Name' 'OK' ${n})"
+
+  u="$(curl --location --silent \
+    "https://api.github.com/search/users?q=${e}" | \
+    sed -n 's/^.*"login": "\(.*\)".*/\1/p')"
+  u="$(ask 'New Account User Name' 'OK' ${u})"
+
+  sudo defaults write \
+    "/System/Library/User Template/Non_localized/Library/Preferences/.GlobalPreferences.plist" \
+    "com.apple.swipescrolldirection" -bool false
+
+  sudo sysadminctl -addUser "${u}" -fullName "${n}" -password - \
+    -shell "$(which zsh)" -picture "/Library/User Pictures/${e}.jpg"
+
+  if run "Log Out Then Log Back In?" "Cancel" "Log Out"; then
+    osascript -e 'tell app "loginwindow" to «event aevtrlgo»'
+  fi
 }
 
 # Define Function =custom=
