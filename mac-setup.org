@@ -468,7 +468,9 @@ install_brewfile_mas_apps () {
 install_brew_bundle () {
   brew bundle --file="${BREWFILE}"
 
-  if ls /Applications/Xcode* > /dev/null 2>&1; then
+  x="$(find '/Applications' -maxdepth 1 -name 'Xcode[^ ]*.app' -print -quit)"
+  if test -n "${x}"; then
+    sudo xcode-select -s "${x}"
     sudo xcodebuild -license accept
   fi
 }
@@ -504,7 +506,7 @@ install_links () {
   brew linkapps 2> /dev/null
   printf "%s\n" "${_links}" | \
   while IFS="$(printf '\t')" read link; do
-    find "${link}" -d 1 -name "*.app" -type d -print0 2> /dev/null | \
+    find "${link}" -maxdepth 1 -name "*.app" -type d -print0 2> /dev/null | \
     xargs -0 -I {} -L 1 ln -s "{}" "/Applications" 2> /dev/null
   done
 }
