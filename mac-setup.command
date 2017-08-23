@@ -128,7 +128,7 @@ install_sw () {
   install_brewfile_cask_pkgs
   install_brewfile_mas_apps
   install_brew_bundle
-  install_brew_built
+  # install_brew_built
   install_links
   install_node_sw
   install_perl_sw
@@ -183,7 +183,9 @@ install_brewfile_taps () {
 
 # Add Homebrew Packages to Brewfile
 
-_pkgs='git
+_pkgs='aspell
+git
+gnu-sed
 gnupg
 mas
 nodenv
@@ -265,6 +267,7 @@ mp4tools
 munki
 musicbrainz-picard
 namechanger
+node
 nvalt
 nzbget
 nzbvortex
@@ -299,6 +302,7 @@ vlc
 vmware-fusion
 wireshark
 xld
+yarn
 caskroom/fonts/font-inconsolata-lgc
 caskroom/versions/transmit4
 ptb/custom/adobe-creative-cloud-2014
@@ -348,18 +352,16 @@ install_brewfile_mas_apps () {
 install_brew_bundle () {
   brew bundle --file="${BREWFILE}"
 
-  test -d /Applications/Xcode* && \
+  if ls /Applications/Xcode* > /dev/null 2>&1; then
     sudo xcodebuild -license accept
+  fi
 }
 
 # Add Compiled Packages to Brewfile
 
-_built='aspell	--lang=en
-dovecot	--with-pam --with-pigeonhole
-gnu-sed	--with-default-names
-yarn	--ignore-dependencies
+_built='dovecot	--with-pam --with-pigeonhole
 homebrew/nginx/nginx-full	--with-dav-ext-module --with-fancyindex-module --with-gzip-static --with-http2 --with-mp4-h264-module --with-passenger --with-push-stream-module --with-secure-link --with-webdav
-ptb/custom/ffmpeg	--with-chromaprint --with-fdk-aac --with-fontconfig --with-freetype --with-frei0r --with-game-music-emu --with-lame --with-libass --with-libbluray --with-libbs2b --with-libcaca --with-libgsm --with-libmodplug --with-libsoxr --with-libssh --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openh264 --with-openjpeg --with-openssl --with-opus --with-pkg-config --with-rtmpdump --with-rubberband --with-schroedinger --with-sdl2 --with-snappy --with-speex --with-tesseract --with-texi2html --with-theora --with-tools --with-two-lame --with-wavpack --with-webp --with-x264 --with-x265 --with-xvid --with-xz --with-yasm --with-zeromq --with-zimg'
+ptb/custom/ffmpeg	--with-chromaprint --with-fdk-aac --with-fontconfig --with-freetype --with-frei0r --with-game-music-emu --with-libass --with-libbluray --with-libbs2b --with-libcaca --with-libgsm --with-libmodplug --with-libsoxr --with-libssh --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openh264 --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-rubberband --with-schroedinger --with-sdl2 --with-snappy --with-speex --with-tesseract --with-theora --with-tools --with-two-lame --with-wavpack --with-webp --with-x265 --with-xz --with-zimg'
 
 install_brew_built () {
   printf "%b\n" "${_built}" | \
@@ -395,20 +397,22 @@ install_node_sw () {
   if which nodenv > /dev/null; then
     sudo mkdir -p "/usr/local/node"
     sudo chown -R "$(whoami):admin" "/usr/local/node"
+    test -f "/etc/zshenv" && \
     grep -q "NODENV_ROOT" "/etc/zshenv" || \
     printf "%s\n" \
       'export NODENV_ROOT="/usr/local/node"' | \
     sudo tee -a "/etc/zshenv" > /dev/null
     . "/etc/zshenv"
 
+    test -f "/etc/zshrc" && \
     grep -q "nodenv" "/etc/zshrc" || \
     printf "%s\n" \
       'eval "$(nodenv init -)"' | \
     sudo tee -a "/etc/zshrc" > /dev/null
     . "/etc/zshrc"
 
-    nodenv install --skip-existing 8.3.0
-    nodenv global 8.3.0
+    nodenv install --skip-existing 8.4.0
+    nodenv global 8.4.0
 
     grep -q "${NODENV_ROOT}" "/etc/paths" || \
     sudo sed -i -e "1i ${NODENV_ROOT}/shims" "/etc/paths"
@@ -421,12 +425,14 @@ install_perl_sw () {
   if which plenv > /dev/null; then
     sudo mkdir -p "/usr/local/perl"
     sudo chown -R "$(whoami):admin" "/usr/local/perl"
+    test -f "/etc/zshenv" && \
     grep -q "PLENV_ROOT" "/etc/zshenv" || \
     printf "%s\n" \
       'export PLENV_ROOT="/usr/local/perl"' | \
     sudo tee -a "/etc/zshenv" > /dev/null
     . "/etc/zshenv"
 
+    test -f "/etc/zshrc" && \
     grep -q "plenv" "/etc/zshrc" || \
     printf "%s\n" \
       'eval "$(plenv init - zsh)"' | \
@@ -451,12 +457,14 @@ install_python_sw () {
 
     sudo mkdir -p "/usr/local/python"
     sudo chown -R "$(whoami):admin" "/usr/local/python"
+    test -f "/etc/zshenv" && \
     grep -q "PYENV_ROOT" "/etc/zshenv" || \
     printf "%s\n" \
       'export PYENV_ROOT="/usr/local/python"' | \
     sudo tee -a "/etc/zshenv" > /dev/null
     . "/etc/zshenv"
 
+    test -f "/etc/zshrc" && \
     grep -q "pyenv" "/etc/zshrc" || \
     printf "%s\n" \
       'eval "$(pyenv init -)"' | \
@@ -480,12 +488,14 @@ install_ruby_sw () {
   if which rbenv > /dev/null; then
     sudo mkdir -p "/usr/local/ruby"
     sudo chown -R "$(whoami):admin" "/usr/local/ruby"
+    test -f "/etc/zshenv" && \
     grep -q "RBENV_ROOT" "/etc/zshenv" || \
     printf "%s\n" \
       'export RBENV_ROOT="/usr/local/ruby"' | \
     sudo tee -a "/etc/zshenv" > /dev/null
     . "/etc/zshenv"
 
+    test -f "/etc/zshrc" && \
     grep -q "rbenv" "/etc/zshrc" || \
     printf "%s\n" \
       'eval "$(rbenv init -)"' | \
@@ -636,8 +646,8 @@ protocol lda {
 # verbose_ssl = yes
 EOF
 
-    MAILADM="$(ask 'Email Administrator Address' 'Set Email' '$(whoami)@$(hostname)')"
-    MAILSVR="$(ask 'Email Server DNS Hostname' 'Set Hostname' '$(hostname)')"
+    MAILADM="$(ask 'Email Administrator Address' 'Set Email' "$(whoami)@$(hostname)")"
+    MAILSVR="$(ask 'Email Server DNS Hostname' 'Set Hostname' "$(hostname)")"
     SSL="$(brew --prefix openssl)"
     printf "%s\n" \
       "postmaster_address = '${MAILADM}'" \
@@ -647,7 +657,7 @@ EOF
 
     if test ! -f "/usr/local/etc/dovecot/cram-md5.pwd"; then
       while true; do
-        MAILUSR="$(ask 'Username for New Email Account?' 'Create Account' '$(whoami)')"
+        MAILUSR="$(ask 'Username for New Email Account?' 'Create Account' "$(whoami)")"
         test -n "${MAILUSR}" || break
         doveadm pw | \
         sed -e "s/^/${MAILUSR}:/" | \
@@ -818,15 +828,21 @@ vim-mode-zz'
 
 custom_atom () {
   if which apm > /dev/null; then
+    mkdir -p "${HOME}/.atom/.apm"
+
+    cat << EOF > "${HOME}/.atom/.apmrc"
+cache = ${CACHES}/apm
+EOF
+
+    cat << EOF > "${HOME}/.atom/.apm/.apmrc"
+cache = ${CACHES}/apm
+EOF
+
     printf "%b\n" "${_atom}" | \
     while IFS="$(printf '%b' '\t')" read pkg; do
       test -d "${HOME}/.atom/packages/${pkg}" ||
       apm install "${pkg}"
     done
-
-    cat << EOF > "${HOME}/.atom/.apmrc"
-cache = ${CACHES}/apm
-EOF
 
     cat << EOF > "${HOME}/.atom/config.cson"
 "*":
