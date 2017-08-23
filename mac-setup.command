@@ -43,6 +43,7 @@ init () {
   init_cache
   init_no_sleep
   init_hostname
+  init_mas_save
   init_devtools "${CACHES}"
   init_updates
 
@@ -92,6 +93,71 @@ init_hostname () {
   sudo systemsetup -setcomputername \
     $(ruby -e "print '$(hostname -s)'.capitalize") > /dev/null
   sudo systemsetup -setlocalsubnetname $(hostname -s) > /dev/null
+}
+
+# Save Mac App Store Packages with =/usr/local/bin/mas_save=
+# - sudo lsof -c softwareupdated -F -r 2 | sed '/^n\//!d;/com.apple.SoftwareUpdate/!d;s/^n//'
+# - sudo lsof -c storedownloadd -F -r 2 | sed '/^n\//!d;/com.apple.appstore/!d;s/^n//'
+
+_mas_save_plist='add	:KeepAlive	bool	false
+add	:Label	string	com.github.ptb.mas_save
+add	:Program	string	/usr/local/bin/mas_save
+add	:RunAtLoad	bool	true
+add	:UserName	string	root'
+
+function init_mas_save () {
+  cat << EOF > "/usr/local/bin/mas_save"
+#!/bin/sh
+
+asdir="/Users/Shared/storedownloadd"
+as="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
+
+for i in 1 2 3 4 5; do
+  mkdir -m a=rwxt -p "\${asdir}"
+  find "\${as}" -iname "[0-9]*" -type d -print | \\
+  while read a; do
+    b="\${asdir}/\$(basename \$a)"
+    mkdir -p "\${b}"
+    find "\${a}" -type f -print | \\
+    while read c; do
+      d="\$(basename \$c)"
+      test -e "\${b}/\${d}" || \\
+        ln "\${c}" "\${b}/\${d}" && \\
+        chmod 666 "\${b}/\${d}"
+    done
+  done
+
+  sudir="/Users/Shared/softwareupdated"
+  su="$(sudo find "/private/var/folders" -name "com.apple.SoftwareUpdate" -type d -user _softwareupdate 2> /dev/null)"
+
+  mkdir -m a=rwxt -p "\${sudir}"
+  find "\${su}" -name "*.tmp" -type f -print | \\
+  while read a; do
+    d="\$(basename \$a)"
+    test -e "\${sudir}/\${d}.xar" ||
+      ln "\${a}" "\${sudir}/\${d}.xar" && \\
+      chmod 666 "\${sudir}/\${d}.xar"
+  done
+
+  sleep 1
+done
+EOF
+
+  chmod a+x "/usr/local/bin/mas_save"
+  rehash
+
+  la="/Library/LaunchDaemons/com.github.ptb.mas_save"
+  as="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
+  su="$(sudo find "/private/var/folders" -name "com.apple.SoftwareUpdate" -type d -user _softwareupdate 2> /dev/null)"
+
+  sudo mkdir -p "$(dirname ${la})"
+  sudo launchctl unload "${la}.plist" 2> /dev/null
+  sudo rm -f "${la}.plist"
+  config_defaults "$(printf '%s\t%s\t%s\t%s\t' ${la} 'WatchPaths' '-array-add' ${as})" "sudo"
+  config_defaults "$(printf '%s\t%s\t%s\t%s\t' ${la} 'WatchPaths' '-array-add' ${su})" "sudo"
+  config_plist "${_mas_save_plist}" "${la}.plist" "" "sudo"
+  sudo plutil -convert xml1 "${la}.plist"
+  sudo launchctl load "${la}.plist" 2> /dev/null
 }
 
 # Install Developer Tools
@@ -553,7 +619,7 @@ config_plist () {
   printf "%s\n" "${1}" | \
   while IFS="$(printf '\t')" read command entry type value; do
     ${4} /usr/libexec/PlistBuddy "${2}" \
-      -c "${command} '${3}${entry}' ${type} '${value}'" > /dev/null 2>&1
+      -c "${command} '${3}${entry}' ${type} '${value}'" 2> /dev/null
   done
 }
 

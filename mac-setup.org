@@ -104,6 +104,7 @@ init () {
   init_cache
   init_no_sleep
   init_hostname
+  init_mas_save
   init_devtools "${CACHES}"
   init_updates
 
@@ -163,6 +164,84 @@ init_hostname () {
     $(ruby -e "print '$(hostname -s)'.capitalize") > /dev/null
   sudo systemsetup -setlocalsubnetname $(hostname -s) > /dev/null
 }
+#+end_src
+
+*** Save Mac App Store Packages with =/usr/local/bin/mas_save=
+- sudo lsof -c softwareupdated -F -r 2 | sed '/^n\//!d;/com.apple.SoftwareUpdate/!d;s/^n//'
+- sudo lsof -c storedownloadd -F -r 2 | sed '/^n\//!d;/com.apple.appstore/!d;s/^n//'
+#+begin_src sh :noweb tangle :var _mas_save_plist=_mas_save_plist[3:-2,0:3]
+
+function init_mas_save () {
+  cat << EOF > "/usr/local/bin/mas_save"
+<<mas_save>>
+EOF
+
+  chmod a+x "/usr/local/bin/mas_save"
+  rehash
+
+  la="/Library/LaunchDaemons/com.github.ptb.mas_save"
+  as="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
+  su="$(sudo find "/private/var/folders" -name "com.apple.SoftwareUpdate" -type d -user _softwareupdate 2> /dev/null)"
+
+  sudo mkdir -p "$(dirname ${la})"
+  sudo launchctl unload "${la}.plist" 2> /dev/null
+  sudo rm -f "${la}.plist"
+  config_defaults "$(printf '%s\t%s\t%s\t%s\t' ${la} 'WatchPaths' '-array-add' ${as})" "sudo"
+  config_defaults "$(printf '%s\t%s\t%s\t%s\t' ${la} 'WatchPaths' '-array-add' ${su})" "sudo"
+  config_plist "${_mas_save_plist}" "${la}.plist" "" "sudo"
+  sudo plutil -convert xml1 "${la}.plist"
+  sudo launchctl load "${la}.plist" 2> /dev/null
+}
+#+end_src
+
+**** _mas_save_plist
+#+name: _mas_save_plist
+|---------+------------+--------+-------------------------|
+| Command | Entry      | Type   | Value                   |
+|---------+------------+--------+-------------------------|
+| add     | :KeepAlive | bool   | false                   |
+| add     | :Label     | string | com.github.ptb.mas_save |
+| add     | :Program   | string | /usr/local/bin/mas_save |
+| add     | :RunAtLoad | bool   | true                    |
+| add     | :UserName  | string | root                    |
+|---------+------------+--------+-------------------------|
+
+**** =/usr/local/bin/mas_save=
+#+begin_src sh :noweb-ref mas_save :tangle no
+#!/bin/sh
+
+asdir="/Users/Shared/storedownloadd"
+as="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
+
+for i in 1 2 3 4 5; do
+  mkdir -m a=rwxt -p "\${asdir}"
+  find "\${as}" -iname "[0-9]*" -type d -print | \\
+  while read a; do
+    b="\${asdir}/\$(basename \$a)"
+    mkdir -p "\${b}"
+    find "\${a}" -type f -print | \\
+    while read c; do
+      d="\$(basename \$c)"
+      test -e "\${b}/\${d}" || \\
+        ln "\${c}" "\${b}/\${d}" && \\
+        chmod 666 "\${b}/\${d}"
+    done
+  done
+
+  sudir="/Users/Shared/softwareupdated"
+  su="$(sudo find "/private/var/folders" -name "com.apple.SoftwareUpdate" -type d -user _softwareupdate 2> /dev/null)"
+
+  mkdir -m a=rwxt -p "\${sudir}"
+  find "\${su}" -name "*.tmp" -type f -print | \\
+  while read a; do
+    d="\$(basename \$a)"
+    test -e "\${sudir}/\${d}.xar" ||
+      ln "\${a}" "\${sudir}/\${d}.xar" && \\
+      chmod 666 "\${sudir}/\${d}.xar"
+  done
+
+  sleep 1
+done
 #+end_src
 
 *** Install Developer Tools
@@ -696,7 +775,7 @@ config_plist () {
   printf "%s\n" "${1}" | \
   while IFS="$(printf '\t')" read command entry type value; do
     ${4} /usr/libexec/PlistBuddy "${2}" \
-      -c "${command} '${3}${entry}' ${type} '${value}'" > /dev/null 2>&1
+      -c "${command} '${3}${entry}' ${type} '${value}'" 2> /dev/null
   done
 }
 #+end_src
@@ -1505,20 +1584,3 @@ curl --location --silent \
   "https://github.com/ptb/2017.8.21/raw/master/mac-setup.command" | \
   . /dev/stdin 1
 #+end_src
-
-# open $TMPDIR../C/com.apple.appstore/
-# install_brew_bundle:3: no matches found: /Applications/Xcode*
-# install_links:6: no matches found: /Applications/Xcode*
-# mas_save before brew mas
-# What’s the difference between the 0, C, and T folders in the parent of $TMPDIR ?
-# T is for temporary, C is for cache, and 0 is for launch services.
-
-set p2t to path to temporary items from local domain
-tell application “System Events”
-set p2appStore to (path of container of container of p2t) & “C:com.apple.appstore:”
-end tell
-tell application “Finder” to open p2appStore
-
-# storeagent
-# storedown
-# org-projectile: config: Symbol's function definition is void: org-projectile: per-repo
