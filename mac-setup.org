@@ -901,11 +901,9 @@ if isdir(argv[1]):
 *** Configure Z-Shell
 #+begin_src sh :noweb tangle
 config_zsh () {
-  if test ! -f "/etc/zshenv"; then
-    sudo tee /etc/zshenv << EOF > /dev/null
+  sudo tee -a /etc/zshenv << EOF > /dev/null
 <<zshenv>>
 EOF
-  fi
   sudo chmod +x "/etc/zshenv"
   . "/etc/zshenv"
 }

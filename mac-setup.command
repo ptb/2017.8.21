@@ -741,8 +741,7 @@ EOF
 # Configure Z-Shell
 
 config_zsh () {
-  if test ! -f "/etc/zshenv"; then
-    sudo tee /etc/zshenv << EOF > /dev/null
+  sudo tee -a /etc/zshenv << EOF > /dev/null
 #!/bin/sh
 
 export ZDOTDIR="${HOME}/.zsh"
@@ -761,7 +760,6 @@ typeset -gU cdpath fpath mailpath path
 # Set the default Less options.
 export LESS="-egiMQRS -x2 -z-2"
 EOF
-  fi
   sudo chmod +x "/etc/zshenv"
   . "/etc/zshenv"
 }
