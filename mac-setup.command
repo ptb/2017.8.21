@@ -405,12 +405,13 @@ install_node_sw () {
     test -f "/etc/zshrc" && \
     grep -q "nodenv" "/etc/zshrc" || \
     printf "%s\n" \
-      'eval "$(nodenv init -)"' | \
+      'eval "$(nodenv init - zsh)"' | \
     sudo tee -a "/etc/zshrc" > /dev/null
     . "/etc/zshrc"
 
-    nodenv install --skip-existing 8.4.0
-    nodenv global 8.4.0
+    nodenv install --skip-existing 8.3.0
+    nodenv global 8.3.0
+    rehash
 
     grep -q "${NODENV_ROOT}" "/etc/paths" || \
     sudo sed -i -e "1i ${NODENV_ROOT}/shims" "/etc/paths"
@@ -437,7 +438,7 @@ install_perl_sw () {
     sudo tee -a "/etc/zshrc" > /dev/null
     . "/etc/zshrc"
 
-    plenv install 5.26.0
+    plenv install 5.26.0 > /dev/null
     plenv global 5.26.0
     rehash
 
@@ -465,13 +466,14 @@ install_python_sw () {
     test -f "/etc/zshrc" && \
     grep -q "pyenv" "/etc/zshrc" || \
     printf "%s\n" \
-      'eval "$(pyenv init -)"' | \
+      'eval "$(pyenv init - zsh)"' | \
     sudo tee -a "/etc/zshrc" > /dev/null
     . "/etc/zshrc"
 
     pyenv install --skip-existing 2.7.13
     pyenv install --skip-existing 3.6.2
     pyenv global 2.7.13
+    rehash
 
     pip install --upgrade "pip" "setuptools"
 
@@ -496,19 +498,20 @@ install_ruby_sw () {
     test -f "/etc/zshrc" && \
     grep -q "rbenv" "/etc/zshrc" || \
     printf "%s\n" \
-      'eval "$(rbenv init -)"' | \
+      'eval "$(rbenv init - zsh)"' | \
     sudo tee -a "/etc/zshrc" > /dev/null
     . "/etc/zshrc"
 
     rbenv install --skip-existing 2.4.1
     rbenv global 2.4.1
+    rehash
 
     printf "%s\n" \
       "gem: --no-document" | \
     tee "${HOME}/.gemrc" > /dev/null
 
     gem update --system
-    gem update
+    yes | gem update
     gem install bundler
 
     grep -q "${RBENV_ROOT}" "/etc/paths" || \
@@ -742,10 +745,8 @@ EOF
 
 config_zsh () {
   sudo tee -a /etc/zshenv << EOF > /dev/null
-#!/bin/sh
-
 export ZDOTDIR="${HOME}/.zsh"
-export MASDIR="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
+export MASDIR="\$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
 
 export EDITOR="vi"
 export VISUAL="vi"

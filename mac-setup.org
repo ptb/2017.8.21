@@ -533,12 +533,13 @@ install_node_sw () {
     test -f "/etc/zshrc" && \
     grep -q "nodenv" "/etc/zshrc" || \
     printf "%s\n" \
-      'eval "$(nodenv init -)"' | \
+      'eval "$(nodenv init - zsh)"' | \
     sudo tee -a "/etc/zshrc" > /dev/null
     . "/etc/zshrc"
 
-    nodenv install --skip-existing 8.4.0
-    nodenv global 8.4.0
+    nodenv install --skip-existing 8.3.0
+    nodenv global 8.3.0
+    rehash
 
     grep -q "${NODENV_ROOT}" "/etc/paths" || \
     sudo sed -i -e "1i ${NODENV_ROOT}/shims" "/etc/paths"
@@ -566,7 +567,7 @@ install_perl_sw () {
     sudo tee -a "/etc/zshrc" > /dev/null
     . "/etc/zshrc"
 
-    plenv install 5.26.0
+    plenv install 5.26.0 > /dev/null
     plenv global 5.26.0
     rehash
 
@@ -595,13 +596,14 @@ install_python_sw () {
     test -f "/etc/zshrc" && \
     grep -q "pyenv" "/etc/zshrc" || \
     printf "%s\n" \
-      'eval "$(pyenv init -)"' | \
+      'eval "$(pyenv init - zsh)"' | \
     sudo tee -a "/etc/zshrc" > /dev/null
     . "/etc/zshrc"
 
     pyenv install --skip-existing 2.7.13
     pyenv install --skip-existing 3.6.2
     pyenv global 2.7.13
+    rehash
 
     pip install --upgrade "pip" "setuptools"
 
@@ -627,19 +629,20 @@ install_ruby_sw () {
     test -f "/etc/zshrc" && \
     grep -q "rbenv" "/etc/zshrc" || \
     printf "%s\n" \
-      'eval "$(rbenv init -)"' | \
+      'eval "$(rbenv init - zsh)"' | \
     sudo tee -a "/etc/zshrc" > /dev/null
     . "/etc/zshrc"
 
     rbenv install --skip-existing 2.4.1
     rbenv global 2.4.1
+    rehash
 
     printf "%s\n" \
       "gem: --no-document" | \
     tee "${HOME}/.gemrc" > /dev/null
 
     gem update --system
-    gem update
+    yes | gem update
     gem install bundler
 
     grep -q "${RBENV_ROOT}" "/etc/paths" || \
@@ -911,10 +914,8 @@ EOF
 
 **** =/etc/zshenv=
 #+begin_src sh :noweb-ref zshenv :tangle no
-#!/bin/sh
-
 export ZDOTDIR="${HOME}/.zsh"
-export MASDIR="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
+export MASDIR="\$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
 
 export EDITOR="vi"
 export VISUAL="vi"
@@ -1489,3 +1490,24 @@ curl --location --silent \
   "https://github.com/ptb/2017.8.21/raw/master/mac-setup.command" | \
   . /dev/stdin 1
 #+end_src
+
+# open $TMPDIR../C/com.apple.appstore/
+# install_brew_bundle:3: no matches found: /Applications/Xcode*
+# install_links:6: no matches found: /Applications/Xcode*
+# mas_save before brew mas
+# sed: 1: "1i /usr/local/node/shims": command i expects \ followed by text
+# sed: 1: "1i /usr/local/perl/shims": command i expects \ followed by text
+# sed: 1: "1i /usr/local/python/shims": command i expects \ followed by text
+# What’s the difference between the 0, C, and T folders in the parent of $TMPDIR ?
+# T is for temporary, C is for cache, and 0 is for launch services.
+
+set p2t to path to temporary items from local domain
+tell application “System Events”
+set p2appStore to (path of container of container of p2t) & “C:com.apple.appstore:”
+end tell
+tell application “Finder” to open p2appStore
+
+# sed: 1: "1i /usr/local/python/shims": command i expects \ followed by text
+# storeagent
+# storedown
+# org-projectile: config: Symbol's function definition is void: org-projectile: per-repo
