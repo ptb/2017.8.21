@@ -47,7 +47,7 @@ diskx="$(diskutil list internal physical | sed '/^\//!d;s/^\(.*\)\ (.*):/\1/')"
 #+begin_example sh
 diskutil zeroDisk $diskx
 diskutil partitionDisk $diskx 2 GPT \
-  jhfs+ "Install" 10G \
+  jhfs+ "Install" 6G \
   apfs $(ruby -e "print '$(hostname -s)'.capitalize") R
 #+end_example
 
