@@ -414,7 +414,9 @@ install_node_sw () {
     rehash
 
     grep -q "${NODENV_ROOT}" "/etc/paths" || \
-    sudo sed -i -e "1i ${NODENV_ROOT}/shims" "/etc/paths"
+    sudo sed -i -e "1i\\
+${NODENV_ROOT}/shims
+" "/etc/paths"
   fi
 }
 
@@ -443,7 +445,9 @@ install_perl_sw () {
     rehash
 
     grep -q "${PLENV_ROOT}" "/etc/paths" || \
-    sudo sed -i -e "1i ${PLENV_ROOT}/shims" "/etc/paths"
+    sudo sed -i -e "1i\\
+${PLENV_ROOT}/shims
+" "/etc/paths"
   fi
 }
 
@@ -478,7 +482,9 @@ install_python_sw () {
     pip install --upgrade "pip" "setuptools"
 
     grep -q "${PYENV_ROOT}" "/etc/paths" || \
-    sudo sed -i -e "1i ${PYENV_ROOT}/shims" "/etc/paths"
+    sudo sed -i -e "1i\\
+${PYENV_ROOT}/shims
+" "/etc/paths"
   fi
 }
 
@@ -515,7 +521,9 @@ install_ruby_sw () {
     gem install bundler
 
     grep -q "${RBENV_ROOT}" "/etc/paths" || \
-    sudo sed -i -e "1i ${RBENV_ROOT}/shims" "/etc/paths"
+    sudo sed -i -e "1i\\
+${RBENV_ROOT}/shims
+" "/etc/paths"
   fi
 }
 

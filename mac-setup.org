@@ -542,7 +542,9 @@ install_node_sw () {
     rehash
 
     grep -q "${NODENV_ROOT}" "/etc/paths" || \
-    sudo sed -i -e "1i ${NODENV_ROOT}/shims" "/etc/paths"
+    sudo sed -i -e "1i\\
+${NODENV_ROOT}/shims
+" "/etc/paths"
   fi
 }
 #+end_src
@@ -572,7 +574,9 @@ install_perl_sw () {
     rehash
 
     grep -q "${PLENV_ROOT}" "/etc/paths" || \
-    sudo sed -i -e "1i ${PLENV_ROOT}/shims" "/etc/paths"
+    sudo sed -i -e "1i\\
+${PLENV_ROOT}/shims
+" "/etc/paths"
   fi
 }
 #+end_src
@@ -608,7 +612,9 @@ install_python_sw () {
     pip install --upgrade "pip" "setuptools"
 
     grep -q "${PYENV_ROOT}" "/etc/paths" || \
-    sudo sed -i -e "1i ${PYENV_ROOT}/shims" "/etc/paths"
+    sudo sed -i -e "1i\\
+${PYENV_ROOT}/shims
+" "/etc/paths"
   fi
 }
 #+end_src
@@ -646,7 +652,9 @@ install_ruby_sw () {
     gem install bundler
 
     grep -q "${RBENV_ROOT}" "/etc/paths" || \
-    sudo sed -i -e "1i ${RBENV_ROOT}/shims" "/etc/paths"
+    sudo sed -i -e "1i\\
+${RBENV_ROOT}/shims
+" "/etc/paths"
   fi
 }
 #+end_src
@@ -1495,9 +1503,6 @@ curl --location --silent \
 # install_brew_bundle:3: no matches found: /Applications/Xcode*
 # install_links:6: no matches found: /Applications/Xcode*
 # mas_save before brew mas
-# sed: 1: "1i /usr/local/node/shims": command i expects \ followed by text
-# sed: 1: "1i /usr/local/perl/shims": command i expects \ followed by text
-# sed: 1: "1i /usr/local/python/shims": command i expects \ followed by text
 # What’s the difference between the 0, C, and T folders in the parent of $TMPDIR ?
 # T is for temporary, C is for cache, and 0 is for launch services.
 
@@ -1507,7 +1512,6 @@ set p2appStore to (path of container of container of p2t) & “C:com.apple.appst
 end tell
 tell application “Finder” to open p2appStore
 
-# sed: 1: "1i /usr/local/python/shims": command i expects \ followed by text
 # storeagent
 # storedown
 # org-projectile: config: Symbol's function definition is void: org-projectile: per-repo
