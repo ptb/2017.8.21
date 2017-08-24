@@ -97,8 +97,8 @@ init_no_sleep () {
 
 init_hostname () {
   sudo systemsetup -setcomputername \
-    $(ruby -e "print '$(hostname -s)'.capitalize") > /dev/null
-  sudo systemsetup -setlocalsubnetname $(hostname -s) > /dev/null
+    "$(ruby -e "print '$(hostname -s)'.capitalize")" > /dev/null
+  sudo systemsetup -setlocalsubnetname "$(hostname -s)" > /dev/null
 }
 
 # Set Permissions on Install Destinations
@@ -134,14 +134,16 @@ add	:Program	string	/usr/local/bin/mas_save
 add	:RunAtLoad	bool	true
 add	:UserName	string	root'
 
-function init_mas_save () {
+init_mas_save () {
   sudo softwareupdate --reset-ignored > /dev/null
 
   cat << EOF > "/usr/local/bin/mas_save"
 #!/bin/sh
 
 asdir="/Library/Caches/storedownloadd"
-as="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
+as="\$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
+sudir="/Library/Caches/softwareupdated"
+su="\$(sudo find "/private/var/folders" -name "com.apple.SoftwareUpdate" -type d -user _softwareupdate 2> /dev/null)"
 
 for i in 1 2 3 4 5; do
   mkdir -m a=rwxt -p "\${asdir}"
@@ -157,9 +159,6 @@ for i in 1 2 3 4 5; do
         chmod 666 "\${b}/\${d}"
     done
   done
-
-  sudir="/Library/Caches/softwareupdated"
-  su="$(sudo find "/private/var/folders" -name "com.apple.SoftwareUpdate" -type d -user _softwareupdate 2> /dev/null)"
 
   mkdir -m a=rwxt -p "\${sudir}"
   find "\${su}" -name "*.tmp" -type f -print | \\
@@ -350,7 +349,7 @@ install_brewfile_cask_args () {
   while IFS="$(printf '\t')" read arg dir; do
     printf '\n  %s: "%s",' "${arg}" "${dir}" >> "${BREWFILE}"
   done
-  sed -i -e "$ s/,/$(printf '\n\n')/" "${BREWFILE}"
+  sed -i -e "$ s/,/$(printf '\n\n\n')/" "${BREWFILE}"
 }
 
 # Add Homebrew Casks to Brewfile
@@ -466,7 +465,7 @@ install_brewfile_mas_apps () {
   open "/Applications/App Store.app"
   run "Sign in to the App Store with your Apple ID" "Cancel" "OK"
 
-  export MASDIR="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
+  MASDIR="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
   sudo chown -R "$(whoami)" "${MASDIR}"
   rsync -a --delay-updates \
     "${CACHES}/storedownloadd/" "${MASDIR}/"
@@ -572,8 +571,8 @@ ${PLENV_ROOT}/shims
 
 install_python_sw () {
   if which pyenv > /dev/null; then
-    export CFLAGS="-I$(brew --prefix openssl)/include" \
-    export LDFLAGS="-L$(brew --prefix openssl)/lib" \
+    CFLAGS="-I$(brew --prefix openssl)/include" && export CFLAGS
+    LDFLAGS="-L$(brew --prefix openssl)/lib" && export LDFLAGS
 
     sudo mkdir -p "/usr/local/python"
     sudo chown -R "$(whoami):admin" "/usr/local/python"
@@ -1412,4 +1411,11 @@ curl --location --silent \
   . /dev/stdin 1
 EOF
   chmod +x "${ZDOTDIR:-$HOME}/.zshrc"
+}
+
+# Reinstate =sudo= Password
+
+config_rm_sudoers () {
+  sudo dscl /Local/Default -delete /Groups/wheel GroupMembership "$(whoami)"
+  sudo rm -f "/etc/sudoers.d/wheel"
 }
