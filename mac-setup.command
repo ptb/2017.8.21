@@ -1008,10 +1008,10 @@ custom () {
 # Customize Home
 
 custom_home () {
-  a=$(ask "Existing Home Repository Path or URL" "Add Remote" "")
+  git -C "${HOME}" init
 
+  a=$(ask "Existing Home Repository Path or URL" "Add Remote" "")
   if test -n "${a}"; then
-    git -C "${HOME}" init
     git -C "${HOME}" remote add origin "${a}"
     git -C "${HOME}" pull origin master
   fi
