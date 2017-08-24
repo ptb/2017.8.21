@@ -2073,6 +2073,7 @@ custom_zsh () {
 #!/bin/sh
 
 alias ll="ls -ABFGHOhl"
+alias sudo="/usr/bin/sudo -E"
 
 autoload -Uz add-zsh-hook
 
