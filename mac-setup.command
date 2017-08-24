@@ -915,6 +915,18 @@ EOF
   rehash
 }
 
+# Configure Login Window
+
+_loginwindow='/Library/Preferences/com.apple.loginwindow
+SHOWFULLNAME
+-bool
+true
+'
+
+config_loginwindow () {
+  config_defaults "${_loginwindow}" "sudo"
+}
+
 # Configure OpenSSL
 
 config_openssl () {
@@ -1390,6 +1402,38 @@ EOF
 EOF
 }
 
+# Customize Finder
+
+_finder='com.apple.finder	ShowHardDrivesOnDesktop	-bool	false	
+com.apple.finder	ShowExternalHardDrivesOnDesktop	-bool	false	
+com.apple.finder	ShowRemovableMediaOnDesktop	-bool	true	
+com.apple.finder	ShowMountedServersOnDesktop	-bool	true	
+com.apple.finder	NewWindowTarget	-string	PfHm	
+com.apple.finder	NewWindowTargetPath	-string	file://${HOME}/	
+-globalDomain	AppleShowAllExtensions	-bool	true	
+com.apple.finder	FXEnableExtensionChangeWarning	-bool	false	
+com.apple.finder	FXEnableRemoveFromICloudDriveWarning	-bool	true	
+com.apple.finder	WarnOnEmptyTrash	-bool	false	
+com.apple.finder	ShowPathbar	-bool	true	
+com.apple.finder	ShowStatusBar	-bool	true	'
+
+custom_finder () {
+  config_defaults "${_finder}"
+  defaults write "com.apple.finder" "NSToolbar Configuration Browser" \
+    '{
+      "TB Display Mode" = 2;
+      "TB Item Identifiers" = (
+        "com.apple.finder.BACK",
+        "com.apple.finder.PATH",
+        "com.apple.finder.SWCH",
+        "com.apple.finder.ARNG",
+        "NSToolbarFlexibleSpaceItem",
+        "com.apple.finder.SRCH",
+        "com.apple.finder.ACTN"
+      );
+    }'
+}
+
 # Configure getmail
 
 custom_getmail () {
@@ -1646,6 +1690,61 @@ custom_sieve () {
 
 custom_ssh () {
   true
+}
+
+# Customize Sound
+
+_sound='-globalDomain	com.apple.sound.beep.sound	-string	/System/Library/Sounds/Sosumi.aiff	
+-globalDomain	com.apple.sound.uiaudio.enabled	-int	0	
+-globalDomain	com.apple.sound.beep.feedback	-int	0	'
+
+custom_sound () {
+  config_defaults "${_sound}"
+}
+
+# Customize Siri
+
+custom_siri () {
+  defaults write com.apple.assistant.backedup "Output Voice" \
+    '{
+      Custom = 1;
+      Footprint = 0;
+      Gender = 1;
+      Language = "en-US";
+    }'
+  defaults write com.apple.Siri StatusMenuVisible -bool false
+}
+
+# Customize Clock
+
+custom_clock () {
+  defaults -currentHost write com.apple.systemuiserver dontAutoLoad \
+    -array-add "/System/Library/CoreServices/Menu Extras/Clock.menu"
+  defaults write com.apple.menuextra.clock DateFormat \
+    -string "EEE MMM d  h:mm:ss a"
+}
+
+# Customize Accessibility
+
+_a11y='com.apple.universalaccess
+reduceTransparency
+-bool
+true
+'
+_speech='com.apple.speech.voice.prefs	SelectedVoiceName	-string	Allison	
+com.apple.speech.voice.prefs	SelectedVoiceCreator	-int	1886745202	
+com.apple.speech.voice.prefs	SelectedVoiceID	-int	184555197	'
+
+custom_a11y () {
+  config_defaults "Acessibility" "${_a11y}"
+
+  if test -d "/System/Library/Speech/Voices/Allison.SpeechVoice"; then
+    config_defaults "${_speech}"
+    defaults write com.apple.speech.voice.prefs VisibleIdentifiers \
+      '{
+        "com.apple.speech.synthesis.voice.allison.premium" = 1;
+      }'
+  fi
 }
 
 # Customize Terminal

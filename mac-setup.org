@@ -25,10 +25,29 @@ curl --location --silent \
   source /dev/stdin 0
 #+end_example
 
-- =init=
-- =install=
-- =config=
-- =custom=
+**** =init=
+
+- Enter administrator account password only once
+- Select the cache folder for repeat installations
+- Turn off sleep and set computer name/hostname
+- Set write permission on destination folders
+- Cache software updates and App Store software
+- Install developer tools and macOS updates
+
+**** =install=
+
+- [[https://brew.sh/][Homebrew]]: The missing package mananger for macOS
+- [[https://caskroom.github.io/][Homebrew-Cask]]: “To install, drag this icon…” no more!
+- [[https://github.com/mas-cli/mas][mas-cli/mas]]: Mac App Store command line interface
+- [[https://github.com/Homebrew/homebrew-bundle][homebrew-bundle]]: List all Homebrew packages in =Brewfile=
+- [[https://nodejs.org/][Node.js]]: Cross-platform JavaScript run-time environment
+- [[https://www.perl.org/][Perl 5]]: Highly capable, feature-rich programming language
+- [[https://www.python.org/][Python]]: Programming language that lets you work quickly
+- [[https://www.ruby-lang.org/][Ruby]]: Language with a focus on simplicity and productivity
+
+**** =config=
+
+**** =custom=
 
 *** Features
 
@@ -1154,6 +1173,22 @@ else
 fi
 #+end_src
 
+*** Configure Login Window
+#+begin_src sh :var _loginwindow=_loginwindow[3:-2,1:5]
+
+config_loginwindow () {
+  config_defaults "${_loginwindow}" "sudo"
+}
+#+end_src
+
+**** _loginwindow
+#+name: _loginwindow
+|------------------------------------------------+--------------------------------------------+--------------+-------+-------+------|
+| Preference                                     | Domain                                     | Key          | Type  | Value | Host |
+|------------------------------------------------+--------------------------------------------+--------------+-------+-------+------|
+| *Display login window as:* ~Name and password~ | /Library/Preferences/com.apple.loginwindow | SHOWFULLNAME | -bool | true  |      |
+|------------------------------------------------+--------------------------------------------+--------------+-------+-------+------|
+
 *** Configure OpenSSL
 #+begin_src sh
 config_openssl () {
@@ -1708,6 +1743,46 @@ EOF
 )
 #+end_src
 
+*** Customize Finder
+#+begin_src sh :var _finder=_finder[3:-2,1:5]
+
+custom_finder () {
+  config_defaults "${_finder}"
+  defaults write "com.apple.finder" "NSToolbar Configuration Browser" \
+    '{
+      "TB Display Mode" = 2;
+      "TB Item Identifiers" = (
+        "com.apple.finder.BACK",
+        "com.apple.finder.PATH",
+        "com.apple.finder.SWCH",
+        "com.apple.finder.ARNG",
+        "NSToolbarFlexibleSpaceItem",
+        "com.apple.finder.SRCH",
+        "com.apple.finder.ACTN"
+      );
+    }'
+}
+#+end_src
+
+**** _finder
+#+name: _finder
+|----------------------------------------------------------------+------------------+--------------------------------------+---------+-----------------+------|
+| Preference                                                     | Domain           | Key                                  | Type    | Value           | Host |
+|----------------------------------------------------------------+------------------+--------------------------------------+---------+-----------------+------|
+| *Show these items on the desktop:* ~off~ *Hard disks*          | com.apple.finder | ShowHardDrivesOnDesktop              | -bool   | false           |      |
+| *Show these items on the desktop:* ~off~ *External disks*      | com.apple.finder | ShowExternalHardDrivesOnDesktop      | -bool   | false           |      |
+| *Show these items on the desktop:* ~on~ *CDs, DVDs, and iPods* | com.apple.finder | ShowRemovableMediaOnDesktop          | -bool   | true            |      |
+| *Show these items on the desktop:* ~on~ *Connected servers:*   | com.apple.finder | ShowMountedServersOnDesktop          | -bool   | true            |      |
+| *New Finder windows show:* ~${HOME}~                           | com.apple.finder | NewWindowTarget                      | -string | PfHm            |      |
+|                                                                | com.apple.finder | NewWindowTargetPath                  | -string | file://${HOME}/ |      |
+| ~on~ *Show all filename extensions*                            | -globalDomain    | AppleShowAllExtensions               | -bool   | true            |      |
+| ~off~ *Show warning before changing an extension*              | com.apple.finder | FXEnableExtensionChangeWarning       | -bool   | false           |      |
+| ~on~ *Show warning before removing from iCloud Drive*          | com.apple.finder | FXEnableRemoveFromICloudDriveWarning | -bool   | true            |      |
+| ~off~ *Show warning before emptying the Trash*                 | com.apple.finder | WarnOnEmptyTrash                     | -bool   | false           |      |
+| *View* ▶ *Show Path Bar*                                       | com.apple.finder | ShowPathbar                          | -bool   | true            |      |
+| *View* ▶ *Show Status Bar*                                     | com.apple.finder | ShowStatusBar                        | -bool   | true            |      |
+|----------------------------------------------------------------+------------------+--------------------------------------+---------+-----------------+------|
+
 *** Configure getmail
 #+begin_src sh
 custom_getmail () {
@@ -2004,6 +2079,75 @@ custom_ssh () {
   true
 }
 #+end_src
+
+**** Customize Sound
+#+begin_src sh :var _sound=_sound[3:-2,1:5]
+
+custom_sound () {
+  config_defaults "${_sound}"
+}
+#+end_src
+
+**** _sound
+#+name: _sound
+|----------------------------------------------+---------------+---------------------------------+---------+------------------------------------+------|
+| Preference                                   | Domain        | Key                             | Type    | Value                              | Host |
+|----------------------------------------------+---------------+---------------------------------+---------+------------------------------------+------|
+| *Select an alert sound:* ~Sosumi~            | -globalDomain | com.apple.sound.beep.sound      | -string | /System/Library/Sounds/Sosumi.aiff |      |
+| ~off~ *Play user interface sound effects*    | -globalDomain | com.apple.sound.uiaudio.enabled | -int    | 0                                  |      |
+| ~off~ *Play feedback when volume is changed* | -globalDomain | com.apple.sound.beep.feedback   | -int    | 0                                  |      |
+|----------------------------------------------+---------------+---------------------------------+---------+------------------------------------+------|
+
+**** Customize Siri
+#+begin_src sh
+custom_siri () {
+  defaults write com.apple.assistant.backedup "Output Voice" \
+    '{
+      Custom = 1;
+      Footprint = 0;
+      Gender = 1;
+      Language = "en-US";
+    }'
+  defaults write com.apple.Siri StatusMenuVisible -bool false
+}
+#+end_src
+
+**** Customize Clock
+#+begin_src sh
+custom_clock () {
+  defaults -currentHost write com.apple.systemuiserver dontAutoLoad \
+    -array-add "/System/Library/CoreServices/Menu Extras/Clock.menu"
+  defaults write com.apple.menuextra.clock DateFormat \
+    -string "EEE MMM d  h:mm:ss a"
+}
+#+end_src
+
+**** Customize Accessibility
+#+begin_src sh :var _a11y=_a11y[3,1:5] :var _speech=_a11y[4:-2,1:5]
+
+custom_a11y () {
+  config_defaults "Acessibility" "${_a11y}"
+
+  if test -d "/System/Library/Speech/Voices/Allison.SpeechVoice"; then
+    config_defaults "${_speech}"
+    defaults write com.apple.speech.voice.prefs VisibleIdentifiers \
+      '{
+        "com.apple.speech.synthesis.voice.allison.premium" = 1;
+      }'
+  fi
+}
+#+end_src
+
+**** _a11y
+#+name: _a11y
+|-------------------------------------+------------------------------+----------------------+---------+------------+------|
+| Preference                          | Domain                       | Key                  | Type    | Value      | Host |
+|-------------------------------------+------------------------------+----------------------+---------+------------+------|
+| Display: ~on~ *Reduce transparency* | com.apple.universalaccess    | reduceTransparency   | -bool   | true       |      |
+| Speech: System Voice: Allison       | com.apple.speech.voice.prefs | SelectedVoiceName    | -string | Allison    |      |
+|                                     | com.apple.speech.voice.prefs | SelectedVoiceCreator | -int    | 1886745202 |      |
+|                                     | com.apple.speech.voice.prefs | SelectedVoiceID      | -int    | 184555197  |      |
+|-------------------------------------+------------------------------+----------------------+---------+------------+------|
 
 *** Customize Terminal
 #+begin_src sh :var _term_plist=_term_plist[3:-2,1:4] :var _term_defaults=_term_defaults[3:-2,1:5]
