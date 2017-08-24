@@ -25,12 +25,19 @@ curl --location --silent \
   source /dev/stdin 0
 #+end_example
 
-#+begin_example sh
-init && install_sw && config && custom
-#+end_example
+- =init=
+- =install=
+- =config=
+- =custom=
 
 *** Features
+
+- *macOS High Sierra:* Tested with macOS High Sierra 10.13 Beta 6 (17A352a).
+- *Completely Automated:* Homebrew, Cask, and =mas-cli= install everything.
+- *Latest Versions:* Includes Node, Perl, Python, and Ruby separate from macOS.
 - *Customized Terminal:* Colors and fonts decyphered into editable preferences.
+- *Idempotent:* This script is intended to be safe to run more than once.
+
 *** Walkthrough
 
 **** Clone Internal Hard Disk to External Disk
@@ -141,7 +148,7 @@ init () {
   init_devtools
   init_updates
 
-  which install_sw
+  which install
 }
 
 if test "${1}" = 0; then
@@ -161,7 +168,7 @@ init_sudo () {
 *** Select Installation Cache Location
 #+begin_src sh
 init_cache () {
-  grep -q "CACHES" "/etc/zshenv" || \
+  grep -q "CACHES" "/etc/zshenv" 2> /dev/null || \
   a=$(osascript << EOF 2> /dev/null
 <<init_cache.applescript>>
 EOF
@@ -169,7 +176,7 @@ EOF
   test -d "${a}" || \
     a="${HOME}/Library/Caches/"
 
-  grep -q "CACHES" "/etc/zshenv" || \
+  grep -q "CACHES" "/etc/zshenv" 2> /dev/null || \
   printf "%s\n" \
     "export CACHES=\"${a}\"" \
     "export HOMEBREW_CACHE=\"${a}Homebrew\"" \
@@ -340,9 +347,9 @@ init_updates () {
 
 ** Install
 
-*** Define Function =install_sw=
+*** Define Function =install=
 #+begin_src sh
-install_sw () {
+install () {
   install_paths
   install_brew
   install_brewfile_taps
@@ -907,7 +914,7 @@ iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAQAAAADrRVxmAAAAGElEQVR4AWOgMxgFo2AUjIJRMApGwSgA
 *** Configure Dovecot
 #+begin_src sh
 config_dovecot () {
-  if which dovecot > /dev/null; then
+  if which /usr/local/sbin/dovecot > /dev/null; then
     if ! run "Configure Dovecot Email Server?" "Configure Server" "Cancel"; then
       cat << EOF > "/usr/local/etc/dovecot/dovecot.conf"
 <<dovecot.conf>>

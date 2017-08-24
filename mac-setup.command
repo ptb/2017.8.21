@@ -48,7 +48,7 @@ init () {
   init_devtools
   init_updates
 
-  which install_sw
+  which install
 }
 
 if test "${1}" = 0; then
@@ -66,7 +66,7 @@ init_sudo () {
 # Select Installation Cache Location
 
 init_cache () {
-  grep -q "CACHES" "/etc/zshenv" || \
+  grep -q "CACHES" "/etc/zshenv" 2> /dev/null || \
   a=$(osascript << EOF 2> /dev/null
     on run
       return POSIX path of (choose folder with prompt "Select Installation Cache Location")
@@ -76,7 +76,7 @@ EOF
   test -d "${a}" || \
     a="${HOME}/Library/Caches/"
 
-  grep -q "CACHES" "/etc/zshenv" || \
+  grep -q "CACHES" "/etc/zshenv" 2> /dev/null || \
   printf "%s\n" \
     "export CACHES=\"${a}\"" \
     "export HOMEBREW_CACHE=\"${a}Homebrew\"" \
@@ -212,9 +212,9 @@ init_updates () {
   sudo softwareupdate --install --all
 }
 
-# Define Function =install_sw=
+# Define Function =install=
 
-install_sw () {
+install () {
   install_paths
   install_brew
   install_brewfile_taps
@@ -701,7 +701,7 @@ EOF
 # Configure Dovecot
 
 config_dovecot () {
-  if which dovecot > /dev/null; then
+  if which /usr/local/sbin/dovecot > /dev/null; then
     if ! run "Configure Dovecot Email Server?" "Configure Server" "Cancel"; then
       cat << EOF > "/usr/local/etc/dovecot/dovecot.conf"
 auth_mechanisms = cram-md5
