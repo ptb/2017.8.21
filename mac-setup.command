@@ -1318,7 +1318,7 @@ EOF
 # Customize Terminal
 
 _term_plist='delete			
-add		dict	
+add	:		dict
 add	:name	string	ptb
 add	:type	string	Window Settings
 add	:ProfileCurrentVersion	real	2.05
