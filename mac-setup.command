@@ -127,7 +127,6 @@ init_perms () {
 # sudo lsof -c storedownloadd -F -r 2 | sed '/^n\//!d;/com.apple.appstore/!d;s/^n//'
 # #+end_example
 
-
 _mas_save_plist='add	:KeepAlive	bool	false
 add	:Label	string	com.github.ptb.mas_save
 add	:Program	string	/usr/local/bin/mas_save

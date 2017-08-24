@@ -244,7 +244,6 @@ init_perms () {
 sudo lsof -c softwareupdated -F -r 2 | sed '/^n\//!d;/com.apple.SoftwareUpdate/!d;s/^n//'
 sudo lsof -c storedownloadd -F -r 2 | sed '/^n\//!d;/com.apple.appstore/!d;s/^n//'
 #+end_example
-
 #+begin_src sh :var _mas_save_plist=_mas_save_plist[3:-2,0:3]
 
 init_mas_save () {
