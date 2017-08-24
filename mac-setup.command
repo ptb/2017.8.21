@@ -213,6 +213,18 @@ init_updates () {
 # Define Function =install=
 
 install () {
+  install_macos_sw
+  install_node_sw
+  install_perl_sw
+  install_python_sw
+  install_ruby_sw
+
+  which config
+}
+
+# Install macOS Software with =brew=
+
+install_macos_sw () {
   install_paths
   install_brew
   install_brewfile_taps
@@ -220,14 +232,15 @@ install () {
   install_brewfile_cask_args
   install_brewfile_cask_pkgs
   install_brewfile_mas_apps
-  install_brew_bundle
   install_links
-  install_node_sw
-  install_perl_sw
-  install_python_sw
-  install_ruby_sw
 
-  which config
+  x="$(find '/Applications' -maxdepth 1 -name 'Xcode[^ ]*.app' -print -quit)"
+  if test -n "${x}"; then
+    sudo xcode-select -s "${x}"
+    sudo xcodebuild -license accept
+  fi
+
+  brew bundle --file="${BREWFILE}"
 }
 
 # Add =/usr/local/bin/sbin= to Default Path
@@ -475,18 +488,6 @@ install_brewfile_mas_apps () {
   done
 }
 
-# Install macOS Software with =brew bundle=
-
-install_brew_bundle () {
-  brew bundle --file="${BREWFILE}"
-
-  x="$(find '/Applications' -maxdepth 1 -name 'Xcode[^ ]*.app' -print -quit)"
-  if test -n "${x}"; then
-    sudo xcode-select -s "${x}"
-    sudo xcodebuild -license accept
-  fi
-}
-
 # Link System Utilities to Applications
 
 _links='/System/Library/CoreServices/Applications
@@ -496,7 +497,6 @@ _links='/System/Library/CoreServices/Applications
 /Applications/Xcode-beta.app/Contents/Developer/Applications'
 
 install_links () {
-  brew linkapps 2> /dev/null
   printf "%s\n" "${_links}" | \
   while IFS="$(printf '\t')" read link; do
     find "${link}" -maxdepth 1 -name "*.app" -type d -print0 2> /dev/null | \
@@ -1034,16 +1034,32 @@ config_rm_sudoers () {
 # Define Function =custom=
 
 custom () {
-  custom_home
+  custom_githome
   custom_atom
+  custom_autoping
   custom_emacs
+  custom_finder
+  custom_getmail
+  custom_git
+  custom_gnupg
+  custom_istatmenus
+  custom_moom
+  custom_nvalt
+  custom_safari
+  custom_sieve
+  custom_ssh
+  custom_sysprefs
   custom_terminal
+  custom_vim
+  custom_vlc
   custom_zsh
+
+  which personalize
 }
 
 # Customize Home
 
-custom_home () {
+custom_githome () {
   git -C "${HOME}" init
 
   a=$(ask "Existing Home Repository Path or URL" "Add Remote" "")
@@ -1157,56 +1173,6 @@ com.memset.autoping	ShowNotifications	-bool	true	'
 
 custom_autoping () {
   config_defaults "${_autoping}"
-}
-
-# Customize Desktop Picture
-
-custom_desktop () {
-  osascript - "${1}" << EOF 2> /dev/null
-    on run { _this }
-      tell application "System Events"
-        set a to POSIX file quoted form of _this
-        set b to a reference to every desktop
-        repeat with c in b
-          set picture of c to a
-        end repeat
-      end tell
-    end run
-EOF
-}
-
-# Customize Dock Apps
-
-_dockapps='Metanota Pro
-Mail
-Safari
-Messages
-Emacs
-Atom
-Utilities/Terminal
-System Preferences
-PCalc
-Hermes
-iTunes
-VLC'
-
-custom_dockapps () {
-  defaults write com.apple.dock "autohide-delay" -float 0
-  defaults write com.apple.dock "autohide-time-modifier" -float 0.5
-
-  defaults delete com.apple.dock "persistent-apps"
-
-  printf "%s\n" "${_dockapps}" | \
-  while IFS="$(printf '\t')" read app; do
-    if test -e "/Applications/${app}.app"; then
-      defaults write com.apple.dock "persistent-apps" -array-add \
-        "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/${app}.app/</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
-    fi
-  done
-
-  defaults delete com.apple.dock "persistent-others"
-
-  osascript -e 'tell app "Dock" to quit'
 }
 
 # Customize Emacs
@@ -1490,7 +1456,7 @@ custom_gnupg () {
 
 # Customize iStat Menus
 
-_istat_menus='com.bjango.istatmenus5.extras	MenubarSkinColor	-int	8	
+_istatmenus='com.bjango.istatmenus5.extras	MenubarSkinColor	-int	8	
 com.bjango.istatmenus5.extras	MenubarTheme	-int	0	
 com.bjango.istatmenus5.extras	DropdownTheme	-int	1	
 com.bjango.istatmenus5.extras	CPU_MenubarMode	-string	100,2,0	
@@ -1576,17 +1542,11 @@ com.bjango.istatmenus5.extras	Time_Cities	-array-add	5879400
 com.bjango.istatmenus5.extras	Time_Cities	-array-add	5856195	
 com.bjango.istatmenus5.extras	Time_TextSize	-int	14	'
 
-custom_istat_menus () {
+custom_istatmenus () {
   defaults delete com.bjango.istatmenus5.extras Time_MenubarFormat
   defaults delete com.bjango.istatmenus5.extras Time_DropdownFormat
   defaults delete com.bjango.istatmenus5.extras Time_Cities
-  config_defaults "${_istat_menus}"
-}
-
-# Customize Login Items
-
-custom_loginitems () {
-  true
+  config_defaults "${_istatmenus}"
 }
 
 # Customize Moom
@@ -1703,19 +1663,6 @@ custom_safari () {
   config_defaults "${_safari}"
 }
 
-# Customize Screen Saver
-
-custom_screensaver () {
-  if [ -e "/Library/Screen Savers/BlankScreen.saver" ]; then
-    defaults -currentHost write com.apple.screensaver moduleDict \
-      '{
-        moduleName = "BlankScreen";
-        path = "/Library/Screen Savers/BlankScreen.saver";
-        type = 0;
-      }'
-  fi
-}
-
 # Customize Sieve
 
 custom_sieve () {
@@ -1726,6 +1673,27 @@ custom_sieve () {
 
 custom_ssh () {
   true
+}
+
+# Customize System Preferences
+
+custom_sysprefs () {
+  custom_general
+  custom_desktop "/Library/Caches/com.apple.desktop.admin.png"
+  custom_screensaver
+  custom_dock
+  custom_dockapps
+  custom_security
+  custom_modkeys
+  custom_text
+  custom_dictation
+  custom_mouse
+  custom_trackpad
+  custom_sound
+  custom_loginitems
+  custom_siri
+  custom_clock
+  custom_a11y
 }
 
 # Customize General
@@ -1756,6 +1724,22 @@ custom_general () {
 EOF
 }
 
+# Customize Desktop Picture
+
+custom_desktop () {
+  osascript - "${1}" << EOF 2> /dev/null
+    on run { _this }
+      tell application "System Events"
+        set a to POSIX file quoted form of _this
+        set b to a reference to every desktop
+        repeat with c in b
+          set picture of c to a
+        end repeat
+      end tell
+    end run
+EOF
+}
+
 # Customize Screen Saver
 
 _screensaver='com.apple.screensaver	idleTime	-int	0	-currentHost
@@ -1765,6 +1749,14 @@ com.apple.dock	wvous-bl-corner	-int	10
 com.apple.dock	wvous-bl-modifier	-int	0	'
 
 custom_screensaver () {
+  if test -e "/Library/Screen Savers/BlankScreen.saver"; then
+    defaults -currentHost write com.apple.screensaver moduleDict \
+      '{
+        moduleName = "BlankScreen";
+        path = "/Library/Screen Savers/BlankScreen.saver";
+        type = 0;
+      }'
+  fi
   config_defaults "${_screensaver}"
 }
 
@@ -1784,6 +1776,40 @@ com.apple.dock	show-process-indicators	-bool	true	'
 
 custom_dock () {
   config_defaults "${_dock}"
+}
+
+# Customize Dock Apps
+
+_dockapps='Metanota Pro
+Mail
+Safari
+Messages
+Emacs
+Atom
+Utilities/Terminal
+System Preferences
+PCalc
+Hermes
+iTunes
+VLC'
+
+custom_dockapps () {
+  defaults write com.apple.dock "autohide-delay" -float 0
+  defaults write com.apple.dock "autohide-time-modifier" -float 0.5
+
+  defaults delete com.apple.dock "persistent-apps"
+
+  printf "%s\n" "${_dockapps}" | \
+  while IFS="$(printf '\t')" read app; do
+    if test -e "/Applications/${app}.app"; then
+      defaults write com.apple.dock "persistent-apps" -array-add \
+        "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/${app}.app/</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+    fi
+  done
+
+  defaults delete com.apple.dock "persistent-others"
+
+  osascript -e 'tell app "Dock" to quit'
 }
 
 # Customize Security
@@ -1861,6 +1887,12 @@ _sound='-globalDomain	com.apple.sound.beep.sound	-string	/System/Library/Sounds/
 
 custom_sound () {
   config_defaults "${_sound}"
+}
+
+# Customize Login Items
+
+custom_loginitems () {
+  true
 }
 
 # Customize Siri
@@ -2050,7 +2082,28 @@ EOF
 # Define Function =personalize=
 
 personalize () {
-  true
+  personalize_airfoil4
+  personalize_bbedit10
+  personalize_ccc4
+  personalize_expandrive5
+  personalize_flip4mac
+  personalize_sketchuppro8
+  personalize_istatmenus5
+  personalize_littlesnitch4
+  personalize_meteorologist3
+  personalize_moom
+  personalize_nzbget
+  personalize_nzbvortex
+  personalize_pacifist
+  personalize_pcalc3
+  personalize_scrivener
+  personalize_sizeup
+  personalize_steermouse5
+  personalize_sourcetree
+  personalize_tower2
+  personalize_transmit4
+  personalize_tune4mac
+  personalize_vmwarefusion8pro
 }
 
 # Personalize Airfoil 4

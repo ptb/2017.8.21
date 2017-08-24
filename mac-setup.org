@@ -381,6 +381,19 @@ init_updates () {
 *** Define Function =install=
 #+begin_src sh
 install () {
+  install_macos_sw
+  install_node_sw
+  install_perl_sw
+  install_python_sw
+  install_ruby_sw
+
+  which config
+}
+#+end_src
+
+*** Install macOS Software with =brew=
+#+begin_src sh
+install_macos_sw () {
   install_paths
   install_brew
   install_brewfile_taps
@@ -388,14 +401,15 @@ install () {
   install_brewfile_cask_args
   install_brewfile_cask_pkgs
   install_brewfile_mas_apps
-  install_brew_bundle
   install_links
-  install_node_sw
-  install_perl_sw
-  install_python_sw
-  install_ruby_sw
 
-  which config
+  x="$(find '/Applications' -maxdepth 1 -name 'Xcode[^ ]*.app' -print -quit)"
+  if test -n "${x}"; then
+    sudo xcode-select -s "${x}"
+    sudo xcodebuild -license accept
+  fi
+
+  brew bundle --file="${BREWFILE}"
 }
 #+end_src
 
@@ -673,50 +687,10 @@ install_brewfile_mas_apps () {
 | WiFi Explorer   | 494803304 | https://itunes.apple.com/app/id494803304 |
 |-----------------+-----------+------------------------------------------|
 
-*** Install macOS Software with =brew bundle=
-#+begin_src sh
-install_brew_bundle () {
-  brew bundle --file="${BREWFILE}"
-
-  x="$(find '/Applications' -maxdepth 1 -name 'Xcode[^ ]*.app' -print -quit)"
-  if test -n "${x}"; then
-    sudo xcode-select -s "${x}"
-    sudo xcodebuild -license accept
-  fi
-}
-#+end_src
-
-*** Add Compiled Packages to Brewfile
-
-- /This section is obsolete./
-
-#+begin_example sh :var _built=_built[3:-2,0:1]
-
-install_brew_built () {
-  printf "%s\n" "${_built}" | \
-  while IFS="$(printf '\t')" read pkg args; do
-    brew install --build-bottle "${pkg}" ${args}
-    brew bottle "${pkg}"
-    brew postinstall "${pkg}"
-  done
-}
-#+end_example
-
-**** _built
-#+name: _built
-|---------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Homebrew Package Name     | Custom Build Arguments                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-|---------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| dovecot                   | --with-pam --with-pigeonhole                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| homebrew/nginx/nginx-full | --with-dav-ext-module --with-fancyindex-module --with-gzip-static --with-http2 --with-mp4-h264-module --with-push-stream-module --with-secure-link --with-webdav                                                                                                                                                                                                                                                                                                                                                                                                                        |
-| ptb/custom/ffmpeg         | --with-chromaprint --with-fdk-aac --with-fontconfig --with-freetype --with-frei0r --with-game-music-emu --with-libass --with-libbluray --with-libbs2b --with-libcaca --with-libgsm --with-libmodplug --with-libsoxr --with-libssh --with-libvidstab --with-libvorbis --with-libvpx --with-opencore-amr --with-openh264 --with-openjpeg --with-openssl --with-opus --with-rtmpdump --with-rubberband --with-schroedinger --with-sdl2 --with-snappy --with-speex --with-tesseract --with-theora --with-tools --with-two-lame --with-wavpack --with-webp --with-x265 --with-xz --with-zimg |
-|---------------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-
 *** Link System Utilities to Applications
 #+begin_src sh :var _links=_links[3:-2,0]
 
 install_links () {
-  brew linkapps 2> /dev/null
   printf "%s\n" "${_links}" | \
   while IFS="$(printf '\t')" read link; do
     find "${link}" -maxdepth 1 -name "*.app" -type d -print0 2> /dev/null | \
@@ -1338,17 +1312,33 @@ config_rm_sudoers () {
 *** Define Function =custom=
 #+begin_src sh
 custom () {
-  custom_home
+  custom_githome
   custom_atom
+  custom_autoping
   custom_emacs
+  custom_finder
+  custom_getmail
+  custom_git
+  custom_gnupg
+  custom_istatmenus
+  custom_moom
+  custom_nvalt
+  custom_safari
+  custom_sieve
+  custom_ssh
+  custom_sysprefs
   custom_terminal
+  custom_vim
+  custom_vlc
   custom_zsh
+
+  which personalize
 }
 #+end_src
 
 *** Customize Home
 #+begin_src sh
-custom_home () {
+custom_githome () {
   git -C "${HOME}" init
 
   a=$(ask "Existing Home Repository Path or URL" "Add Remote" "")
@@ -1490,70 +1480,6 @@ custom_autoping () {
 | *Packet Loss Text* ~on~          | com.memset.autoping | ShowPacketLossText   | -bool   | true       |      |
 | *Connection Up/Down Alerts* ~on~ | com.memset.autoping | ShowNotifications    | -bool   | true       |      |
 |----------------------------------+---------------------+----------------------+---------+------------+------|
-
-*** Customize Desktop Picture
-#+begin_src sh
-custom_desktop () {
-  osascript - "${1}" << EOF 2> /dev/null
-<<custom_desktop.applescript>>
-EOF
-}
-#+end_src
-
-**** =custom_desktop.applescript=
-#+begin_src applescript :noweb-ref custom_desktop.applescript
-    on run { _this }
-      tell application "System Events"
-        set a to POSIX file quoted form of _this
-        set b to a reference to every desktop
-        repeat with c in b
-          set picture of c to a
-        end repeat
-      end tell
-    end run
-#+end_src
-
-*** Customize Dock Apps
-#+begin_src sh :var _dockapps=_dockapps[3:-2,0]
-
-custom_dockapps () {
-  defaults write com.apple.dock "autohide-delay" -float 0
-  defaults write com.apple.dock "autohide-time-modifier" -float 0.5
-
-  defaults delete com.apple.dock "persistent-apps"
-
-  printf "%s\n" "${_dockapps}" | \
-  while IFS="$(printf '\t')" read app; do
-    if test -e "/Applications/${app}.app"; then
-      defaults write com.apple.dock "persistent-apps" -array-add \
-        "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/${app}.app/</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
-    fi
-  done
-
-  defaults delete com.apple.dock "persistent-others"
-
-  osascript -e 'tell app "Dock" to quit'
-}
-#+end_src
-
-**** _dockapps
-#+name: _dockapps
-|--------------------|
-| Dock Items         |
-|--------------------|
-| Metanota Pro       |
-| Mail               |
-| Safari             |
-| Messages           |
-| Emacs              |
-| Atom               |
-| Utilities/Terminal |
-| System Preferences |
-| PCalc              |
-| Hermes             |
-| iTunes             |
-| VLC                |
-|--------------------|
 
 *** Customize Emacs
 #+begin_src sh
@@ -1872,18 +1798,18 @@ custom_gnupg () {
 #+end_src
 
 *** Customize iStat Menus
-#+begin_src sh :var _istat_menus=_istat_menus[3:-2,1:5]
+#+begin_src sh :var _istatmenus=_istatmenus[3:-2,1:5]
 
-custom_istat_menus () {
+custom_istatmenus () {
   defaults delete com.bjango.istatmenus5.extras Time_MenubarFormat
   defaults delete com.bjango.istatmenus5.extras Time_DropdownFormat
   defaults delete com.bjango.istatmenus5.extras Time_Cities
-  config_defaults "${_istat_menus}"
+  config_defaults "${_istatmenus}"
 }
 #+end_src
 
-***** _istat_menus
-#+name: _istat_menus
+***** _istatmenus
+#+name: _istatmenus
 |------------+-------------------------------+------------------------------------------+------------+---------------------+------|
 | Preference | Domain                        | Key                                      | Type       | Value               | Host |
 |------------+-------------------------------+------------------------------------------+------------+---------------------+------|
@@ -1973,13 +1899,6 @@ custom_istat_menus () {
 |            | com.bjango.istatmenus5.extras | Time_Cities                              | -array-add | 5856195             |      |
 |            | com.bjango.istatmenus5.extras | Time_TextSize                            | -int       | 14                  |      |
 |------------+-------------------------------+------------------------------------------+------------+---------------------+------|
-
-*** Customize Login Items
-#+begin_src sh
-custom_loginitems () {
-  true
-}
-#+end_src
 
 *** Customize Moom
 #+begin_src sh :var _moom=_moom[3:-2,1:5]
@@ -2119,20 +2038,6 @@ custom_safari () {
 |                                                                         | com.apple.Safari | ShowStatusBarInFullScreen                                                              | -bool   | true  |      |
 |-------------------------------------------------------------------------+------------------+----------------------------------------------------------------------------------------+---------+-------+------|
 
-*** Customize Screen Saver
-#+begin_src sh
-custom_screensaver () {
-  if [ -e "/Library/Screen Savers/BlankScreen.saver" ]; then
-    defaults -currentHost write com.apple.screensaver moduleDict \
-      '{
-        moduleName = "BlankScreen";
-        path = "/Library/Screen Savers/BlankScreen.saver";
-        type = 0;
-      }'
-  fi
-}
-#+end_src
-
 *** Customize Sieve
 #+begin_src sh
 custom_sieve () {
@@ -2144,6 +2049,28 @@ custom_sieve () {
 #+begin_src sh
 custom_ssh () {
   true
+}
+#+end_src
+
+*** Customize System Preferences
+#+begin_src sh
+custom_sysprefs () {
+  custom_general
+  custom_desktop "/Library/Caches/com.apple.desktop.admin.png"
+  custom_screensaver
+  custom_dock
+  custom_dockapps
+  custom_security
+  custom_modkeys
+  custom_text
+  custom_dictation
+  custom_mouse
+  custom_trackpad
+  custom_sound
+  custom_loginitems
+  custom_siri
+  custom_clock
+  custom_a11y
 }
 #+end_src
 
@@ -2188,10 +2115,40 @@ EOF
 | ~on~ *Use LCD font smoothing when available*                   | -globalDomain                        | AppleFontSmoothing           | -int    | 1                          | -currentHost |
 |----------------------------------------------------------------+--------------------------------------+------------------------------+---------+----------------------------+--------------|
 
+**** Customize Desktop Picture
+#+begin_src sh
+custom_desktop () {
+  osascript - "${1}" << EOF 2> /dev/null
+<<custom_desktop.applescript>>
+EOF
+}
+#+end_src
+
+**** =custom_desktop.applescript=
+#+begin_src applescript :noweb-ref custom_desktop.applescript
+    on run { _this }
+      tell application "System Events"
+        set a to POSIX file quoted form of _this
+        set b to a reference to every desktop
+        repeat with c in b
+          set picture of c to a
+        end repeat
+      end tell
+    end run
+#+end_src
+
 **** Customize Screen Saver
 #+begin_src sh :var _screensaver=_screensaver[3:-2,1:5]
 
 custom_screensaver () {
+  if test -e "/Library/Screen Savers/BlankScreen.saver"; then
+    defaults -currentHost write com.apple.screensaver moduleDict \
+      '{
+        moduleName = "BlankScreen";
+        path = "/Library/Screen Savers/BlankScreen.saver";
+        type = 0;
+      }'
+  fi
   config_defaults "${_screensaver}"
 }
 #+end_src
@@ -2233,6 +2190,48 @@ custom_dock () {
 | ~on~ *Automatically hide and show the Dock*         | com.apple.dock | autohide                 | -bool   | true   |      |
 | ~on~ *Show indicators for open applications*        | com.apple.dock | show-process-indicators  | -bool   | true   |      |
 |-----------------------------------------------------+----------------+--------------------------+---------+--------+------|
+
+**** Customize Dock Apps
+#+begin_src sh :var _dockapps=_dockapps[3:-2,0]
+
+custom_dockapps () {
+  defaults write com.apple.dock "autohide-delay" -float 0
+  defaults write com.apple.dock "autohide-time-modifier" -float 0.5
+
+  defaults delete com.apple.dock "persistent-apps"
+
+  printf "%s\n" "${_dockapps}" | \
+  while IFS="$(printf '\t')" read app; do
+    if test -e "/Applications/${app}.app"; then
+      defaults write com.apple.dock "persistent-apps" -array-add \
+        "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/${app}.app/</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+    fi
+  done
+
+  defaults delete com.apple.dock "persistent-others"
+
+  osascript -e 'tell app "Dock" to quit'
+}
+#+end_src
+
+**** _dockapps
+#+name: _dockapps
+|--------------------|
+| Dock Items         |
+|--------------------|
+| Metanota Pro       |
+| Mail               |
+| Safari             |
+| Messages           |
+| Emacs              |
+| Atom               |
+| Utilities/Terminal |
+| System Preferences |
+| PCalc              |
+| Hermes             |
+| iTunes             |
+| VLC                |
+|--------------------|
 
 **** Customize Security
 #+begin_src sh :var _security=_security[3:-2,1:5]
@@ -2352,6 +2351,13 @@ custom_sound () {
 | ~off~ *Play user interface sound effects*    | -globalDomain | com.apple.sound.uiaudio.enabled | -int    | 0                                  |      |
 | ~off~ *Play feedback when volume is changed* | -globalDomain | com.apple.sound.beep.feedback   | -int    | 0                                  |      |
 |----------------------------------------------+---------------+---------------------------------+---------+------------------------------------+------|
+
+**** Customize Login Items
+#+begin_src sh
+custom_loginitems () {
+  true
+}
+#+end_src
 
 **** Customize Siri
 #+begin_src sh
@@ -2585,7 +2591,28 @@ curl --location --silent \
 *** Define Function =personalize=
 #+begin_src sh
 personalize () {
-  true
+  personalize_airfoil4
+  personalize_bbedit10
+  personalize_ccc4
+  personalize_expandrive5
+  personalize_flip4mac
+  personalize_sketchuppro8
+  personalize_istatmenus5
+  personalize_littlesnitch4
+  personalize_meteorologist3
+  personalize_moom
+  personalize_nzbget
+  personalize_nzbvortex
+  personalize_pacifist
+  personalize_pcalc3
+  personalize_scrivener
+  personalize_sizeup
+  personalize_steermouse5
+  personalize_sourcetree
+  personalize_tower2
+  personalize_transmit4
+  personalize_tune4mac
+  personalize_vmwarefusion8pro
 }
 #+end_src
 
