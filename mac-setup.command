@@ -69,7 +69,7 @@ init_cache () {
   grep -q "CACHES" "/etc/zshenv" || \
   a=$(osascript << EOF 2> /dev/null
     on run
-      return POSIX path of (choose folder with prompt "Select Existing Installation Cache")
+      return POSIX path of (choose folder with prompt "Select Installation Cache Location")
     end run
 EOF
 ) && \

@@ -183,7 +183,7 @@ EOF
 **** =init_cache.applescript=
 #+begin_src applescript :noweb-ref init_cache.applescript
     on run
-      return POSIX path of (choose folder with prompt "Select Existing Installation Cache")
+      return POSIX path of (choose folder with prompt "Select Installation Cache Location")
     end run
 #+end_src
 
