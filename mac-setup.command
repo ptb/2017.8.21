@@ -2068,9 +2068,13 @@ custom_vlc () {
 # Customize Z-Shell
 
 custom_zsh () {
-  mkdir -m go= "${ZDOTDIR:-$HOME}"
+  mkdir -m go= "${ZDOTDIR:-$HOME}" 2> /dev/null
   cat << EOF > "${ZDOTDIR:-$HOME}/.zshrc"
 #!/bin/sh
+
+alias ll="ls -ABFGHOhl"
+
+autoload -Uz add-zsh-hook
 
 prompt_ptb_setup () {
   I="$(printf '%b' '%{\e[3m%}')"
@@ -2079,11 +2083,167 @@ prompt_ptb_setup () {
   export PROMPT
 }
 
+prompt_ptb_setup
+
 prompt_ptb_precmd () {
   test -n "$(git rev-parse --git-dir 2> /dev/null)" && \
   RPROMPT="%F{000}$(git rev-parse --abbrev-ref HEAD)%f" && \
   export RPROMPT
 }
+
+add-zsh-hook precmd prompt_ptb_precmd
+
+# Changing Directories
+
+setopt AUTO_CD
+setopt AUTO_PUSHD
+setopt CDABLE_VARS
+setopt CHASE_DOTS
+setopt CHASE_LINKS
+setopt NO_POSIX_CD
+setopt PUSHD_IGNORE_DUPS
+setopt NO_PUSHD_MINUS
+setopt NO_PUSHD_SILENT
+setopt NO_PUSHD_TO_HOME
+
+# Completion
+
+setopt NO_ALWAYS_LAST_PROMPT
+setopt ALWAYS_TO_END
+setopt AUTO_LIST
+setopt AUTO_MENU
+setopt NO_AUTO_NAME_DIRS
+setopt NO_AUTO_PARAM_KEYS
+setopt AUTO_PARAM_SLASH
+setopt NO_AUTO_REMOVE_SLASH
+setopt NO_BASH_AUTO_LIST
+setopt NO_COMPLETE_ALIASES
+setopt COMPLETE_IN_WORD
+setopt GLOB_COMPLETE
+setopt NO_HASH_LIST_ALL
+setopt LIST_AMBIGUOUS
+setopt NO_LIST_BEEP
+setopt LIST_PACKED
+setopt NO_LIST_ROWS_FIRST
+setopt LIST_TYPES
+setopt MENU_COMPLETE
+setopt NO_REC_EXACT
+
+# Expansion and Globbing
+
+setopt BAD_PATTERN
+setopt NO_BARE_GLOB_QUAL
+setopt NO_BRACE_CCL
+setopt NO_CASE_GLOB
+setopt NO_CASE_MATCH
+setopt NO_EQUALS
+setopt NO_EXTENDED_GLOB
+setopt NO_FORCE_FLOAT
+setopt GLOB
+setopt NO_GLOB_ASSIGN
+setopt NO_GLOB_DOTS
+setopt GLOB_STAR_SHORT
+setopt NO_GLOB_SUBST
+setopt NO_HIST_SUBST_PATTERN
+setopt NO_IGNORE_BRACES
+setopt NO_IGNORE_CLOSE_BRACES
+setopt NO_KSH_GLOB
+setopt NO_MAGIC_EQUAL_SUBST
+setopt MARK_DIRS
+setopt MULTIBYTE
+setopt NOMATCH
+setopt NO_NULL_GLOB
+setopt NO_NUMERIC_GLOB_SORT
+setopt NO_RC_EXPAND_PARAM
+setopt NO_REMATCH_PCRE
+setopt NO_SH_GLOB
+setopt NO_UNSET
+setopt WARN_CREATE_GLOBAL
+setopt WARN_NESTED_VAR
+
+# History
+
+setopt APPEND_HISTORY
+setopt NO_BANG_HIST
+setopt EXTENDED_HISTORY
+setopt NO_HIST_ALLOW_CLOBBER
+setopt NO_HIST_BEEP
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt NO_HIST_FCNTL_LOCK
+setopt HIST_FIND_NO_DUPS
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_LEX_WORDS
+setopt NO_HIST_NO_FUNCTIONS
+setopt HIST_NO_STORE
+setopt HIST_REDUCE_BLANKS
+setopt NO_HIST_SAVE_BY_COPY
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_VERIFY
+setopt INC_APPEND_HISTORY
+setopt INC_APPEND_HISTORY_TIME
+setopt SHARE_HISTORY
+
+# Initialisation
+
+setopt NO_ALL_EXPORT
+setopt NO_GLOBAL_EXPORT
+setopt GLOBAL_RCS
+setopt RCS
+
+# Input/Output
+
+setopt ALIASES
+setopt NO_CLOBBER
+setopt CORRECT
+setopt NO_CORRECT_ALL
+setopt DVORAK
+setopt FLOW_CONTROL
+setopt NO_IGNORE_EOF
+setopt INTERACTIVE_COMMENTS
+setopt NO_HASH_CMDS
+setopt NO_HASH_DIRS
+setopt NO_HASH_EXECUTABLES_ONLY
+setopt NO_MAIL_WARNING
+setopt NO_PATH_DIRS
+setopt PATH_SCRIPT
+setopt PRINT_EIGHT_BIT
+setopt PRINT_EXIT_VALUE
+setopt NO_RC_QUOTES
+setopt NO_RM_STAR_SILENT
+setopt NO_RM_STAR_WAIT
+setopt SHORT_LOOPS
+setopt NO_SUN_KEYBOARD_HACK
+
+# Job Control
+
+# Prompting
+
+setopt NO_PROMPT_BANG
+setopt NO_PROMPT_CR
+setopt PROMPT_SP
+setopt PROMPT_PERCENT
+setopt PROMPT_SUBST
+setopt TRANSIENT_RPROMPT
+
+# Scripts and Functions
+
+# Shell Emulation
+
+# Shell State
+
+# Zle
+
+setopt NO_BEEP
+# setopt COMBINING_CHARS
+setopt NO_EMACS
+setopt NO_OVERSTRIKE
+setopt NO_SINGLE_LINE_ZLE
+setopt VI
+setopt ZLE
+
+zmodload zsh/zle
 
 zle-keymap-select zle-line-finish zle-line-init () {
   case "${TERM_PROGRAM}" in
@@ -2097,11 +2257,6 @@ zle-keymap-select zle-line-finish zle-line-init () {
         printf "%b" '\e]Pl99cc99\e\x5c\e[6 q' ;;
   esac
 }
-
-autoload -Uz add-zsh-hook
-add-zsh-hook precmd prompt_ptb_precmd
-
-prompt_ptb_setup
 EOF
   chmod +x "${ZDOTDIR:-$HOME}/.zshrc"
 }
