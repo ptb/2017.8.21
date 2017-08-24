@@ -2147,6 +2147,67 @@ custom_ssh () {
 }
 #+end_src
 
+**** Customize General
+#+begin_src sh :var _general=_general[3:-2,1:5]
+
+custom_general () {
+  config_defaults "${_general}"
+  osascript << EOF
+<<recent-items.applescript>>
+EOF
+}
+#+end_src
+
+**** =recent-items.applescript=
+#+begin_src applescript :noweb-ref recent-items.applescript
+    tell application "System Events"
+      tell appearance preferences
+        set recent documents limit to 0
+        set recent applications limit to 0
+        set recent servers limit to 0
+      end tell
+    end tell
+#+end_src
+
+**** _general
+#+name: _general
+|----------------------------------------------------------------+--------------------------------------+------------------------------+---------+----------------------------+--------------|
+| Preference                                                     | Domain                               | Key                          | Type    | Value                      | Host         |
+|----------------------------------------------------------------+--------------------------------------+------------------------------+---------+----------------------------+--------------|
+| *Appearance:* ~Graphite~ *For Buttons, Menus, and Windows*     | -globalDomain                        | AppleAquaColorVariant        | -int    | 6                          |              |
+| *Appearance:* ~on~ *Use dark menu bar and Dock*                | -globalDomain                        | AppleInterfaceStyle          | -string | Dark                       |              |
+| *Appearance:* ~off~ *Automatically hide and show the menu bar* | -globalDomain                        | _HIHideMenuBar               | -bool   | false                      |              |
+| *Highlight color:* ~#99CC99~ ~Other…~                          | -globalDomain                        | AppleHighlightColor          | -string | 0.600000 0.800000 0.600000 |              |
+| *Sidebar icon size:* ~Small~                                   | -globalDomain                        | NSTableViewDefaultSizeMode   | -int    | 1                          |              |
+| *Show scroll bars:* ~Always~                                   | -globalDomain                        | AppleShowScrollBars          | -string | Always                     |              |
+| *Click in the scroll bar to:* ~Jump to the next page~          | -globalDomain                        | AppleScrollerPagingBehavior  | -bool   | false                      |              |
+| ~on~ *Ask to keep changes when closing documents*              | -globalDomain                        | NSCloseAlwaysConfirmsChanges | -bool   | true                       |              |
+| ~on~ *Close windows when quitting an app*                      | -globalDomain                        | NSQuitAlwaysKeepsWindows     | -bool   | false                      |              |
+| ~on~ *Allow Handoff between this Mac and your iCloud devices*  | com.apple.coreservices.useractivityd | ActivityAdvertisingAllowed   | -bool   | true                       | -currentHost |
+|                                                                | com.apple.coreservices.useractivityd | ActivityReceivingAllowed     | -bool   | true                       | -currentHost |
+| ~on~ *Use LCD font smoothing when available*                   | -globalDomain                        | AppleFontSmoothing           | -int    | 1                          | -currentHost |
+|----------------------------------------------------------------+--------------------------------------+------------------------------+---------+----------------------------+--------------|
+
+**** Customize Screen Saver
+#+begin_src sh :var _screensaver=_screensaver[3:-2,1:5]
+
+custom_screensaver () {
+  config_defaults "${_screensaver}"
+}
+#+end_src
+
+**** _screensaver
+#+name: _screensaver
+|-------------------------------------------------------------+-----------------------+--------------------------+---------+---------+--------------|
+| Preference                                                  | Domain                | Key                      | Type    | Value   | Host         |
+|-------------------------------------------------------------+-----------------------+--------------------------+---------+---------+--------------|
+| *Start after:* ~Never~                                      | com.apple.screensaver | idleTime                 | -int    | 0       | -currentHost |
+| *Hot Corners…: Top Left:* ~⌘ Mission Control~               | com.apple.dock        | wvous-tl-corner          | -int    | 2       |              |
+|                                                             | com.apple.dock        | wvous-tl-modifier        | -int    | 1048576 |              |
+| *Hot Corners…: Bottom Left:* ~Put Display to Sleep~         | com.apple.dock        | wvous-bl-corner          | -int    | 10      |              |
+|                                                             | com.apple.dock        | wvous-bl-modifier        | -int    | 0       |              |
+|-------------------------------------------------------------+-----------------------+--------------------------+---------+---------+--------------|
+
 **** Customize Dock
 #+begin_src sh :var _dock=_dock[3:-2,1:5]
 

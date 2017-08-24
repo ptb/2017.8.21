@@ -1728,6 +1728,46 @@ custom_ssh () {
   true
 }
 
+# Customize General
+
+_general='-globalDomain	AppleAquaColorVariant	-int	6	
+-globalDomain	AppleInterfaceStyle	-string	Dark	
+-globalDomain	_HIHideMenuBar	-bool	false	
+-globalDomain	AppleHighlightColor	-string	0.600000 0.800000 0.600000	
+-globalDomain	NSTableViewDefaultSizeMode	-int	1	
+-globalDomain	AppleShowScrollBars	-string	Always	
+-globalDomain	AppleScrollerPagingBehavior	-bool	false	
+-globalDomain	NSCloseAlwaysConfirmsChanges	-bool	true	
+-globalDomain	NSQuitAlwaysKeepsWindows	-bool	false	
+com.apple.coreservices.useractivityd	ActivityAdvertisingAllowed	-bool	true	-currentHost
+com.apple.coreservices.useractivityd	ActivityReceivingAllowed	-bool	true	-currentHost
+-globalDomain	AppleFontSmoothing	-int	1	-currentHost'
+
+custom_general () {
+  config_defaults "${_general}"
+  osascript << EOF
+    tell application "System Events"
+      tell appearance preferences
+        set recent documents limit to 0
+        set recent applications limit to 0
+        set recent servers limit to 0
+      end tell
+    end tell
+EOF
+}
+
+# Customize Screen Saver
+
+_screensaver='com.apple.screensaver	idleTime	-int	0	-currentHost
+com.apple.dock	wvous-tl-corner	-int	2	
+com.apple.dock	wvous-tl-modifier	-int	1048576	
+com.apple.dock	wvous-bl-corner	-int	10	
+com.apple.dock	wvous-bl-modifier	-int	0	'
+
+custom_screensaver () {
+  config_defaults "${_screensaver}"
+}
+
 # Customize Dock
 
 _dock='com.apple.dock	tilesize	-int	32	
