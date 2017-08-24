@@ -1707,6 +1707,64 @@ custom_ssh () {
   true
 }
 
+# Customize Caps Lock
+
+custom_modkeys () {
+  defaults -currentHost write -globalDomain \
+    "com.apple.keyboard.modifiermapping.1452-591-0" -array-add \
+      '{ HIDKeyboardModifierMappingDst = 0;
+        HIDKeyboardModifierMappingSrc = 30064771129;
+      }'
+}
+
+# Customize Text
+
+_text='-globalDomain	NSAutomaticCapitalizationEnabled	-bool	false	
+-globalDomain	NSAutomaticPeriodSubstitutionEnabled	-bool	false	
+-globalDomain	NSAutomaticQuoteSubstitutionEnabled	-bool	false	'
+custom_text () {
+  defaults write -globalDomain \
+    NSUserDictionaryReplacementItems -array-add \
+      '{ on = 1;
+          replace = "**";
+          with = "\\Ud83d\\Ude18\\Ud83d\\Ude18\\Ud83d\\Ude18\\Ud83d\\Ude0d";
+      }'
+  config_defaults "${_text}"
+}
+
+# Customize Dictation
+
+_dictation='com.apple.speech.recognition.AppleSpeechRecognition.prefs
+DictationIMMasterDictationEnabled
+-bool
+true
+'
+
+custom_dictation () {
+  config_defaults "${_dictation}"
+}
+
+# Customize Mouse
+
+_mouse='-globalDomain
+com.apple.swipescrolldirection
+-bool
+false
+'
+
+custom_mouse () {
+  config_defaults "${_mouse}"
+}
+
+# Customize Trackpad
+
+_trackpad='com.apple.driver.AppleBluetoothMultitouch.trackpad	Clicking	-bool	true	
+-globalDomain	com.apple.mouse.tapBehavior	-int	1	-currentHost'
+
+custom_trackpad () {
+  config_defaults "${_trackpad}"
+}
+
 # Customize Sound
 
 _sound='-globalDomain	com.apple.sound.beep.sound	-string	/System/Library/Sounds/Sosumi.aiff	
