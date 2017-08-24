@@ -177,9 +177,9 @@ init () {
   init_no_sleep
   init_hostname
   init_perms
-  init_mas_save
   init_devtools
   init_updates
+  init_mas_save
 
   which install
 }
@@ -272,6 +272,29 @@ init_perms () {
 |                 | /Library/User Pictures   |
 |-----------------+--------------------------|
 
+*** Install Developer Tools
+#+begin_src sh
+init_devtools () {
+  p="${CACHES}/Command Line Tools (macOS High Sierra version 10.13).pkg"
+  i="com.apple.pkg.CLTools_SDK_macOS1013"
+
+  if test -f "${p}"; then
+    if ! pkgutil --pkg-info "${i}" > /dev/null 2>&1; then
+      sudo installer -pkg "${p}" -target /
+    fi
+  else
+    xcode-select --install
+  fi
+}
+#+end_src
+
+*** Install macOS Updates
+#+begin_src sh
+init_updates () {
+  sudo softwareupdate --install --all
+}
+#+end_src
+
 *** Save Mac App Store Packages
 #+begin_example sh
 sudo lsof -c softwareupdated -F -r 2 | sed '/^n\//!d;/com.apple.SoftwareUpdate/!d;s/^n//'
@@ -351,29 +374,6 @@ for i in 1 2 3 4 5; do
 
   sleep 1
 done
-#+end_src
-
-*** Install Developer Tools
-#+begin_src sh
-init_devtools () {
-  p="${CACHES}/Command Line Tools (macOS High Sierra version 10.13).pkg"
-  i="com.apple.pkg.CLTools_SDK_macOS1013"
-
-  if test -f "${p}"; then
-    if ! pkgutil --pkg-info "${i}" > /dev/null 2>&1; then
-      sudo installer -pkg "${p}" -target /
-    fi
-  else
-    xcode-select --install
-  fi
-}
-#+end_src
-
-*** Install macOS Updates
-#+begin_src sh
-init_updates () {
-  sudo softwareupdate --install --all
-}
 #+end_src
 
 ** Install
