@@ -933,6 +933,21 @@ config_openssl () {
   true
 }
 
+# Configure App Store
+
+_swupdate='/Library/Preferences/com.apple.commerce	AutoUpdate	-bool	true	
+/Library/Preferences/com.apple.commerce	AutoUpdateRestartRequired	-bool	true	'
+
+config_mas () {
+  config_defaults "${_swupdate}" "sudo"
+}
+
+# Configure Guest Users
+
+config_guest () {
+  sudo sysadminctl -guestAccount off
+}
+
 # Configure Z-Shell
 
 config_zsh () {

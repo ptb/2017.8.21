@@ -1210,6 +1210,30 @@ config_openssl () {
 }
 #+end_src
 
+**** Configure App Store
+#+begin_src sh :var _swupdate=_swupdate[3:-2,1:5]
+
+config_mas () {
+  config_defaults "${_swupdate}" "sudo"
+}
+#+end_src
+
+**** _swupdate
+#+name: _swupdate
+|------------------------------+-----------------------------------------+---------------------------+-------+-------+------|
+| Preference                   | Domain                                  | Key                       | Type  | Value | Host |
+|------------------------------+-----------------------------------------+---------------------------+-------+-------+------|
+| ~on~ *Install app updates*   | /Library/Preferences/com.apple.commerce | AutoUpdate                | -bool | true  |      |
+| ~on~ *Install macOS updates* | /Library/Preferences/com.apple.commerce | AutoUpdateRestartRequired | -bool | true  |      |
+|------------------------------+-----------------------------------------+---------------------------+-------+-------+------|
+
+**** Configure Guest Users
+#+begin_src sh
+config_guest () {
+  sudo sysadminctl -guestAccount off
+}
+#+end_src
+
 *** Configure Z-Shell
 #+begin_src sh
 config_zsh () {
