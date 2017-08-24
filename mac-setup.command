@@ -933,6 +933,27 @@ config_openssl () {
   true
 }
 
+# Configure Energy Saver
+
+_energy='-c	displaysleep	20
+-c	sleep	0
+-c	disksleep	60
+-c	womp	1
+-c	autorestart	1
+-c	powernap	1
+-u	displaysleep	2
+-u	lessbright	1
+-u	haltafter	5
+-u	haltremain	-1
+-u	haltlevel	-1'
+
+config_energy () {
+  printf "%s\n" "${_energy}" | \
+  while IFS="$(printf '\t')" read flag setting value; do
+    sudo pmset $flag ${setting} ${value}
+  done
+}
+
 # Configure App Store
 
 _swupdate='/Library/Preferences/com.apple.commerce	AutoUpdate	-bool	true	
@@ -1154,9 +1175,9 @@ custom_desktop () {
 EOF
 }
 
-# Customize Dock
+# Customize Dock Apps
 
-_dock='Metanota Pro
+_dockapps='Metanota Pro
 Mail
 Safari
 Messages
@@ -1169,13 +1190,13 @@ Hermes
 iTunes
 VLC'
 
-custom_dock () {
+custom_dockapps () {
   defaults write com.apple.dock "autohide-delay" -float 0
   defaults write com.apple.dock "autohide-time-modifier" -float 0.5
 
   defaults delete com.apple.dock "persistent-apps"
 
-  printf "%s\n" "${_dock}" | \
+  printf "%s\n" "${_dockapps}" | \
   while IFS="$(printf '\t')" read app; do
     if test -e "/Applications/${app}.app"; then
       defaults write com.apple.dock "persistent-apps" -array-add \
@@ -1705,6 +1726,33 @@ custom_sieve () {
 
 custom_ssh () {
   true
+}
+
+# Customize Dock
+
+_dock='com.apple.dock	tilesize	-int	32	
+com.apple.dock	magnification	-bool	false	
+com.apple.dock	largesize	-int	64	
+com.apple.dock	orientation	-string	right	
+com.apple.dock	mineffect	-string	scale	
+-globalDomain	AppleWindowTabbingMode	-string	always	
+-globalDomain	AppleActionOnDoubleClick	-string	None	
+com.apple.dock	minimize-to-application	-bool	true	
+com.apple.dock	launchanim	-bool	false	
+com.apple.dock	autohide	-bool	true	
+com.apple.dock	show-process-indicators	-bool	true	'
+
+custom_dock () {
+  config_defaults "${_dock}"
+}
+
+# Customize Security
+
+_security='com.apple.screensaver	askForPassword	-int	1	
+com.apple.screensaver	askForPasswordDelay	-int	5	'
+
+custom_security () {
+  config_defaults "${_security}"
 }
 
 # Customize Caps Lock

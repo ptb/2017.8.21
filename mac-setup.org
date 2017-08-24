@@ -1210,6 +1210,35 @@ config_openssl () {
 }
 #+end_src
 
+**** Configure Energy Saver
+#+begin_src sh :var _energy=_energy[3:-2,1:3]
+
+config_energy () {
+  printf "%s\n" "${_energy}" | \
+  while IFS="$(printf '\t')" read flag setting value; do
+    sudo pmset $flag ${setting} ${value}
+  done
+}
+#+end_src
+
+***** _energy
+#+name: _energy
+|--------------------------------------------------------------------------------------+------+--------------+-------|
+| Preference                                                                           | Flag | Setting      | Value |
+|--------------------------------------------------------------------------------------+------+--------------+-------|
+| *Power: Turn display off after:* ~20 min~                                            | -c   | displaysleep |    20 |
+| *Power:* ~on~ *Prevent computer from sleeping automatically when the display is off* | -c   | sleep        |     0 |
+| *Power:* ~60 min~ *Put hard disks to sleep when possible*                            | -c   | disksleep    |    60 |
+| *Power:* ~on~ *Wake for network access*                                              | -c   | womp         |     1 |
+| *Power:* ~on~ *Start up automatically after a power failure*                         | -c   | autorestart  |     1 |
+| *Power:* ~on~ *Enable Power Nap*                                                     | -c   | powernap     |     1 |
+| *UPS: Turn display off after:* ~2 min~                                               | -u   | displaysleep |     2 |
+| *UPS:* ~on~ *Slightly dim the display when using this power source*                  | -u   | lessbright   |     1 |
+| *UPS:* ~on~ *Shut down the computer after using the UPS battery for:* ~5 min~        | -u   | haltafter    |     5 |
+| *UPS:* ~off~ *Shut down the computer when the time remaining on the UPS battery is:* | -u   | haltremain   |    -1 |
+| *UPS:* ~off~ *Shut down the computer when the UPS battery level is below:*           | -u   | haltlevel    |    -1 |
+|--------------------------------------------------------------------------------------+------+--------------+-------|
+
 **** Configure App Store
 #+begin_src sh :var _swupdate=_swupdate[3:-2,1:5]
 
@@ -1484,16 +1513,16 @@ EOF
     end run
 #+end_src
 
-*** Customize Dock
-#+begin_src sh :var _dock=_dock[3:-2,0]
+*** Customize Dock Apps
+#+begin_src sh :var _dockapps=_dockapps[3:-2,0]
 
-custom_dock () {
+custom_dockapps () {
   defaults write com.apple.dock "autohide-delay" -float 0
   defaults write com.apple.dock "autohide-time-modifier" -float 0.5
 
   defaults delete com.apple.dock "persistent-apps"
 
-  printf "%s\n" "${_dock}" | \
+  printf "%s\n" "${_dockapps}" | \
   while IFS="$(printf '\t')" read app; do
     if test -e "/Applications/${app}.app"; then
       defaults write com.apple.dock "persistent-apps" -array-add \
@@ -1507,8 +1536,8 @@ custom_dock () {
 }
 #+end_src
 
-***** _dock
-#+name: _dock
+**** _dockapps
+#+name: _dockapps
 |--------------------|
 | Dock Items         |
 |--------------------|
@@ -2117,6 +2146,49 @@ custom_ssh () {
   true
 }
 #+end_src
+
+**** Customize Dock
+#+begin_src sh :var _dock=_dock[3:-2,1:5]
+
+custom_dock () {
+  config_defaults "${_dock}"
+}
+#+end_src
+
+**** _dock
+#+name: _dock
+|-----------------------------------------------------+----------------+--------------------------+---------+--------+------|
+| Preference                                          | Domain         | Key                      | Type    | Value  | Host |
+|-----------------------------------------------------+----------------+--------------------------+---------+--------+------|
+| *Size:* ~32 px~                                     | com.apple.dock | tilesize                 | -int    | 32     |      |
+| ~off~ *Magnification:* ~64 px~                      | com.apple.dock | magnification            | -bool   | false  |      |
+|                                                     | com.apple.dock | largesize                | -int    | 64     |      |
+| *Position on screen:* ~Right~                       | com.apple.dock | orientation              | -string | right  |      |
+| *Minimize windows using:* ~Scale effect~            | com.apple.dock | mineffect                | -string | scale  |      |
+| *Prefer tabs when opening documents:* ~Always~      | -globalDomain  | AppleWindowTabbingMode   | -string | always |      |
+| ~off~ *Double-click a window’s title bar to* ~None~ | -globalDomain  | AppleActionOnDoubleClick | -string | None   |      |
+| ~on~ *Minimize windows into application icon*       | com.apple.dock | minimize-to-application  | -bool   | true   |      |
+| ~off~ *Animate opening applications*                | com.apple.dock | launchanim               | -bool   | false  |      |
+| ~on~ *Automatically hide and show the Dock*         | com.apple.dock | autohide                 | -bool   | true   |      |
+| ~on~ *Show indicators for open applications*        | com.apple.dock | show-process-indicators  | -bool   | true   |      |
+|-----------------------------------------------------+----------------+--------------------------+---------+--------+------|
+
+**** Customize Security
+#+begin_src sh :var _security=_security[3:-2,1:5]
+
+custom_security () {
+  config_defaults "${_security}"
+}
+#+end_src
+
+**** _security
+#+name: _security
+|--------------------------------------------------------------------------+-----------------------+---------------------+------+-------+------|
+| Preference                                                               | Domain                | Key                 | Type | Value | Host |
+|--------------------------------------------------------------------------+-----------------------+---------------------+------+-------+------|
+| ~on~ *Require password* ~5 seconds~ *after sleep or screen saver begins* | com.apple.screensaver | askForPassword      | -int |     1 |      |
+|                                                                          | com.apple.screensaver | askForPasswordDelay | -int |     5 |      |
+|--------------------------------------------------------------------------+-----------------------+---------------------+------+-------+------|
 
 **** Customize Caps Lock
 #+begin_src sh
