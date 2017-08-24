@@ -652,6 +652,7 @@ config () {
   config_emacs
   config_zsh
   config_new_account
+  config_rm_sudoers
 
   which custom
 }
@@ -958,6 +959,13 @@ config_new_account () {
 
   sudo sysadminctl -addUser "${u}" -fullName "${n}" -password - \
     -shell "$(which zsh)" -picture "/Library/User Pictures/${e}.jpg"
+}
+
+# Reinstate =sudo= Password
+
+config_rm_sudoers () {
+  sudo dscl /Local/Default -delete /Groups/wheel GroupMembership "$(whoami)"
+  sudo rm -f "/etc/sudoers.d/wheel"
 
   if run "Log Out Then Log Back In?" "Cancel" "Log Out"; then
     osascript -e 'tell app "loginwindow" to «event aevtrlgo»'
@@ -1411,11 +1419,4 @@ curl --location --silent \
   . /dev/stdin 1
 EOF
   chmod +x "${ZDOTDIR:-$HOME}/.zshrc"
-}
-
-# Reinstate =sudo= Password
-
-config_rm_sudoers () {
-  sudo dscl /Local/Default -delete /Groups/wheel GroupMembership "$(whoami)"
-  sudo rm -f "/etc/sudoers.d/wheel"
 }
