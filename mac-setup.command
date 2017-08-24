@@ -2072,9 +2072,36 @@ custom_zsh () {
   cat << EOF > "${ZDOTDIR:-$HOME}/.zshrc"
 #!/bin/sh
 
-curl --location --silent \
-  "https://github.com/ptb/2017.8.21/raw/master/mac-setup.command" | \
-  . /dev/stdin 1
+prompt_ptb_setup () {
+  I="$(printf '%b' '%{\e[3m%}')"
+  i="$(printf '%b' '%{\e[0m%}')"
+  PROMPT="%F{004}$I%d$i %(!.%F{001}.%F{002})%n %B❯%b%f "
+  export PROMPT
+}
+
+prompt_ptb_precmd () {
+  test -n "$(git rev-parse --git-dir 2> /dev/null)" && \
+  RPROMPT="%F{000}$(git rev-parse --abbrev-ref HEAD)%f" && \
+  export RPROMPT
+}
+
+zle-keymap-select zle-line-finish zle-line-init () {
+  case "${TERM_PROGRAM}" in
+    ("Apple_Terminal")
+      test "${KEYMAP}" = "vicmd" && \
+        printf "%b" '\e[4 q' || \
+        printf "%b" '\e[6 q' ;;
+    ("iTerm.app")
+      test "${KEYMAP}" = "vicmd" && \
+        printf "%b" '\e]Plf27f7f\e\x5c\e[4 q' || \
+        printf "%b" '\e]Pl99cc99\e\x5c\e[6 q' ;;
+  esac
+}
+
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd prompt_ptb_precmd
+
+prompt_ptb_setup
 EOF
   chmod +x "${ZDOTDIR:-$HOME}/.zshrc"
 }
