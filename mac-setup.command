@@ -43,6 +43,7 @@ init () {
   init_cache
   init_no_sleep
   init_hostname
+  init_perms
   init_mas_save
   init_devtools
   init_updates
@@ -65,19 +66,24 @@ init_sudo () {
 # Select Installation Cache Location
 
 init_cache () {
+  grep -q "CACHES" "/etc/zshenv" || \
   a=$(osascript << EOF 2> /dev/null
     on run
       return POSIX path of (choose folder with prompt "Select Existing Installation Cache")
     end run
 EOF
-)
-
+) && \
   test -d "${a}" || \
     a="${HOME}/Library/Caches/"
 
-  export CACHES="${a}"
-  export HOMEBREW_CACHE="${a}Homebrew"
-  export BREWFILE="${a}Homebrew/Brewfile"
+  grep -q "CACHES" "/etc/zshenv" || \
+  printf "%s\n" \
+    "export CACHES=\"${a}\"" \
+    "export HOMEBREW_CACHE=\"${a}Homebrew\"" \
+    "export BREWFILE=\"${a}Homebrew/Brewfile\"" | \
+  sudo tee -a "/etc/zshenv" > /dev/null
+  . "/etc/zshenv"
+
 }
 
 # Set Defaults for Sleep
@@ -107,10 +113,11 @@ _dest='/usr/local/bin
 /Library/User Pictures'
 
 init_perms () {
-  for d in "${_dest}"; do
+  printf "%s\n" "${_dest}" | \
+  while IFS="$(printf '\t')" read d; do
     test -d "${d}" || sudo mkdir -p "${d}"
     sudo chgrp -R admin "${d}"
-    sudo chmod -R g+w "{d}"
+    sudo chmod -R g+w "${d}"
   done
 }
 
@@ -187,7 +194,7 @@ EOF
 # Install Developer Tools
 
 init_devtools () {
-  p="${CACHE}/Command Line Tools (macOS High Sierra version 10.13).pkg"
+  p="${CACHES}/Command Line Tools (macOS High Sierra version 10.13).pkg"
   i="com.apple.pkg.CLTools_SDK_macOS1013"
 
   if test -f "${p}"; then
@@ -462,7 +469,7 @@ install_brewfile_mas_apps () {
   export MASDIR="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
   sudo chown -R "$(whoami)" "${MASDIR}"
   rsync -a --delay-updates \
-    "${CACHE}/storedownloadd/" "${MASDIR}/
+    "${CACHES}/storedownloadd/" "${MASDIR}/"
 
   printf "%s\n" "${_mas}" | \
   while IFS="$(printf '\t')" read app id; do
@@ -643,6 +650,7 @@ config () {
   config_bbedit
   config_desktop
   config_dovecot
+  config_emacs
   config_zsh
   config_new_account
 
@@ -860,18 +868,61 @@ EOF
   fi
 }
 
+# Configure Emacs
+
+config_emacs () {
+  test -f "/usr/local/bin/vi" || \
+  cat << EOF > "/usr/local/bin/vi"
+#!/bin/sh
+
+if [ -e "/Applications/Emacs.app" ]; then
+  t=()
+
+  if [ \${#@} -ne 0 ]; then
+    while IFS= read -r file; do
+      [ ! -f "\$file" ] && t+=("\$file") && /usr/bin/touch "\$file"
+      file=\$(echo \$(cd \$(dirname "\$file") && pwd -P)/\$(basename "\$file"))
+      \$(/usr/bin/osascript <<-END
+        if application "Emacs.app" is running then
+          tell application id (id of application "Emacs.app") to open POSIX file "\$file"
+        else
+          tell application ((path to applications folder as text) & "Emacs.app")
+            activate
+            open POSIX file "\$file"
+          end tell
+        end if
+END
+        ) &  # Note: END on the previous line may be indented with tabs but not spaces
+    done <<<"\$(printf '%s\n' "\$@")"
+  fi
+
+  if [ ! -z "\$t" ]; then
+    \$(/bin/sleep 10; for file in "\${t[@]}"; do
+      [ ! -s "\$file" ] && /bin/rm "\$file";
+    done) &
+  fi
+else
+  vim -No "\$@"
+fi
+EOF
+
+  chmod a+x /usr/local/bin/vi
+  rehash
+}
+
 # Configure Z-Shell
 
 config_zsh () {
+  grep -q "ZDOTDIR" "/etc/zshenv" || \
   sudo tee -a /etc/zshenv << EOF > /dev/null
-export ZDOTDIR="${HOME}/.zsh"
+export ZDOTDIR="\${HOME}/.zsh"
 export MASDIR="\$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
 
 export EDITOR="vi"
 export VISUAL="vi"
 export PAGER="less"
 
-test -z "${LANG}" && \
+test -z "\${LANG}" && \\
   export LANG="en_US.UTF-8"
 
 # Ensure path arrays do not contain duplicates.
@@ -891,14 +942,15 @@ config_new_account () {
   curl --output "/Library/User Pictures/${e}.jpg" --silent \
     "https://www.gravatar.com/avatar/$(md5 -qs ${e}).jpg?s=512"
 
-  n="$(curl --location --silent \
+  g="$(curl --location --silent \
     "https://api.github.com/search/users?q=${e}" | \
-    sed -n 's/^.*"name": "\(.*\)".*/\1/p')"
+    sed -n 's/^.*"url": "\(.*\)".*/\1/p')"
+  g="$(curl --location --silent ${g})"
+
+  n="$(printf ${g} | sed -n 's/^.*"name": "\(.*\)".*/\1/p')"
   n="$(ask 'New Account Real Name' 'OK' ${n})"
 
-  u="$(curl --location --silent \
-    "https://api.github.com/search/users?q=${e}" | \
-    sed -n 's/^.*"login": "\(.*\)".*/\1/p')"
+  u="$(printf ${g} | sed -n 's/^.*"login": "\(.*\)".*/\1/p')"
   u="$(ask 'New Account User Name' 'OK' ${u})"
 
   sudo defaults write \
@@ -1254,43 +1306,6 @@ EOF
   )
 )
 EOF
-
-  cat << EOF > "/usr/local/bin/vi"
-#!/bin/sh
-
-if [ -e "/Applications/Emacs.app" ]; then
-  t=()
-
-  if [ \${#@} -ne 0 ]; then
-    while IFS= read -r file; do
-      [ ! -f "\$file" ] && t+=("\$file") && /usr/bin/touch "\$file"
-      file=\$(echo \$(cd \$(dirname "\$file") && pwd -P)/\$(basename "\$file"))
-      \$(/usr/bin/osascript <<-END
-        if application "Emacs.app" is running then
-          tell application id (id of application "Emacs.app") to open POSIX file "\$file"
-        else
-          tell application ((path to applications folder as text) & "Emacs.app")
-            activate
-            open POSIX file "\$file"
-          end tell
-        end if
-END
-        ) &  # Note: END on the previous line may be indented with tabs but not spaces
-    done <<<"\$(printf '%s\n' "\$@")"
-  fi
-
-  if [ ! -z "\$t" ]; then
-    \$(/bin/sleep 10; for file in "\${t[@]}"; do
-      [ ! -s "\$file" ] && /bin/rm "\$file";
-    done) &
-  fi
-else
-  vim -No "\$@"
-fi
-EOF
-
-  chmod a+x /usr/local/bin/vi
-  rehash
 }
 
 # Customize Terminal
