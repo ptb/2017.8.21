@@ -687,6 +687,12 @@ config_bbedit () {
   fi
 }
 
+# Configure Default Apps
+
+config_default_apps () {
+  true
+}
+
 # Configure Desktop Picture
 
 config_desktop () {
@@ -909,6 +915,12 @@ EOF
   rehash
 }
 
+# Configure OpenSSL
+
+config_openssl () {
+  true
+}
+
 # Configure Z-Shell
 
 config_zsh () {
@@ -1083,6 +1095,70 @@ EOF
 @purple: #cc99cc;
 EOF
   fi
+}
+
+# Customize autoping
+
+_autoping='com.memset.autoping	Hostname	-string	google.com	
+com.memset.autoping	SlowPingLowThreshold	-int	100	
+com.memset.autoping	LaunchAtLogin	-bool	true	
+com.memset.autoping	ShowIcon	-bool	true	
+com.memset.autoping	ShowText	-bool	true	
+com.memset.autoping	ShowPacketLossText	-bool	true	
+com.memset.autoping	ShowNotifications	-bool	true	'
+
+custom_autoping () {
+  config_defaults "${_autoping}"
+}
+
+# Customize Desktop Picture
+
+custom_desktop () {
+  osascript - "${1}" << EOF 2> /dev/null
+    on run { _this }
+      tell application "System Events"
+        set a to POSIX file quoted form of _this
+        set b to a reference to every desktop
+        repeat with c in b
+          set picture of c to a
+        end repeat
+      end tell
+    end run
+EOF
+}
+
+# Customize Dock
+
+_dock='Metanota Pro
+Mail
+Safari
+Messages
+Emacs
+Atom
+Utilities/Terminal
+System Preferences
+PCalc
+Hermes
+iTunes
+VLC'
+
+custom_dock () {
+  defaults write com.apple.dock "autohide-delay" -float 0
+  defaults write com.apple.dock "autohide-time-modifier" -float 0.5
+
+  defaults delete com.apple.dock "persistent-apps"
+
+  printf "%s\n" "${_dock}" | \
+  while IFS="$(printf '\t')" read app; do
+    if test -e "/Applications/${app}.app"; then
+      defaults write com.apple.dock "persistent-apps" -array-add \
+        "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/${app}.app/</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+    fi
+  done
+
+  defaults delete com.apple.dock "persistent-others"
+
+  osascript -e 'tell app "Dock" to quit'
 }
 
 # Customize Emacs
@@ -1314,6 +1390,264 @@ EOF
 EOF
 }
 
+# Configure getmail
+
+custom_getmail () {
+  true
+}
+
+# Configure Git
+
+custom_git () {
+  true
+}
+
+# Customize GnuPG
+
+custom_gnupg () {
+  true
+}
+
+# Customize iStat Menus
+
+_istat_menus='com.bjango.istatmenus5.extras	MenubarSkinColor	-int	8	
+com.bjango.istatmenus5.extras	MenubarTheme	-int	0	
+com.bjango.istatmenus5.extras	DropdownTheme	-int	1	
+com.bjango.istatmenus5.extras	CPU_MenubarMode	-string	100,2,0	
+com.bjango.istatmenus5.extras	CPU_MenubarTextSize	-int	14	
+com.bjango.istatmenus5.extras	CPU_MenubarGraphShowBackground	-int	0	
+com.bjango.istatmenus5.extras	CPU_MenubarGraphWidth	-int	32	
+com.bjango.istatmenus5.extras	CPU_MenubarGraphBreakdowns	-int	0	
+com.bjango.istatmenus5.extras	CPU_MenubarGraphCustomColors	-int	0	
+com.bjango.istatmenus5.extras	CPU_MenubarGraphOverall	-string	0.40 0.60 0.40 1.00	
+com.bjango.istatmenus5.extras	CPU_MenubarCombineCores	-int	1	
+com.bjango.istatmenus5.extras	CPU_MenubarGroupItems	-int	0	
+com.bjango.istatmenus5.extras	CPU_MenubarSingleHistoryGraph	-int	0	
+com.bjango.istatmenus5.extras	CPU_CombineLogicalCores	-int	1	
+com.bjango.istatmenus5.extras	CPU_AppFormat	-int	0	
+com.bjango.istatmenus5.extras	Memory_MenubarMode	-string	100,2,6	
+com.bjango.istatmenus5.extras	Memory_MenubarPercentageSize	-int	14	
+com.bjango.istatmenus5.extras	Memory_MenubarGraphBreakdowns	-int	1	
+com.bjango.istatmenus5.extras	Memory_MenubarGraphCustomColors	-int	0	
+com.bjango.istatmenus5.extras	Memory_MenubarGraphOverall	-string	0.40 0.60 0.40 1.00	
+com.bjango.istatmenus5.extras	Memory_MenubarGraphWired	-string	0.40 0.60 0.40 1.00	
+com.bjango.istatmenus5.extras	Memory_MenubarGraphActive	-string	0.47 0.67 0.47 1.00	
+com.bjango.istatmenus5.extras	Memory_MenubarGraphCompressed	-string	0.53 0.73 0.53 1.00	
+com.bjango.istatmenus5.extras	Memory_MenubarGraphInactive	-string	0.60 0.80 0.60 1.00	
+com.bjango.istatmenus5.extras	Memory_IgnoreInactive	-int	0	
+com.bjango.istatmenus5.extras	Memory_AppFormat	-int	0	
+com.bjango.istatmenus5.extras	Memory_DisplayFormat	-int	1	
+com.bjango.istatmenus5.extras	Disks_MenubarMode	-string	100,9,8	
+com.bjango.istatmenus5.extras	Disks_MenubarGroupItems	-int	1	
+com.bjango.istatmenus5.extras	Disks_MenubarRWShowLabel	-int	1	
+com.bjango.istatmenus5.extras	Disks_MenubarRWBold	-int	0	
+com.bjango.istatmenus5.extras	Disks_MenubarGraphActivityWidth	-int	32	
+com.bjango.istatmenus5.extras	Disks_MenubarGraphActivityShowBackground	-int	0	
+com.bjango.istatmenus5.extras	Disks_MenubarGraphActivityCustomColors	-int	0	
+com.bjango.istatmenus5.extras	Disks_MenubarGraphActivityRead	-string	0.60 0.80 0.60 1.00	
+com.bjango.istatmenus5.extras	Disks_MenubarGraphActivityWrite	-string	0.40 0.60 0.40 1.00	
+com.bjango.istatmenus5.extras	Disks_SeperateFusion	-int	1	
+com.bjango.istatmenus5.extras	Network_MenubarMode	-string	4,0,1	
+com.bjango.istatmenus5.extras	Network_TextUploadColor-Dark	-string	1.00 1.00 1.00 1.00	
+com.bjango.istatmenus5.extras	Network_TextDownloadColor-Dark	-string	1.00 1.00 1.00 1.00	
+com.bjango.istatmenus5.extras	Network_GraphWidth	-int	32	
+com.bjango.istatmenus5.extras	Network_GraphShowBackground	-int	0	
+com.bjango.istatmenus5.extras	Network_GraphCustomColors	-int	0	
+com.bjango.istatmenus5.extras	Network_GraphUpload	-string	0.60 0.80 0.60 1.00	
+com.bjango.istatmenus5.extras	Network_GraphDownload	-string	0.40 0.60 0.40 1.00	
+com.bjango.istatmenus5.extras	Network_GraphMode	-int	1	
+com.bjango.istatmenus5.extras	Battery_MenubarMode	-string	5,0	
+com.bjango.istatmenus5.extras	Battery_ColorGraphCustomColors	-int	1	
+com.bjango.istatmenus5.extras	Battery_ColorGraphCharged	-string	0.40 0.60 0.40 1.00	
+com.bjango.istatmenus5.extras	Battery_ColorGraphCharging	-string	0.60 0.80 0.60 1.00	
+com.bjango.istatmenus5.extras	Battery_ColorGraphDraining	-string	1.00 0.60 0.60 1.00	
+com.bjango.istatmenus5.extras	Battery_ColorGraphLow	-string	1.00 0.20 0.20 1.00	
+com.bjango.istatmenus5.extras	Battery_PercentageSize	-int	14	
+com.bjango.istatmenus5.extras	Battery_MenubarCustomizeStates	-int	0	
+com.bjango.istatmenus5.extras	Battery_MenubarHideBluetooth	-int	1	
+com.bjango.istatmenus5.extras	Time_MenubarFormat	-array-add	EE	
+com.bjango.istatmenus5.extras	Time_MenubarFormat	-array-add	\\040	
+com.bjango.istatmenus5.extras	Time_MenubarFormat	-array-add	MMM	
+com.bjango.istatmenus5.extras	Time_MenubarFormat	-array-add	\\040	
+com.bjango.istatmenus5.extras	Time_MenubarFormat	-array-add	d	
+com.bjango.istatmenus5.extras	Time_MenubarFormat	-array-add	\\040	
+com.bjango.istatmenus5.extras	Time_MenubarFormat	-array-add	h	
+com.bjango.istatmenus5.extras	Time_MenubarFormat	-array-add	:	
+com.bjango.istatmenus5.extras	Time_MenubarFormat	-array-add	mm	
+com.bjango.istatmenus5.extras	Time_MenubarFormat	-array-add	:	
+com.bjango.istatmenus5.extras	Time_MenubarFormat	-array-add	ss	
+com.bjango.istatmenus5.extras	Time_MenubarFormat	-array-add	\\040	
+com.bjango.istatmenus5.extras	Time_MenubarFormat	-array-add	a	
+com.bjango.istatmenus5.extras	Time_DropdownFormat	-array-add	EE	
+com.bjango.istatmenus5.extras	Time_DropdownFormat	-array-add	\\040	
+com.bjango.istatmenus5.extras	Time_DropdownFormat	-array-add	h	
+com.bjango.istatmenus5.extras	Time_DropdownFormat	-array-add	:	
+com.bjango.istatmenus5.extras	Time_DropdownFormat	-array-add	mm	
+com.bjango.istatmenus5.extras	Time_DropdownFormat	-array-add	\\040	
+com.bjango.istatmenus5.extras	Time_DropdownFormat	-array-add	a	
+com.bjango.istatmenus5.extras	Time_DropdownFormat	-array-add	\\040\\050	
+com.bjango.istatmenus5.extras	Time_DropdownFormat	-array-add	zzz	
+com.bjango.istatmenus5.extras	Time_DropdownFormat	-array-add	\\051	
+com.bjango.istatmenus5.extras	Time_Cities	-array-add	4930956	
+com.bjango.istatmenus5.extras	Time_Cities	-array-add	4887398	
+com.bjango.istatmenus5.extras	Time_Cities	-array-add	5419384	
+com.bjango.istatmenus5.extras	Time_Cities	-array-add	5392171	
+com.bjango.istatmenus5.extras	Time_Cities	-array-add	5879400	
+com.bjango.istatmenus5.extras	Time_Cities	-array-add	5856195	
+com.bjango.istatmenus5.extras	Time_TextSize	-int	14	'
+
+custom_istat_menus () {
+  defaults delete com.bjango.istatmenus5.extras Time_MenubarFormat
+  defaults delete com.bjango.istatmenus5.extras Time_DropdownFormat
+  defaults delete com.bjango.istatmenus5.extras Time_Cities
+  config_defaults "${_istat_menus}"
+}
+
+# Customize Login Items
+
+custom_loginitems () {
+  true
+}
+
+# Customize Moom
+
+_moom='com.manytricks.Moom	Allow For Drawers	-bool	true	
+com.manytricks.Moom	Grid Spacing	-bool	true	
+com.manytricks.Moom	Grid Spacing: Gap	-int	2	
+com.manytricks.Moom	Grid Spacing: Apply To Edges	-bool	false	
+com.manytricks.Moom	Target Window Highlight	-float	0.25	
+com.manytricks.Moom	Stealth Mode	-bool	true	
+com.manytricks.Moom	Application Mode	-int	2	
+com.manytricks.Moom	Mouse Controls	-bool	true	
+com.manytricks.Moom	Mouse Controls Delay	-float	0.1	
+com.manytricks.Moom	Mouse Controls Grid	-bool	true	
+com.manytricks.Moom	Mouse Controls Grid: Mode	-int	3	
+com.manytricks.Moom	Mouse Controls Grid: Columns	-int	10	
+com.manytricks.Moom	Mouse Controls Grid: Rows	-int	6	
+com.manytricks.Moom	Mouse Controls Include Custom Controls	-bool	true	
+com.manytricks.Moom	Mouse Controls Include Custom Controls: Show On Hover	-bool	true	
+com.manytricks.Moom	Mouse Controls Auto-Activate Window	-bool	true	
+com.manytricks.Moom	Snap	-bool	false	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0, 0.33333}, {0.5, 0.66666}}"; }	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0, 0}, {0.3, 0.33333}}"; }	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.4, 0.33333}, {0.3, 0.66666}}"; }	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.3, 0}, {0.4, 0.33333}}"; }	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.7, 0.66666}, {0.3, 0.33333}}"; }	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.7, 0.33333}, {0.3, 0.33333}}"; }	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.7, 0}, {0.3, 0.33333}}"; }	
+com.manytricks.Moom	Configuration Grid: Columns	-int	10	
+com.manytricks.Moom	Configuration Grid: Rows	-int	6	
+com.manytricks.Moom	SUEnableAutomaticChecks	-bool	true	'
+
+custom_moom () {
+  config_defaults "${_moom}"
+}
+
+# Customize nvALT
+
+_nvalt='net.elasticthreads.nv	TableFontPointSize	-int	11	
+net.elasticthreads.nv	AppActivationKeyCode	-int	-1	
+net.elasticthreads.nv	AppActivationModifiers	-int	-1	
+net.elasticthreads.nv	AutoCompleteSearches	-bool	true	
+net.elasticthreads.nv	ConfirmNoteDeletion	-bool	true	
+net.elasticthreads.nv	QuitWhenClosingMainWindow	-bool	false	
+net.elasticthreads.nv	StatusBarItem	-bool	true	
+net.elasticthreads.nv	ShowDockIcon	-bool	false	
+net.elasticthreads.nv	PastePreservesStyle	-bool	false	
+net.elasticthreads.nv	CheckSpellingInNoteBody	-bool	false	
+net.elasticthreads.nv	TabKeyIndents	-bool	true	
+net.elasticthreads.nv	UseSoftTabs	-bool	true	
+net.elasticthreads.nv	MakeURLsClickable	-bool	true	
+net.elasticthreads.nv	AutoSuggestLinks	-bool	false	
+net.elasticthreads.nv	UseMarkdownImport	-bool	false	
+net.elasticthreads.nv	UseReadability	-bool	false	
+net.elasticthreads.nv	rtl	-bool	false	
+net.elasticthreads.nv	UseAutoPairing	-bool	true	
+net.elasticthreads.nv	DefaultEEIdentifier	-string	org.gnu.Emacs	
+net.elasticthreads.nv	UserEEIdentifiers	-array-add	com.apple.TextEdit	
+net.elasticthreads.nv	UserEEIdentifiers	-array-add	org.gnu.Emacs	
+net.elasticthreads.nv	NoteBodyFont	-data	040b73747265616d747970656481e803840140848484064e53466f6e741e8484084e534f626a65637400858401692884055b3430635d060000001e000000fffe49006e0063006f006e0073006f006c006100740061004c004700430000008401660d8401630098019800980086	
+net.elasticthreads.nv	HighlightSearchTerms	-bool	true	
+net.elasticthreads.nv	SearchTermHighlightColor	-data	040b73747265616d747970656481e803840140848484074e53436f6c6f72008484084e534f626a65637400858401630184046666666683cdcc4c3f0183cdcc4c3f0186	
+net.elasticthreads.nv	ForegroundTextColor	-data	040b73747265616d747970656481e803840140848484074e53436f6c6f72008484084e534f626a65637400858401630184046666666683cdcc4c3f83cdcc4c3f83cdcc4c3f0186	
+net.elasticthreads.nv	BackgroundTextColor	-data	040b73747265616d747970656481e803840140848484074e53436f6c6f72008484084e534f626a65637400858401630184046666666683d1d0d03d83d1d0d03d83d1d0d03d0186	
+net.elasticthreads.nv	ShowGrid	-bool	true	
+net.elasticthreads.nv	AlternatingRows	-bool	true	
+net.elasticthreads.nv	UseETScrollbarsOnLion	-bool	false	
+net.elasticthreads.nv	KeepsMaxTextWidth	-bool	true	
+net.elasticthreads.nv	NoteBodyMaxWidth	-int	650	
+net.elasticthreads.nv	HorizontalLayout	-bool	false	
+net.elasticthreads.nv	NoteAttributesVisible	-array-add	Title	
+net.elasticthreads.nv	NoteAttributesVisible	-array-add	Tags	
+net.elasticthreads.nv	TableIsReverseSorted	-bool	true	
+net.elasticthreads.nv	TableSortColumn	-string	Date Modified	
+net.elasticthreads.nv	TableColumnsHaveBodyPreview	-bool	true	'
+
+custom_nvalt () {
+  config_defaults "${_nvalt}"
+}
+
+# Customize Safari
+
+_safari='com.apple.Safari	AlwaysRestoreSessionAtLaunch	-bool	false	
+com.apple.Safari	OpenPrivateWindowWhenNotRestoringSessionAtLaunch	-bool	false	
+com.apple.Safari	NewWindowBehavior	-int	1	
+com.apple.Safari	NewTabBehavior	-int	1	
+com.apple.Safari	AutoOpenSafeDownloads	-bool	false	
+com.apple.Safari	TabCreationPolicy	-int	2	
+com.apple.Safari	AutoFillFromAddressBook	-bool	false	
+com.apple.Safari	AutoFillPasswords	-bool	true	
+com.apple.Safari	AutoFillCreditCardData	-bool	false	
+com.apple.Safari	AutoFillMiscellaneousForms	-bool	false	
+com.apple.Safari	SuppressSearchSuggestions	-bool	false	
+com.apple.Safari	UniversalSearchEnabled	-bool	false	
+com.apple.Safari	WebsiteSpecificSearchEnabled	-bool	true	
+com.apple.Safari	PreloadTopHit	-bool	true	
+com.apple.Safari	ShowFavoritesUnderSmartSearchField	-bool	false	
+com.apple.Safari	SafariGeolocationPermissionPolicy	-int	0	
+com.apple.Safari	SendDoNotTrackHTTPHeader	-bool	true	
+com.apple.Safari	com.apple.Safari.ContentPageGroupIdentifier.WebKit2ApplePayCapabilityDisclosureAllowed	-bool	true	
+com.apple.Safari	CanPromptForPushNotifications	-bool	false	
+com.apple.Safari	ShowFullURLInSmartSearchField	-bool	true	
+com.apple.Safari	WebKitDefaultTextEncodingName	-string	utf-8	
+com.apple.Safari	com.apple.Safari.ContentPageGroupIdentifier.WebKit2DefaultTextEncodingName	-string	utf-8	
+com.apple.Safari	IncludeDevelopMenu	-bool	true	
+com.apple.Safari	WebKitDeveloperExtrasEnabledPreferenceKey	-bool	true	
+com.apple.Safari	com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled	-bool	true	
+com.apple.Safari	ShowFavoritesBar-v2	-bool	true	
+com.apple.Safari	AlwaysShowTabBar	-bool	true	
+com.apple.Safari	ShowStatusBar	-bool	true	
+com.apple.Safari	ShowStatusBarInFullScreen	-bool	true	'
+
+custom_safari () {
+  config_defaults "${_safari}"
+}
+
+# Customize Screen Saver
+
+custom_screensaver () {
+  if [ -e "/Library/Screen Savers/BlankScreen.saver" ]; then
+    defaults -currentHost write com.apple.screensaver moduleDict \
+      '{
+        moduleName = "BlankScreen";
+        path = "/Library/Screen Savers/BlankScreen.saver";
+        type = 0;
+      }'
+  fi
+}
+
+# Customize Sieve
+
+custom_sieve () {
+  true
+}
+
+# Customize SSH
+
+custom_ssh () {
+  true
+}
+
 # Customize Terminal
 
 _term_plist='delete			
@@ -1406,6 +1740,39 @@ custom_terminal () {
   config_defaults "${_term_defaults}"
 }
 
+# Customize Vim
+
+custom_vim () {
+  true
+}
+
+# Customize VLC
+
+_vlc_defaults='org.videolan.vlc	SUEnableAutomaticChecks	-bool	true	
+org.videolan.vlc	SUHasLaunchedBefore	-bool	true	
+org.videolan.vlc	SUSendProfileInfo	-bool	true	'
+_vlcrc='macosx	macosx-nativefullscreenmode	1
+macosx	macosx-video-autoresize	0
+macosx	macosx-appleremote	0
+macosx	macosx-pause-minimized	1
+macosx	macosx-continue-playback	1
+core	metadata-network-access	1
+core	volume-save	0
+core	spdif	1
+core	sub-language	English
+subsdec	subsdec-encoding	UTF-8
+avcodec	avcodec-hw	vda'
+
+custom_vlc () {
+  config_defaults "${_vlc_defaults}"
+  if which crudini > /dev/null; then
+    printf "%s\n" "${_vlcrc}" | \
+    while IFS="$(printf '\t')" read section key value; do
+      crudini --set "${HOME}/Library/Preferences/org.videolan.vlc/vlcrc" "${section}" "${key}" "${value}"
+    done
+  fi
+}
+
 # Customize Z-Shell
 
 custom_zsh () {
@@ -1418,4 +1785,142 @@ curl --location --silent \
   . /dev/stdin 1
 EOF
   chmod +x "${ZDOTDIR:-$HOME}/.zshrc"
+}
+
+# Define Function =personalize=
+
+personalize () {
+  true
+}
+
+# Personalize Airfoil 4
+
+personalize_airfoil4 () {
+  true
+}
+
+# Personalize BBEdit 10
+
+personalize_bbedit10 () {
+  true
+}
+
+# Personalize Carbon Copy Cloner 4
+
+personalize_ccc4 () {
+  true
+}
+
+# Personalize ExpanDrive 5
+
+personalize_expandrive5 () {
+  true
+}
+
+# Personalize Flip4Mac
+
+personalize_flip4mac () {
+  true
+}
+
+# Personalize Sketchup Pro 8
+
+personalize_sketchuppro8 () {
+  true
+}
+
+# Personalize iStat Menus 5
+
+personalize_istatmenus5 () {
+  true
+}
+
+# Personalize Little Snitch 4
+
+personalize_littlesnitch4 () {
+  true
+}
+
+# Personalize Meteorologist 3
+
+personalize_meteorologist3 () {
+  true
+}
+
+# Personalize Moom
+
+personalize_moom () {
+  true
+}
+
+# Personalize NZBGet
+
+personalize_nzbget () {
+  true
+}
+
+# Personalize NZBVortex
+
+personalize_nzbvortex () {
+  true
+}
+
+# Personalize Pacifist
+
+personalize_pacifist () {
+  true
+}
+
+# Personalize PCalc 3
+
+personalize_pcalc3 () {
+  true
+}
+
+# Personalize Scrivener
+
+personalize_scrivener () {
+  true
+}
+
+# Personalize SizeUp
+
+personalize_sizeup () {
+  true
+}
+
+# Personalize SteerMouse 5
+
+personalize_steermouse5 () {
+  true
+}
+
+# Personalize SourceTree
+
+personalize_sourcetree () {
+  true
+}
+
+# Personalize Tower 2
+
+personalize_tower2 () {
+  true
+}
+
+# Personalize Transmit 4
+
+personalize_transmit4 () {
+  true
+}
+
+# Personalize Tune4mac
+
+personalize_tune4mac () {
+  true
+}
+
+# Personalize VMware Fusion 8 Pro
+
+personalize_vmwarefusion8pro () {
+  true
 }

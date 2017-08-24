@@ -897,6 +897,13 @@ config_bbedit () {
 }
 #+end_src
 
+*** Configure Default Apps
+#+begin_src sh
+config_default_apps () {
+  true
+}
+#+end_src
+
 *** Configure Desktop Picture
 #+begin_src sh
 config_desktop () {
@@ -1147,6 +1154,13 @@ else
 fi
 #+end_src
 
+*** Configure OpenSSL
+#+begin_src sh
+config_openssl () {
+  true
+}
+#+end_src
+
 *** Configure Z-Shell
 #+begin_src sh
 config_zsh () {
@@ -1352,6 +1366,92 @@ EOF
 @blue: #6699cc;
 @purple: #cc99cc;
 #+end_src
+
+*** Customize autoping
+#+begin_src sh :var _autoping=_autoping[3:-2,1:5]
+
+custom_autoping () {
+  config_defaults "${_autoping}"
+}
+#+end_src
+
+**** _autoping
+#+name: _autoping
+|----------------------------------+---------------------+----------------------+---------+------------+------|
+| Preference                       | Domain              | Key                  | Type    | Value      | Host |
+|----------------------------------+---------------------+----------------------+---------+------------+------|
+| *Host to Ping*                   | com.memset.autoping | Hostname             | -string | google.com |      |
+| *Slow Ping Threshold (ms)* ~100~ | com.memset.autoping | SlowPingLowThreshold | -int    | 100        |      |
+| *Launch at Login* ~on~           | com.memset.autoping | LaunchAtLogin        | -bool   | true       |      |
+| *Display* ~Icon and Text~        | com.memset.autoping | ShowIcon             | -bool   | true       |      |
+|                                  | com.memset.autoping | ShowText             | -bool   | true       |      |
+| *Packet Loss Text* ~on~          | com.memset.autoping | ShowPacketLossText   | -bool   | true       |      |
+| *Connection Up/Down Alerts* ~on~ | com.memset.autoping | ShowNotifications    | -bool   | true       |      |
+|----------------------------------+---------------------+----------------------+---------+------------+------|
+
+*** Customize Desktop Picture
+#+begin_src sh
+custom_desktop () {
+  osascript - "${1}" << EOF 2> /dev/null
+<<custom_desktop.applescript>>
+EOF
+}
+#+end_src
+
+**** =custom_desktop.applescript=
+#+begin_src applescript :noweb-ref custom_desktop.applescript
+    on run { _this }
+      tell application "System Events"
+        set a to POSIX file quoted form of _this
+        set b to a reference to every desktop
+        repeat with c in b
+          set picture of c to a
+        end repeat
+      end tell
+    end run
+#+end_src
+
+*** Customize Dock
+#+begin_src sh :var _dock=_dock[3:-2,0]
+
+custom_dock () {
+  defaults write com.apple.dock "autohide-delay" -float 0
+  defaults write com.apple.dock "autohide-time-modifier" -float 0.5
+
+  defaults delete com.apple.dock "persistent-apps"
+
+  printf "%s\n" "${_dock}" | \
+  while IFS="$(printf '\t')" read app; do
+    if test -e "/Applications/${app}.app"; then
+      defaults write com.apple.dock "persistent-apps" -array-add \
+        "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/${app}.app/</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+    fi
+  done
+
+  defaults delete com.apple.dock "persistent-others"
+
+  osascript -e 'tell app "Dock" to quit'
+}
+#+end_src
+
+***** _dock
+#+name: _dock
+|--------------------|
+| Dock Items         |
+|--------------------|
+| Metanota Pro       |
+| Mail               |
+| Safari             |
+| Messages           |
+| Emacs              |
+| Atom               |
+| Utilities/Terminal |
+| System Preferences |
+| PCalc              |
+| Hermes             |
+| iTunes             |
+| VLC                |
+|--------------------|
 
 *** Customize Emacs
 #+begin_src sh
@@ -1608,6 +1708,303 @@ EOF
 )
 #+end_src
 
+*** Configure getmail
+#+begin_src sh
+custom_getmail () {
+  true
+}
+#+end_src
+
+*** Configure Git
+#+begin_src sh
+custom_git () {
+  true
+}
+#+end_src
+
+*** Customize GnuPG
+#+begin_src sh
+custom_gnupg () {
+  true
+}
+#+end_src
+
+*** Customize iStat Menus
+#+begin_src sh :var _istat_menus=_istat_menus[3:-2,1:5]
+
+custom_istat_menus () {
+  defaults delete com.bjango.istatmenus5.extras Time_MenubarFormat
+  defaults delete com.bjango.istatmenus5.extras Time_DropdownFormat
+  defaults delete com.bjango.istatmenus5.extras Time_Cities
+  config_defaults "${_istat_menus}"
+}
+#+end_src
+
+***** _istat_menus
+#+name: _istat_menus
+|------------+-------------------------------+------------------------------------------+------------+---------------------+------|
+| Preference | Domain                        | Key                                      | Type       | Value               | Host |
+|------------+-------------------------------+------------------------------------------+------------+---------------------+------|
+|            | com.bjango.istatmenus5.extras | MenubarSkinColor                         | -int       | 8                   |      |
+|            | com.bjango.istatmenus5.extras | MenubarTheme                             | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | DropdownTheme                            | -int       | 1                   |      |
+|            | com.bjango.istatmenus5.extras | CPU_MenubarMode                          | -string    | 100,2,0             |      |
+|            | com.bjango.istatmenus5.extras | CPU_MenubarTextSize                      | -int       | 14                  |      |
+|            | com.bjango.istatmenus5.extras | CPU_MenubarGraphShowBackground           | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | CPU_MenubarGraphWidth                    | -int       | 32                  |      |
+|            | com.bjango.istatmenus5.extras | CPU_MenubarGraphBreakdowns               | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | CPU_MenubarGraphCustomColors             | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | CPU_MenubarGraphOverall                  | -string    | 0.40 0.60 0.40 1.00 |      |
+|            | com.bjango.istatmenus5.extras | CPU_MenubarCombineCores                  | -int       | 1                   |      |
+|            | com.bjango.istatmenus5.extras | CPU_MenubarGroupItems                    | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | CPU_MenubarSingleHistoryGraph            | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | CPU_CombineLogicalCores                  | -int       | 1                   |      |
+|            | com.bjango.istatmenus5.extras | CPU_AppFormat                            | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | Memory_MenubarMode                       | -string    | 100,2,6             |      |
+|            | com.bjango.istatmenus5.extras | Memory_MenubarPercentageSize             | -int       | 14                  |      |
+|            | com.bjango.istatmenus5.extras | Memory_MenubarGraphBreakdowns            | -int       | 1                   |      |
+|            | com.bjango.istatmenus5.extras | Memory_MenubarGraphCustomColors          | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | Memory_MenubarGraphOverall               | -string    | 0.40 0.60 0.40 1.00 |      |
+|            | com.bjango.istatmenus5.extras | Memory_MenubarGraphWired                 | -string    | 0.40 0.60 0.40 1.00 |      |
+|            | com.bjango.istatmenus5.extras | Memory_MenubarGraphActive                | -string    | 0.47 0.67 0.47 1.00 |      |
+|            | com.bjango.istatmenus5.extras | Memory_MenubarGraphCompressed            | -string    | 0.53 0.73 0.53 1.00 |      |
+|            | com.bjango.istatmenus5.extras | Memory_MenubarGraphInactive              | -string    | 0.60 0.80 0.60 1.00 |      |
+|            | com.bjango.istatmenus5.extras | Memory_IgnoreInactive                    | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | Memory_AppFormat                         | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | Memory_DisplayFormat                     | -int       | 1                   |      |
+|            | com.bjango.istatmenus5.extras | Disks_MenubarMode                        | -string    | 100,9,8             |      |
+|            | com.bjango.istatmenus5.extras | Disks_MenubarGroupItems                  | -int       | 1                   |      |
+|            | com.bjango.istatmenus5.extras | Disks_MenubarRWShowLabel                 | -int       | 1                   |      |
+|            | com.bjango.istatmenus5.extras | Disks_MenubarRWBold                      | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | Disks_MenubarGraphActivityWidth          | -int       | 32                  |      |
+|            | com.bjango.istatmenus5.extras | Disks_MenubarGraphActivityShowBackground | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | Disks_MenubarGraphActivityCustomColors   | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | Disks_MenubarGraphActivityRead           | -string    | 0.60 0.80 0.60 1.00 |      |
+|            | com.bjango.istatmenus5.extras | Disks_MenubarGraphActivityWrite          | -string    | 0.40 0.60 0.40 1.00 |      |
+|            | com.bjango.istatmenus5.extras | Disks_SeperateFusion                     | -int       | 1                   |      |
+|            | com.bjango.istatmenus5.extras | Network_MenubarMode                      | -string    | 4,0,1               |      |
+|            | com.bjango.istatmenus5.extras | Network_TextUploadColor-Dark             | -string    | 1.00 1.00 1.00 1.00 |      |
+|            | com.bjango.istatmenus5.extras | Network_TextDownloadColor-Dark           | -string    | 1.00 1.00 1.00 1.00 |      |
+|            | com.bjango.istatmenus5.extras | Network_GraphWidth                       | -int       | 32                  |      |
+|            | com.bjango.istatmenus5.extras | Network_GraphShowBackground              | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | Network_GraphCustomColors                | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | Network_GraphUpload                      | -string    | 0.60 0.80 0.60 1.00 |      |
+|            | com.bjango.istatmenus5.extras | Network_GraphDownload                    | -string    | 0.40 0.60 0.40 1.00 |      |
+|            | com.bjango.istatmenus5.extras | Network_GraphMode                        | -int       | 1                   |      |
+|            | com.bjango.istatmenus5.extras | Battery_MenubarMode                      | -string    | 5,0                 |      |
+|            | com.bjango.istatmenus5.extras | Battery_ColorGraphCustomColors           | -int       | 1                   |      |
+|            | com.bjango.istatmenus5.extras | Battery_ColorGraphCharged                | -string    | 0.40 0.60 0.40 1.00 |      |
+|            | com.bjango.istatmenus5.extras | Battery_ColorGraphCharging               | -string    | 0.60 0.80 0.60 1.00 |      |
+|            | com.bjango.istatmenus5.extras | Battery_ColorGraphDraining               | -string    | 1.00 0.60 0.60 1.00 |      |
+|            | com.bjango.istatmenus5.extras | Battery_ColorGraphLow                    | -string    | 1.00 0.20 0.20 1.00 |      |
+|            | com.bjango.istatmenus5.extras | Battery_PercentageSize                   | -int       | 14                  |      |
+|            | com.bjango.istatmenus5.extras | Battery_MenubarCustomizeStates           | -int       | 0                   |      |
+|            | com.bjango.istatmenus5.extras | Battery_MenubarHideBluetooth             | -int       | 1                   |      |
+|            | com.bjango.istatmenus5.extras | Time_MenubarFormat                       | -array-add | EE                  |      |
+|            | com.bjango.istatmenus5.extras | Time_MenubarFormat                       | -array-add | \\040               |      |
+|            | com.bjango.istatmenus5.extras | Time_MenubarFormat                       | -array-add | MMM                 |      |
+|            | com.bjango.istatmenus5.extras | Time_MenubarFormat                       | -array-add | \\040               |      |
+|            | com.bjango.istatmenus5.extras | Time_MenubarFormat                       | -array-add | d                   |      |
+|            | com.bjango.istatmenus5.extras | Time_MenubarFormat                       | -array-add | \\040               |      |
+|            | com.bjango.istatmenus5.extras | Time_MenubarFormat                       | -array-add | h                   |      |
+|            | com.bjango.istatmenus5.extras | Time_MenubarFormat                       | -array-add | :                   |      |
+|            | com.bjango.istatmenus5.extras | Time_MenubarFormat                       | -array-add | mm                  |      |
+|            | com.bjango.istatmenus5.extras | Time_MenubarFormat                       | -array-add | :                   |      |
+|            | com.bjango.istatmenus5.extras | Time_MenubarFormat                       | -array-add | ss                  |      |
+|            | com.bjango.istatmenus5.extras | Time_MenubarFormat                       | -array-add | \\040               |      |
+|            | com.bjango.istatmenus5.extras | Time_MenubarFormat                       | -array-add | a                   |      |
+|            | com.bjango.istatmenus5.extras | Time_DropdownFormat                      | -array-add | EE                  |      |
+|            | com.bjango.istatmenus5.extras | Time_DropdownFormat                      | -array-add | \\040               |      |
+|            | com.bjango.istatmenus5.extras | Time_DropdownFormat                      | -array-add | h                   |      |
+|            | com.bjango.istatmenus5.extras | Time_DropdownFormat                      | -array-add | :                   |      |
+|            | com.bjango.istatmenus5.extras | Time_DropdownFormat                      | -array-add | mm                  |      |
+|            | com.bjango.istatmenus5.extras | Time_DropdownFormat                      | -array-add | \\040               |      |
+|            | com.bjango.istatmenus5.extras | Time_DropdownFormat                      | -array-add | a                   |      |
+|            | com.bjango.istatmenus5.extras | Time_DropdownFormat                      | -array-add | \\040\\050          |      |
+|            | com.bjango.istatmenus5.extras | Time_DropdownFormat                      | -array-add | zzz                 |      |
+|            | com.bjango.istatmenus5.extras | Time_DropdownFormat                      | -array-add | \\051               |      |
+|            | com.bjango.istatmenus5.extras | Time_Cities                              | -array-add | 4930956             |      |
+|            | com.bjango.istatmenus5.extras | Time_Cities                              | -array-add | 4887398             |      |
+|            | com.bjango.istatmenus5.extras | Time_Cities                              | -array-add | 5419384             |      |
+|            | com.bjango.istatmenus5.extras | Time_Cities                              | -array-add | 5392171             |      |
+|            | com.bjango.istatmenus5.extras | Time_Cities                              | -array-add | 5879400             |      |
+|            | com.bjango.istatmenus5.extras | Time_Cities                              | -array-add | 5856195             |      |
+|            | com.bjango.istatmenus5.extras | Time_TextSize                            | -int       | 14                  |      |
+|------------+-------------------------------+------------------------------------------+------------+---------------------+------|
+
+*** Customize Login Items
+#+begin_src sh
+custom_loginitems () {
+  true
+}
+#+end_src
+
+*** Customize Moom
+#+begin_src sh :var _moom=_moom[3:-2,1:5]
+
+custom_moom () {
+  config_defaults "${_moom}"
+}
+#+end_src
+
+***** _moom
+#+name: _moom
+|------------------------------------------------------------------------+---------------------+-------------------------------------------------------+------------+-------------------------------------------------------------------------+------|
+| Preference                                                             | Domain              | Key                                                   | Type       | Value                                                                   | Host |
+|------------------------------------------------------------------------+---------------------+-------------------------------------------------------+------------+-------------------------------------------------------------------------+------|
+| ~on~ *Treat drawers as part of their parent windows*                   | com.manytricks.Moom | Allow For Drawers                                     | -bool      | true                                                                    |      |
+| ~on~ *Separate windows by* ~2~ *pt*                                    | com.manytricks.Moom | Grid Spacing                                          | -bool      | true                                                                    |      |
+|                                                                        | com.manytricks.Moom | Grid Spacing: Gap                                     | -int       | 2                                                                       |      |
+| ~off~ *Apply to screen edges*                                          | com.manytricks.Moom | Grid Spacing: Apply To Edges                          | -bool      | false                                                                   |      |
+| *Grid/keyboard control highlight:* ~25%~                               | com.manytricks.Moom | Target Window Highlight                               | -float     | 0.25                                                                    |      |
+| ~off~ *Show preferences on launch*                                     | com.manytricks.Moom | Stealth Mode                                          | -bool      | true                                                                    |      |
+| *Run as* ~faceless~ *application*                                      | com.manytricks.Moom | Application Mode                                      | -int       | 2                                                                       |      |
+| ~on~ *Pop up controls when hovering over a Zoom button*                | com.manytricks.Moom | Mouse Controls                                        | -bool      | true                                                                    |      |
+| *Delay:* ~0.1~ *second*                                                | com.manytricks.Moom | Mouse Controls Delay                                  | -float     | 0.1                                                                     |      |
+| ~on~ *Enable* ~hexagon~ *grid with* ~10~ *×* ~6~ *cells*               | com.manytricks.Moom | Mouse Controls Grid                                   | -bool      | true                                                                    |      |
+|                                                                        | com.manytricks.Moom | Mouse Controls Grid: Mode                             | -int       | 3                                                                       |      |
+|                                                                        | com.manytricks.Moom | Mouse Controls Grid: Columns                          | -int       | 10                                                                      |      |
+|                                                                        | com.manytricks.Moom | Mouse Controls Grid: Rows                             | -int       | 6                                                                       |      |
+| ~on~ *Enable access to custom controls*                                | com.manytricks.Moom | Mouse Controls Include Custom Controls                | -bool      | true                                                                    |      |
+| ~off~ *Show on hover*                                                  | com.manytricks.Moom | Mouse Controls Include Custom Controls: Show On Hover | -bool      | true                                                                    |      |
+| ~on~ *Bring moomed windows to the front automatically*                 | com.manytricks.Moom | Mouse Controls Auto-Activate Window                   | -bool      | true                                                                    |      |
+| ~off~ *Move & Zoom when dragging a window to a display edge or corner* | com.manytricks.Moom | Snap                                                  | -bool      | false                                                                   |      |
+| ~Move & Zoom~                                                          | com.manytricks.Moom | Custom Controls                                       | -array-add | { Action = 19; "Relative Frame" = "{{0, 0.33333}, {0.5, 0.66666}}"; }   |      |
+|                                                                        | com.manytricks.Moom | Custom Controls                                       | -array-add | { Action = 19; "Relative Frame" = "{{0, 0}, {0.3, 0.33333}}"; }         |      |
+|                                                                        | com.manytricks.Moom | Custom Controls                                       | -array-add | { Action = 19; "Relative Frame" = "{{0.4, 0.33333}, {0.3, 0.66666}}"; } |      |
+|                                                                        | com.manytricks.Moom | Custom Controls                                       | -array-add | { Action = 19; "Relative Frame" = "{{0.3, 0}, {0.4, 0.33333}}"; }       |      |
+|                                                                        | com.manytricks.Moom | Custom Controls                                       | -array-add | { Action = 19; "Relative Frame" = "{{0.7, 0.66666}, {0.3, 0.33333}}"; } |      |
+|                                                                        | com.manytricks.Moom | Custom Controls                                       | -array-add | { Action = 19; "Relative Frame" = "{{0.7, 0.33333}, {0.3, 0.33333}}"; } |      |
+|                                                                        | com.manytricks.Moom | Custom Controls                                       | -array-add | { Action = 19; "Relative Frame" = "{{0.7, 0}, {0.3, 0.33333}}"; }       |      |
+| *Define window sizes using* ~10~ *×* ~6~ *cells*                       | com.manytricks.Moom | Configuration Grid: Columns                           | -int       | 10                                                                      |      |
+|                                                                        | com.manytricks.Moom | Configuration Grid: Rows                              | -int       | 6                                                                       |      |
+| ~on~ *Check for updates automatically*                                 | com.manytricks.Moom | SUEnableAutomaticChecks                               | -bool      | true                                                                    |      |
+|------------------------------------------------------------------------+---------------------+-------------------------------------------------------+------------+-------------------------------------------------------------------------+------|
+
+*** Customize nvALT
+#+begin_src sh :var _nvalt=_nvalt[3:-2,1:5]
+
+custom_nvalt () {
+  config_defaults "${_nvalt}"
+}
+#+end_src
+
+**** _nvalt
+#+name: _nvalt
+|----------------------------------------------------------+-----------------------+-----------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------|
+| Preference                                               | Domain                | Key                         | Type       | Value                                                                                                                                                                                                                      | Host |
+|----------------------------------------------------------+-----------------------+-----------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------|
+| *List Text Size:* ~Small~                                | net.elasticthreads.nv | TableFontPointSize          | -int       | 11                                                                                                                                                                                                                         |      |
+| *Bring-to-Front Hotkey:* ~(None)~                        | net.elasticthreads.nv | AppActivationKeyCode        | -int       | -1                                                                                                                                                                                                                         |      |
+|                                                          | net.elasticthreads.nv | AppActivationModifiers      | -int       | -1                                                                                                                                                                                                                         |      |
+| ~on~ *Auto-select notes by title when searching*         | net.elasticthreads.nv | AutoCompleteSearches        | -bool      | true                                                                                                                                                                                                                       |      |
+| ~on~ *Confirm note deletion*                             | net.elasticthreads.nv | ConfirmNoteDeletion         | -bool      | true                                                                                                                                                                                                                       |      |
+| ~off~ *Quit when closing window*                         | net.elasticthreads.nv | QuitWhenClosingMainWindow   | -bool      | false                                                                                                                                                                                                                      |      |
+| ~on~ *Show menu bar icon*                                | net.elasticthreads.nv | StatusBarItem               | -bool      | true                                                                                                                                                                                                                       |      |
+| *Hide Dock Icon*                                         | net.elasticthreads.nv | ShowDockIcon                | -bool      | false                                                                                                                                                                                                                      |      |
+| *Styled Text:* ~off~ *Copy basic styles from other apps* | net.elasticthreads.nv | PastePreservesStyle         | -bool      | false                                                                                                                                                                                                                      |      |
+| *Spelling:* ~off~ *Check as you type*                    | net.elasticthreads.nv | CheckSpellingInNoteBody     | -bool      | false                                                                                                                                                                                                                      |      |
+| *Tab Key:* ~Indent lines~                                | net.elasticthreads.nv | TabKeyIndents               | -bool      | true                                                                                                                                                                                                                       |      |
+| ~on~ *Soft tabs (spaces)*                                | net.elasticthreads.nv | UseSoftTabs                 | -bool      | true                                                                                                                                                                                                                       |      |
+| *Links:* ~on~ *Make URLs clickable links*                | net.elasticthreads.nv | MakeURLsClickable           | -bool      | true                                                                                                                                                                                                                       |      |
+| *Links:* ~off~ *Suggest titles for note-links*           | net.elasticthreads.nv | AutoSuggestLinks            | -bool      | false                                                                                                                                                                                                                      |      |
+| *URL Import:* ~off~ *Convert imported URLs to Markdown*  | net.elasticthreads.nv | UseMarkdownImport           | -bool      | false                                                                                                                                                                                                                      |      |
+| *URL Import:* ~off~ *Process with Readability*           | net.elasticthreads.nv | UseReadability              | -bool      | false                                                                                                                                                                                                                      |      |
+| *Direction:* ~off~ *Right-To-Left (RTL)*                 | net.elasticthreads.nv | rtl                         | -bool      | false                                                                                                                                                                                                                      |      |
+| *Auto-pair:* ~on~                                        | net.elasticthreads.nv | UseAutoPairing              | -bool      | true                                                                                                                                                                                                                       |      |
+| *External Text Editor:* ~Emacs.app~                      | net.elasticthreads.nv | DefaultEEIdentifier         | -string    | org.gnu.Emacs                                                                                                                                                                                                              |      |
+|                                                          | net.elasticthreads.nv | UserEEIdentifiers           | -array-add | com.apple.TextEdit                                                                                                                                                                                                         |      |
+|                                                          | net.elasticthreads.nv | UserEEIdentifiers           | -array-add | org.gnu.Emacs                                                                                                                                                                                                              |      |
+| *Body Font:* ~InconsolataLGC 13~                         | net.elasticthreads.nv | NoteBodyFont                | -data      | 040b73747265616d747970656481e803840140848484064e53466f6e741e8484084e534f626a65637400858401692884055b3430635d060000001e000000fffe49006e0063006f006e0073006f006c006100740061004c004700430000008401660d8401630098019800980086 |      |
+| ~on~ *Search Highlight:* ~#CCFFCC~                       | net.elasticthreads.nv | HighlightSearchTerms        | -bool      | true                                                                                                                                                                                                                       |      |
+|                                                          | net.elasticthreads.nv | SearchTermHighlightColor    | -data      | 040b73747265616d747970656481e803840140848484074e53436f6c6f72008484084e534f626a65637400858401630184046666666683cdcc4c3f0183cdcc4c3f0186                                                                                     |      |
+| *Foreground Text:* ~#CCCCCC~                             | net.elasticthreads.nv | ForegroundTextColor         | -data      | 040b73747265616d747970656481e803840140848484074e53436f6c6f72008484084e534f626a65637400858401630184046666666683cdcc4c3f83cdcc4c3f83cdcc4c3f0186                                                                             |      |
+| *Background:* ~#1A1A1A~                                  | net.elasticthreads.nv | BackgroundTextColor         | -data      | 040b73747265616d747970656481e803840140848484074e53436f6c6f72008484084e534f626a65637400858401630184046666666683d1d0d03d83d1d0d03d83d1d0d03d0186                                                                             |      |
+| *Always Show Grid Lines in Notes List:* ~on~             | net.elasticthreads.nv | ShowGrid                    | -bool      | true                                                                                                                                                                                                                       |      |
+| *Alternating Row Colors:* ~on~                           | net.elasticthreads.nv | AlternatingRows             | -bool      | true                                                                                                                                                                                                                       |      |
+| *Use nvALT Scrollbars:* ~off~                            | net.elasticthreads.nv | UseETScrollbarsOnLion       | -bool      | false                                                                                                                                                                                                                      |      |
+| *Keep Note Body Width Readable:* ~on~                    | net.elasticthreads.nv | KeepsMaxTextWidth           | -bool      | true                                                                                                                                                                                                                       |      |
+| *Max. Note Body Width:* ~650~ *pixels*                   | net.elasticthreads.nv | NoteBodyMaxWidth            | -int       | 650                                                                                                                                                                                                                        |      |
+| *View* ▶ *Switch to Vertical Layout*                     | net.elasticthreads.nv | HorizontalLayout            | -bool      | false                                                                                                                                                                                                                      |      |
+| *View* ▶ *Columns* ▶ ~✓ Title~ ~✓ Tags~                  | net.elasticthreads.nv | NoteAttributesVisible       | -array-add | Title                                                                                                                                                                                                                      |      |
+|                                                          | net.elasticthreads.nv | NoteAttributesVisible       | -array-add | Tags                                                                                                                                                                                                                       |      |
+| *View* ▶ *Sort By* ▶︎ ~▼ Date Modified~                   | net.elasticthreads.nv | TableIsReverseSorted        | -bool      | true                                                                                                                                                                                                                       |      |
+|                                                          | net.elasticthreads.nv | TableSortColumn             | -string    | Date Modified                                                                                                                                                                                                              |      |
+| *View* ▶ *Show Note Previews in Title*                   | net.elasticthreads.nv | TableColumnsHaveBodyPreview | -bool      | true                                                                                                                                                                                                                       |      |
+|----------------------------------------------------------+-----------------------+-----------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------|
+
+*** Customize Safari
+#+begin_src sh :var _safari=_safari[3:-2,1:5]
+
+custom_safari () {
+  config_defaults "${_safari}"
+}
+#+end_src
+
+**** _safari
+#+name: _safari
+|-------------------------------------------------------------------------+------------------+----------------------------------------------------------------------------------------+---------+-------+------|
+| Preference                                                              | Domain           | Key                                                                                    | Type    | Value | Host |
+|-------------------------------------------------------------------------+------------------+----------------------------------------------------------------------------------------+---------+-------+------|
+| *Safari opens with:* ~A new window~                                     | com.apple.Safari | AlwaysRestoreSessionAtLaunch                                                           | -bool   | false |      |
+|                                                                         | com.apple.Safari | OpenPrivateWindowWhenNotRestoringSessionAtLaunch                                       | -bool   | false |      |
+| *New windows open with:* ~Empty Page~                                   | com.apple.Safari | NewWindowBehavior                                                                      | -int    | 1     |      |
+| *New tabs open with:* ~Empty Page~                                      | com.apple.Safari | NewTabBehavior                                                                         | -int    | 1     |      |
+| ~off~ *Open “safe” files after downloading*                             | com.apple.Safari | AutoOpenSafeDownloads                                                                  | -bool   | false |      |
+| *Open pages in tabs instead of windows:* ~Always~                       | com.apple.Safari | TabCreationPolicy                                                                      | -int    | 2     |      |
+| *AutoFill web forms:* ~off~ *Using info from my contacts*               | com.apple.Safari | AutoFillFromAddressBook                                                                | -bool   | false |      |
+| *AutoFill web forms:* ~on~ *User names and passwords*                   | com.apple.Safari | AutoFillPasswords                                                                      | -bool   | true  |      |
+| *AutoFill web forms:* ~off~ *Credit cards*                              | com.apple.Safari | AutoFillCreditCardData                                                                 | -bool   | false |      |
+| *AutoFill web forms:* ~off~ *Other forms*                               | com.apple.Safari | AutoFillMiscellaneousForms                                                             | -bool   | false |      |
+| ~on~ *Include search engine suggestions*                                | com.apple.Safari | SuppressSearchSuggestions                                                              | -bool   | false |      |
+| *Smart Search Field:* ~off~ *Include Safari Suggestions*                | com.apple.Safari | UniversalSearchEnabled                                                                 | -bool   | false |      |
+| *Smart Search Field:* ~on~ *Enable Quick Website Search*                | com.apple.Safari | WebsiteSpecificSearchEnabled                                                           | -bool   | true  |      |
+| *Smart Search Field:* ~on~ *Preload Top Hit in the background*          | com.apple.Safari | PreloadTopHit                                                                          | -bool   | true  |      |
+| *Smart Search Field:* ~off~ *Show Favorites*                            | com.apple.Safari | ShowFavoritesUnderSmartSearchField                                                     | -bool   | false |      |
+| *Website use of location services:* ~Deny without prompting~            | com.apple.Safari | SafariGeolocationPermissionPolicy                                                      | -int    | 0     |      |
+| *Website tracking:* ~on~ *Ask websites not to track me*                 | com.apple.Safari | SendDoNotTrackHTTPHeader                                                               | -bool   | true  |      |
+| *Apple Pay:* ~on~ *Allow websites to check if Apple Pay is set up*      | com.apple.Safari | com.apple.Safari.ContentPageGroupIdentifier.WebKit2ApplePayCapabilityDisclosureAllowed | -bool   | true  |      |
+| ~off~ *Allow websites to ask for permission to send push notifications* | com.apple.Safari | CanPromptForPushNotifications                                                          | -bool   | false |      |
+| *Smart Search Field:* ~on~ *Show full website address*                  | com.apple.Safari | ShowFullURLInSmartSearchField                                                          | -bool   | true  |      |
+| *Default encoding:* ~Unicode (UTF-8)~                                   | com.apple.Safari | WebKitDefaultTextEncodingName                                                          | -string | utf-8 |      |
+|                                                                         | com.apple.Safari | com.apple.Safari.ContentPageGroupIdentifier.WebKit2DefaultTextEncodingName             | -string | utf-8 |      |
+| ~on~ *Show Develop menu in menu bar*                                    | com.apple.Safari | IncludeDevelopMenu                                                                     | -bool   | true  |      |
+|                                                                         | com.apple.Safari | WebKitDeveloperExtrasEnabledPreferenceKey                                              | -bool   | true  |      |
+|                                                                         | com.apple.Safari | com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled              | -bool   | true  |      |
+| *View* ▶ *Show Favorites Bar*                                           | com.apple.Safari | ShowFavoritesBar-v2                                                                    | -bool   | true  |      |
+| *View* ▶ *Show Tab Bar*                                                 | com.apple.Safari | AlwaysShowTabBar                                                                       | -bool   | true  |      |
+| *View* ▶ *Show Status Bar*                                              | com.apple.Safari | ShowStatusBar                                                                          | -bool   | true  |      |
+|                                                                         | com.apple.Safari | ShowStatusBarInFullScreen                                                              | -bool   | true  |      |
+|-------------------------------------------------------------------------+------------------+----------------------------------------------------------------------------------------+---------+-------+------|
+
+*** Customize Screen Saver
+#+begin_src sh
+custom_screensaver () {
+  if [ -e "/Library/Screen Savers/BlankScreen.saver" ]; then
+    defaults -currentHost write com.apple.screensaver moduleDict \
+      '{
+        moduleName = "BlankScreen";
+        path = "/Library/Screen Savers/BlankScreen.saver";
+        type = 0;
+      }'
+  fi
+}
+#+end_src
+
+*** Customize Sieve
+#+begin_src sh
+custom_sieve () {
+  true
+}
+#+end_src
+
+*** Customize SSH
+#+begin_src sh
+custom_ssh () {
+  true
+}
+#+end_src
+
 *** Customize Terminal
 #+begin_src sh :var _term_plist=_term_plist[3:-2,1:4] :var _term_defaults=_term_defaults[3:-2,1:5]
 
@@ -1715,6 +2112,55 @@ custom_terminal () {
 |            | com.apple.Terminal | Default Window Settings | -string | ptb   |      |
 |------------+--------------------+-------------------------+---------+-------+------|
 
+*** Customize Vim
+#+begin_src sh
+custom_vim () {
+  true
+}
+#+end_src
+
+*** Customize VLC
+#+begin_src sh :var _vlc_defaults=_vlc_defaults[3:-2,1:5] :var _vlcrc=_vlcrc[3:-2,1:3]
+
+custom_vlc () {
+  config_defaults "${_vlc_defaults}"
+  if which crudini > /dev/null; then
+    printf "%s\n" "${_vlcrc}" | \
+    while IFS="$(printf '\t')" read section key value; do
+      crudini --set "${HOME}/Library/Preferences/org.videolan.vlc/vlcrc" "${section}" "${key}" "${value}"
+    done
+  fi
+}
+#+end_src
+
+**** _vlc_defaults
+#+name: _vlc_defaults
+|--------------------------------------+------------------+-------------------------+-------+-------+------|
+| Preference                           | Domain           | Key                     | Type  | Value | Host |
+|--------------------------------------+------------------+-------------------------+-------+-------+------|
+| ~on~ Automatically check for updates | org.videolan.vlc | SUEnableAutomaticChecks | -bool | true  |      |
+|                                      | org.videolan.vlc | SUHasLaunchedBefore     | -bool | true  |      |
+|                                      | org.videolan.vlc | SUSendProfileInfo       | -bool | true  |      |
+|--------------------------------------+------------------+-------------------------+-------+-------+------|
+
+**** _vlcrc
+#+name: _vlcrc
+|---------------------------------------------------------------------+---------+-----------------------------+---------|
+| Preference                                                          | Section | Key                         |   Value |
+|---------------------------------------------------------------------+---------+-----------------------------+---------|
+| *Interface:* ~on~ *Use the native fullscreen mode*                  | macosx  | macosx-nativefullscreenmode |       1 |
+| *Interface:* ~off~ *Resize interface to the native video size*      | macosx  | macosx-video-autoresize     |       0 |
+| *Interface:* ~off~ *Control playback with the Apple Remote*         | macosx  | macosx-appleremote          |       0 |
+| *Interface:* ~on~ *Pause the video playback when minimized*         | macosx  | macosx-pause-minimized      |       1 |
+| *Interface:* *Continue playback* ~Always~                           | macosx  | macosx-continue-playback    |       1 |
+| *Interface:* ~on~ *Allow metadata network access*                   | core    | metadata-network-access     |       1 |
+| *Audio:* ~Always reset audio start level to:~ ~100%~                | core    | volume-save                 |       0 |
+| *Audio:* ~on~ *Use S/PDIF when available*                           | core    | spdif                       |       1 |
+| *Subtitles / OSD:* *Preferred subtitle language* ~English~          | core    | sub-language                | English |
+| *Subtitles / OSD:* *Default Encoding* ~Universal (UTF-8)~           | subsdec | subsdec-encoding            |   UTF-8 |
+| *Input / Codecs: Hardware Acceleration* ~Video Decode Acceleration~ | avcodec | avcodec-hw                  |     vda |
+|---------------------------------------------------------------------+---------+-----------------------------+---------|
+
 *** Customize Z-Shell
 #+begin_src sh
 custom_zsh () {
@@ -1733,4 +2179,167 @@ EOF
 curl --location --silent \
   "https://github.com/ptb/2017.8.21/raw/master/mac-setup.command" | \
   . /dev/stdin 1
+#+end_src
+
+** Personalize
+
+*** Define Function =personalize=
+#+begin_src sh
+personalize () {
+  true
+}
+#+end_src
+
+*** Personalize Airfoil 4
+#+begin_src sh
+personalize_airfoil4 () {
+  true
+}
+#+end_src
+
+*** Personalize BBEdit 10
+#+begin_src sh
+personalize_bbedit10 () {
+  true
+}
+#+end_src
+
+*** Personalize Carbon Copy Cloner 4
+#+begin_src sh
+personalize_ccc4 () {
+  true
+}
+#+end_src
+
+*** Personalize ExpanDrive 5
+#+begin_src sh
+personalize_expandrive5 () {
+  true
+}
+#+end_src
+
+*** Personalize Flip4Mac
+#+begin_src sh
+personalize_flip4mac () {
+  true
+}
+#+end_src
+
+*** Personalize Sketchup Pro 8
+#+begin_src sh
+personalize_sketchuppro8 () {
+  true
+}
+#+end_src
+
+*** Personalize iStat Menus 5
+#+begin_src sh
+personalize_istatmenus5 () {
+  true
+}
+#+end_src
+
+*** Personalize Little Snitch 4
+#+begin_src sh
+personalize_littlesnitch4 () {
+  true
+}
+#+end_src
+
+*** Personalize Meteorologist 3
+#+begin_src sh
+personalize_meteorologist3 () {
+  true
+}
+#+end_src
+
+*** Personalize Moom
+#+begin_src sh
+personalize_moom () {
+  true
+}
+#+end_src
+
+*** Personalize NZBGet
+#+begin_src sh
+personalize_nzbget () {
+  true
+}
+#+end_src
+
+*** Personalize NZBVortex
+#+begin_src sh
+personalize_nzbvortex () {
+  true
+}
+#+end_src
+
+*** Personalize Pacifist
+#+begin_src sh
+personalize_pacifist () {
+  true
+}
+#+end_src
+
+*** Personalize PCalc 3
+#+begin_src sh
+personalize_pcalc3 () {
+  true
+}
+#+end_src
+
+*** Personalize Scrivener
+#+begin_src sh
+personalize_scrivener () {
+  true
+}
+#+end_src
+
+*** Personalize SizeUp
+#+begin_src sh
+personalize_sizeup () {
+  true
+}
+#+end_src
+
+*** Personalize SteerMouse 5
+#+begin_src sh
+personalize_steermouse5 () {
+  true
+}
+#+end_src
+
+*** Personalize SourceTree
+#+begin_src sh
+personalize_sourcetree () {
+  true
+}
+#+end_src
+
+*** Personalize Tower 2
+#+begin_src sh
+personalize_tower2 () {
+  true
+}
+#+end_src
+
+*** Personalize Transmit 4
+#+begin_src sh
+personalize_transmit4 () {
+  true
+}
+#+end_src
+
+*** Personalize Tune4mac
+#+begin_src sh
+personalize_tune4mac () {
+  true
+}
+#+end_src
+
+*** Personalize VMware Fusion 8 Pro
+#+begin_src sh
+personalize_vmwarefusion8pro () {
+  true
+}
 #+end_src
