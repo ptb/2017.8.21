@@ -140,7 +140,7 @@ function init_mas_save () {
   cat << EOF > "/usr/local/bin/mas_save"
 #!/bin/sh
 
-asdir="/Users/Shared/storedownloadd"
+asdir="/Library/Caches/storedownloadd"
 as="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
 
 for i in 1 2 3 4 5; do
@@ -158,7 +158,7 @@ for i in 1 2 3 4 5; do
     done
   done
 
-  sudir="/Users/Shared/softwareupdated"
+  sudir="/Library/Caches/softwareupdated"
   su="$(sudo find "/private/var/folders" -name "com.apple.SoftwareUpdate" -type d -user _softwareupdate 2> /dev/null)"
 
   mkdir -m a=rwxt -p "\${sudir}"
