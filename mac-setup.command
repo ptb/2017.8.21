@@ -1562,25 +1562,31 @@ com.manytricks.Moom	Mouse Controls	-bool	true
 com.manytricks.Moom	Mouse Controls Delay	-float	0.1	
 com.manytricks.Moom	Mouse Controls Grid	-bool	true	
 com.manytricks.Moom	Mouse Controls Grid: Mode	-int	3	
-com.manytricks.Moom	Mouse Controls Grid: Columns	-int	10	
-com.manytricks.Moom	Mouse Controls Grid: Rows	-int	6	
+com.manytricks.Moom	Mouse Controls Grid: Columns	-int	16	
+com.manytricks.Moom	Mouse Controls Grid: Rows	-int	9	
 com.manytricks.Moom	Mouse Controls Include Custom Controls	-bool	true	
-com.manytricks.Moom	Mouse Controls Include Custom Controls: Show On Hover	-bool	true	
+com.manytricks.Moom	Mouse Controls Include Custom Controls: Show On Hover	-bool	false	
 com.manytricks.Moom	Mouse Controls Auto-Activate Window	-bool	true	
 com.manytricks.Moom	Snap	-bool	false	
-com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0, 0.33333}, {0.5, 0.66666}}"; }	
-com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0, 0}, {0.3, 0.33333}}"; }	
-com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.4, 0.33333}, {0.3, 0.66666}}"; }	
-com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.3, 0}, {0.4, 0.33333}}"; }	
-com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.7, 0.66666}, {0.3, 0.33333}}"; }	
-com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.7, 0.33333}, {0.3, 0.33333}}"; }	
-com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.7, 0}, {0.3, 0.33333}}"; }	
-com.manytricks.Moom	Configuration Grid: Columns	-int	10	
-com.manytricks.Moom	Configuration Grid: Rows	-int	6	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0, 0.55555}, {0.375, 0.44444}}"; }	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0, 0.22222}, {0.375, 0.33333}}"; }	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0, 0}, {0.25, 0.22222}}"; }	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.125, 0}, {0.25, 0.22222}}"; }	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.375, 0.44444}, {0.3125, 0.55555}}"; }	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.375, 0}, {0.3125, 0.44444}}"; }	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.6875, 0.55555}, {0.3125, 0.44444}}"; }	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.6875, 0.33333}, {0.3125, 0.22222}}"; }	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 19; "Relative Frame" = "{{0.6875, 0}, {0.3125, 0.33333}}"; }	
+com.manytricks.Moom	Custom Controls	-array-add	{ Action = 1001; "Apply to Overlapping Windows" = 1; Snapshot = ( { "Application Name" = Safari; "Bundle Identifier" = "com.apple.safari"; "Window Frame" = "{{0, 989}, {1199, 789}}"; "Window Subrole" = AXStandardWindow; }, { "Application Name" = Safari; "Bundle Identifier" = "com.apple.safari"; "Window Frame" = "{{0, 396}, {1199, 591}}"; "Window Subrole" = AXStandardWindow; }, { "Application Name" = Finder; "Bundle Identifier" = "com.apple.finder"; "Window Frame" = "{{0, 0}, {799, 394}}"; "Window Subrole" = AXStandardWindow; }, { "Application Name" = Messages; "Bundle Identifier" = "com.apple.ichat"; "Window Frame" = "{{401, 0}, {798, 394}}"; "Window Subrole" = AXStandardWindow; }, { "Application Name" = Emacs; "Bundle Identifier" = "org.gnu.emacs"; "Window Frame" = "{{1201, 806}, {991, 972}}"; "Window Subrole" = AXStandardWindow; }, { "Application Name" = Terminal; "Bundle Identifier" = "com.apple.terminal"; "Window Frame" = "{{1201, 17}, {993, 772}}"; "Window Subrole" = AXStandardWindow; }, { "Application Name" = Emacs; "Bundle Identifier" = "org.gnu.emacs"; "Window Frame" = "{{2201, 996}, {991, 782}}"; "Window Subrole" = AXStandardWindow; }, { "Application Name" = Atom; "Bundle Identifier" = "com.github.atom"; "Window Frame" = "{{2201, 485}, {999, 502}}"; "Window Subrole" = AXStandardWindow; }, { "Application Name" = VLC; "Bundle Identifier" = "org.videolan.vlc"; "Window Frame" = "{{2201, 0}, {999, 483}}"; "Window Subrole" = AXStandardWindow; } ); "Snapshot Screens" = ( "{{0, 0}, {3200, 1800}}" ); }	
+com.manytricks.Moom	Configuration Grid: Columns	-int	16	
+com.manytricks.Moom	Configuration Grid: Rows	-int	9	
 com.manytricks.Moom	SUEnableAutomaticChecks	-bool	true	'
 
 custom_moom () {
+  killall Moom
+  defaults delete com.manytricks.Moom "Custom Controls"
   config_defaults "${_moom}"
+  open "/Applications/Moom.app"
 }
 
 # Customize nvALT
@@ -2069,7 +2075,7 @@ custom_vlc () {
 
 custom_zsh () {
   mkdir -m go= "${ZDOTDIR:-$HOME}" 2> /dev/null
-  cat << EOF > "${ZDOTDIR:-$HOME}/.zshrc"
+  cat << EOF >! "${ZDOTDIR:-$HOME}/.zshrc"
 #!/bin/sh
 
 alias ll="ls -ABFGHOhl"
@@ -2087,8 +2093,8 @@ prompt_ptb_setup () {
 prompt_ptb_setup
 
 prompt_ptb_precmd () {
-  test -n "$(git rev-parse --git-dir 2> /dev/null)" && \
-  RPROMPT="%F{000}$(git rev-parse --abbrev-ref HEAD)%f" && \
+  test -n "$(git rev-parse --git-dir 2> /dev/null)" && \\
+  RPROMPT="%F{000}$(git rev-parse --abbrev-ref HEAD)%f" && \\
   export RPROMPT
 }
 
@@ -2158,9 +2164,9 @@ setopt NO_NUMERIC_GLOB_SORT
 setopt NO_RC_EXPAND_PARAM
 setopt NO_REMATCH_PCRE
 setopt NO_SH_GLOB
-setopt NO_UNSET
-setopt WARN_CREATE_GLOBAL
-setopt WARN_NESTED_VAR
+setopt UNSET
+setopt NO_WARN_CREATE_GLOBAL
+setopt NO_WARN_NESTED_VAR
 
 # History
 
@@ -2249,17 +2255,18 @@ zmodload zsh/zle
 zle-keymap-select zle-line-finish zle-line-init () {
   case "${TERM_PROGRAM}" in
     ("Apple_Terminal")
-      test "${KEYMAP}" = "vicmd" && \
-        printf "%b" '\e[4 q' || \
+      test "${KEYMAP}" = "vicmd" && \\
+        printf "%b" '\e[4 q' || \\
         printf "%b" '\e[6 q' ;;
     ("iTerm.app")
-      test "${KEYMAP}" = "vicmd" && \
-        printf "%b" '\e]Plf27f7f\e\x5c\e[4 q' || \
+      test "${KEYMAP}" = "vicmd" && \\
+        printf "%b" '\e]Plf27f7f\e\x5c\e[4 q' || \\
         printf "%b" '\e]Pl99cc99\e\x5c\e[6 q' ;;
   esac
 }
 EOF
   chmod +x "${ZDOTDIR:-$HOME}/.zshrc"
+  . "${ZDOTDIR:-$HOME}/.zshrc"
 }
 
 # Define Function =personalize=
