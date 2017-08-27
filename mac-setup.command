@@ -2134,8 +2134,8 @@ add	:ShowWindowSettingsNameInTitle	bool	false
 add	:ShowTTYNameInTitle	bool	false
 add	:ShowDimensionsInTitle	bool	false
 add	:ShowCommandKeyInTitle	bool	false
-add	:columnCount	integer	124
-add	:rowCount	integer	20
+add	:columnCount	integer	121
+add	:rowCount	integer	35
 add	:ShouldLimitScrollback	integer	0
 add	:ScrollbackLines	integer	0
 add	:ShouldRestoreContent	bool	false
