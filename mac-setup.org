@@ -2916,12 +2916,35 @@ personalize_meteorologist3 () {
 #+begin_src sh :var _j=_j
 
 personalize_moom () {
-  true
+  echo "${_j}" | \
+  openssl enc -aes-256-ecb -a -d -pass "pass:${CRYPTPASS}" | sh
 }
 #+end_src
 
 #+name: _j
-|   |
+| U2FsdGVkX18lU+JpUd5n3lZTfIBCHIyenbkWqcLZDtlQ0xNnzuOnHWEuVzMZTEMO |
+| n32zp+nIgCBYCQU8cj1CT/jOKfuQ0bYEqMXls05yi5SfsLuHciUfgOZtaZdIo0HI |
+| xi2ozsQaCX9tbxo9l2+l3AS5yE83TYvtWvg2QlTAkkOdPNnnHY7odDNCNICx+aZK |
+| u5N9CGeB/Dg9yDtEUUZInmUG6wJ/lgPizNTRVVEfntKrjNGIy23nOHk5wdvuOYZP |
+| ENnGfaoT3eBC0k1/0Rb4SBATDjP4EJyR1kiBRaV0Km+uNz5tH91e2Ows6gAWJc+e |
+| InOgKTDVAweXmBLxAy5kRTeJAcIkjkAuluu41suzvlAE6e8SSqZXIoptYhNIoLIb |
+| TyXgx5Ad16KSxla9HrdMWwCoxKnOwzuZbfmTasOy6g7tP18FdTiawfbwf20ZLdKc |
+| 67ksIOfctKHToHee9g8R+4CtwS0bztEfgszzUhV5Q8BGsP+fYjCI64v3VlLKlPRh |
+| /7DxoZ5T6Vf9vMM9B3TbEcupmH98Cq+PgZa8TLtjScFTw5rlGTyNC8AAFiJzfipA |
+| nDZMcWeyhtep1BhL/LcBcPZja/uwtbNYIMxDwgmQzeyzBqBqzE1AX4St+oM4AQmC |
+| bB7xmEZekWw8LhO4vGGxEkoaT+FXt7GZI6hvKjd2biMCs0LqW8OWWgArWsR7BjrP |
+| /otPGFZi6RK655O069cEaeVaizxZJ/9kw8QvvRYElh1OzfiQQSfozRwnVghHuk9X |
+| u9n8b6MnrRYOojufn9YHltb1UZ6WPEMSk0657TcNZkX5AeWLT6/LF9++/qw37nWr |
+| Z0+xTMP4+BUrXRG2qVOy9gtRkWVr/m9Ap/xvs2IymM+sGPK8msCm+Sx2bL/QpMf9 |
+| UunICoL9GHCz5iu47bLTVZPYkG8SAnsDzauHMxWxJcJOVrMNfJwLinc3GmWi7OXo |
+| 8r/zcFc0vFA6bSym+3+qCgGrWZ3D84Wf4JO15/qej1o3UqvrHZN1XCgGdNoe7QQu |
+| fuf003HH98R/KYbM7tnWCKTyr/rqbwNG3EzyM9qWABPsUKhhD4xNDSrAETg0gCcU |
+| 17ZV74vWmXpBD6GEAvXtW0WxTFm4mX+SwoqA1YEkDDkAxhMIsG00T3X3OcdG8U8/ |
+| NgeKG2PJcPK5ZzdCS1jKWQKh4+oS+UOjdJjH9CvpGnM6Ol/7GtnvjReRBn91qjBs |
+| fpVhnmdK3+2+lQsiChCfVH8ZV7scGZqmHrT/Z5B80hxFoHXCBzc4aXqhRP3+8Kwc |
+| 8Vdm8BexgPjn/f1h6mZt7V3J5+kaQFItwJgd8f6VYwU40/HVQWgggkBVfb6DFTq2 |
+| u+XZ5aZkoM65B4s1HK0bO+Kr8pDxcvcf+O1a53043qPGoAP8l4M2xRHhkKbc2T6Z |
+| r1dm7UQuLktwMAY2m4B1bg==                                         |
 
 *** Personalize NZBGet
 #+begin_src sh :var _k=_k
