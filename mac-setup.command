@@ -2286,24 +2286,11 @@ personalize () {
 
 personalize_all () {
   personalize_ccc4
+  personalize_sketchuppro8
+  personalize_istatmenus5
+  personalize_littlesnitch4
   personalize_moom
   personalize_steermouse5
-}
-
-# Personalize Airfoil 4
-
-_a=''
-
-personalize_airfoil4 () {
-  true
-}
-
-# Personalize BBEdit 10
-
-_b=''
-
-personalize_bbedit10 () {
-  true
 }
 
 # Personalize Carbon Copy Cloner 4
@@ -2322,52 +2309,49 @@ personalize_ccc4 () {
   personalize "${_ccc4_crypt}"
 }
 
-# Personalize ExpanDrive 5
-
-_d=''
-
-personalize_expandrive5 () {
-  true
-}
-
-# Personalize Flip4Mac
-
-_e=''
-
-personalize_flip4mac () {
-  true
-}
-
 # Personalize Sketchup Pro 8
 
-_f=''
+_sketchuppro8_crypt='U2FsdGVkX1+Tk342k7PUO4M2fsW48XxgmfYOTkAETOTS1Mknski2xjNY55dC12HU
+NiGHcWbphwNvQn5kUyVEYccer/1TAVZvk8UZhIJZIqH6q6H2tULiG8p5hyj9CJZI
+Yet4iPYxV0oXlUystv9E8f+k+1NSPAet5wwcNoC4s2gkkuXhhKaT0Eh88Jw/68e8
+RObIMSOm5njfyH2ZyP53Vmb5q4d8dFjpcup9W6VXEB8='
 
 personalize_sketchuppro8 () {
-  true
+  personalize "${_sketchuppro8_crypt}"
 }
 
 # Personalize iStat Menus 5
 
-_g=''
+_istatmenus5_crypt='U2FsdGVkX1+tdI0uAzK7kUWZN9APcwvzte3Q4E1Gr+lOlBTkn55cbHepHjYo0f+W
+FC+v9NBp13EI+owprzVN8qU+Xs9pX69WKgLQuKa45d8ASrX6Pwz9HrYLVfauuh4r
+d8Zd5K8KEsDDZJSmbPq9Xg=='
 
 personalize_istatmenus5 () {
-  true
+  personalize "${_istatmenus5_crypt}"
 }
 
 # Personalize Little Snitch 4
 
-_h=''
+_littlesnitch4_crypt='U2FsdGVkX19WKTqA4DlNJR/cXvkLFlZsbk+B6MLSiGKoODiGcSpFIoL3Yx4uEhA7
+zMxQ4HXGPtrQIyo/yA2dNZ0teQY/ETSnZt098KKPxijxB/iqyw0rzB5ZyhDksyqo
+rclhmZWILHZdvBLKbHe0JD7vnfl79aud2OeyWeyqx04lbH/GxLFeJVcwZhrysuP8
+sX7TcSWiAMZawiq5lhezE4JUwLkmtBODkn0Tt7eI8WC+5CiHl87Wz1ka8bB1qz7Q
+u5AKP6AwDhjpmX/fBSVRLvDDOccJJK+OaU7EPGk0iHXecmdQRNCcUgoj4QHptgJ1
+O8M/2OnGCOtSOezfElBoBFNtJjvmpzGWuOKWNG2I+qpIHLPQ82sQg2+lxIaXCsZN
+2rZvey/RD3aOfDRGOOhn1vM/30tcL/iOpnks11VcsotCRuJCOwVTd2aGiJ5Fa8Sk
+aVOdiW4Q3zpp93E37ldzY3NG1eh88Rvz2+8HlLcB048UwmNO8PBcfSqc8HNQONzc
+TwJFyfmQHm6WT+6PrOqX9W7MSreHkKaE4iOly7cidGg='
 
 personalize_littlesnitch4 () {
-  true
+  personalize "${_littlesnitch4_crypt}"
 }
 
 # Personalize Meteorologist 3
 
-_i=''
+_meteorologist3_crypt=''
 
 personalize_meteorologist3 () {
-  true
+  personalize "${_meteorologist3_crypt}"
 }
 
 # Personalize Moom
@@ -2402,50 +2386,50 @@ personalize_moom () {
 
 # Personalize NZBGet
 
-_k=''
+_nzbget_crypt=''
 
 personalize_nzbget () {
-  true
+  personalize "${_nzbget_crypt}"
 }
 
 # Personalize NZBVortex
 
-_l=''
+_nzbvortex_crypt=''
 
 personalize_nzbvortex () {
-  true
+  personalize "${_nzbvortex_crypt}"
 }
 
 # Personalize Pacifist
 
-_m=''
+_pacifist_crypt=''
 
 personalize_pacifist () {
-  true
+  personalize "${_pacifist_crypt}"
 }
 
 # Personalize PCalc 3
 
-_n=''
+_pcalc3_crypt=''
 
 personalize_pcalc3 () {
-  true
+  personalize "${_pcalc3_crypt}"
 }
 
 # Personalize Scrivener
 
-_o=''
+_scrivener_crypt=''
 
 personalize_scrivener () {
-  true
+  personalize "${_scrivener_crypt}"
 }
 
 # Personalize SizeUp
 
-_p=''
+_sizeup_crypt=''
 
 personalize_sizeup () {
-  true
+  personalize "${_sizeup_crypt}"
 }
 
 # Personalize SteerMouse 5
@@ -2823,30 +2807,35 @@ personalize_steermouse5 () {
 
 # Personalize SourceTree
 
+_sourcetree_crypt=''
 personalize_sourcetree () {
-  true
+  personalize "${_sourcetree_crypt}"
 }
 
 # Personalize Tower 2
 
+_tower2_crypt=''
 personalize_tower2 () {
-  true
+  personalize "${_tower2_crypt}"
 }
 
 # Personalize Transmit 4
 
+_transmit4_crypt=''
 personalize_transmit4 () {
-  true
+  personalize "${_transmit4_crypt}"
 }
 
 # Personalize Tune4mac
 
+_tune4mac_crypt=''
 personalize_tune4mac () {
-  true
+  personalize "${_tune4mac_crypt}"
 }
 
 # Personalize VMware Fusion 8 Pro
 
+_vmwarefusion8pro_crypt=''
 personalize_vmwarefusion8pro () {
-  true
+  personalize "${_vmwarefusion8pro_crypt}"
 }
