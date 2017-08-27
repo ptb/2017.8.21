@@ -328,6 +328,7 @@ selenium-server-standalone
 shellcheck
 sqlite
 stow
+tag
 terminal-notifier
 trash
 unrar
@@ -1546,9 +1547,9 @@ com.bjango.istatmenus5.extras	Time_Cities	-array-add	5856195
 com.bjango.istatmenus5.extras	Time_TextSize	-int	14	'
 
 custom_istatmenus () {
-  defaults delete com.bjango.istatmenus5.extras Time_MenubarFormat
-  defaults delete com.bjango.istatmenus5.extras Time_DropdownFormat
-  defaults delete com.bjango.istatmenus5.extras Time_Cities
+  defaults delete com.bjango.istatmenus5.extras Time_MenubarFormat > /dev/null 2>&1
+  defaults delete com.bjango.istatmenus5.extras Time_DropdownFormat > /dev/null 2>&1
+  defaults delete com.bjango.istatmenus5.extras Time_Cities > /dev/null 2>&1
   config_defaults "${_istatmenus}"
 }
 
@@ -1985,12 +1986,6 @@ _text='-globalDomain	NSAutomaticCapitalizationEnabled	-bool	false
 -globalDomain	NSAutomaticPeriodSubstitutionEnabled	-bool	false	
 -globalDomain	NSAutomaticQuoteSubstitutionEnabled	-bool	false	'
 custom_text () {
-  defaults write -globalDomain \
-    NSUserDictionaryReplacementItems -array-add \
-      '{ on = 1;
-          replace = "**";
-          with = "\\Ud83d\\Ude18\\Ud83d\\Ude18\\Ud83d\\Ude18\\Ud83d\\Ude0d";
-      }'
   config_defaults "${_text}"
 }
 

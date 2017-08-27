@@ -523,6 +523,7 @@ install_brewfile_brew_pkgs () {
 | shellcheck                   | https://github.com/koalaman/shellcheck                    |
 | sqlite                       | https://sqlite.org                                        |
 | stow                         | https://www.gnu.org/software/stow/                        |
+| tag                          | https://github.com/jdberry/tag                            |
 | terminal-notifier            | https://github.com/julienXX/terminal-notifier             |
 | trash                        | http://hasseg.org/trash/                                  |
 | unrar                        | http://www.rarlab.com/                                    |
@@ -1804,9 +1805,9 @@ custom_gnupg () {
 #+begin_src sh :var _istatmenus=_istatmenus[3:-2,1:5]
 
 custom_istatmenus () {
-  defaults delete com.bjango.istatmenus5.extras Time_MenubarFormat
-  defaults delete com.bjango.istatmenus5.extras Time_DropdownFormat
-  defaults delete com.bjango.istatmenus5.extras Time_Cities
+  defaults delete com.bjango.istatmenus5.extras Time_MenubarFormat > /dev/null 2>&1
+  defaults delete com.bjango.istatmenus5.extras Time_DropdownFormat > /dev/null 2>&1
+  defaults delete com.bjango.istatmenus5.extras Time_Cities > /dev/null 2>&1
   config_defaults "${_istatmenus}"
 }
 #+end_src
@@ -2426,14 +2427,8 @@ custom_modkeys () {
 #+end_src
 
 **** Customize Text
-#+begin_src sh :var _text=_text[4:-2,1:5]
+#+begin_src sh :var _text=_text[3:-2,1:5]
 custom_text () {
-  defaults write -globalDomain \
-    NSUserDictionaryReplacementItems -array-add \
-      '{ on = 1;
-          replace = "**";
-          with = "\\Ud83d\\Ude18\\Ud83d\\Ude18\\Ud83d\\Ude18\\Ud83d\\Ude0d";
-      }'
   config_defaults "${_text}"
 }
 #+end_src
@@ -2443,7 +2438,6 @@ custom_text () {
 |----------------------------------------+---------------+--------------------------------------+-------+-------+------|
 | Preference                             | Domain        | Key                                  | Type  | Value | Host |
 |----------------------------------------+---------------+--------------------------------------+-------+-------+------|
-| *Replace* ** *With* 😘😘😘😍           | -globalDomain | NSUserDictionaryReplacementItems     |       |       |      |
 | ~off~ *Capitalize words automatically* | -globalDomain | NSAutomaticCapitalizationEnabled     | -bool | false |      |
 | ~off~ *Add period with double-space*   | -globalDomain | NSAutomaticPeriodSubstitutionEnabled | -bool | false |      |
 | ~off~ *Use smart quotes and dashes*    | -globalDomain | NSAutomaticQuoteSubstitutionEnabled  | -bool | false |      |
