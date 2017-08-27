@@ -245,7 +245,7 @@ init_hostname () {
 #+end_src
 
 *** Set Permissions on Install Destinations
-#+begin_src sh :var _dest=_dest[3:10,1]
+#+begin_src sh :var _dest=_dest[3:11,1]
 
 init_perms () {
   printf "%s\n" "${_dest}" | \
@@ -259,18 +259,19 @@ init_perms () {
 
 **** _dest
 #+name: _dest
-|-----------------+--------------------------|
-| Location        | Install Path             |
-|-----------------+--------------------------|
-|                 | /usr/local/bin           |
-| fontdir         | /Library/Fonts           |
-| colorpickerdir  | /Library/ColorPickers    |
-| input_methoddir | /Library/Input Methods   |
-| prefpanedir     | /Library/PreferencePanes |
-| qlplugindir     | /Library/QuickLook       |
-| screen_saverdir | /Library/Screen Savers   |
-|                 | /Library/User Pictures   |
-|-----------------+--------------------------|
+|-----------------+---------------------------|
+| Location        | Install Path              |
+|-----------------+---------------------------|
+|                 | /usr/local/bin            |
+|                 | /Library/Desktop Pictures |
+| colorpickerdir  | /Library/ColorPickers     |
+| fontdir         | /Library/Fonts            |
+| input_methoddir | /Library/Input Methods    |
+| prefpanedir     | /Library/PreferencePanes  |
+| qlplugindir     | /Library/QuickLook        |
+| screen_saverdir | /Library/Screen Savers    |
+|                 | /Library/User Pictures    |
+|-----------------+---------------------------|
 
 *** Install Developer Tools
 #+begin_src sh
@@ -535,7 +536,7 @@ install_brewfile_brew_pkgs () {
 |----------------------------+---------------------------------------------------------|
 
 *** Add Caskroom Options to Brewfile
-#+begin_src sh :var _args=_dest[4:9,0:1]
+#+begin_src sh :var _args=_dest[5:10,0:1]
 
 install_brewfile_cask_args () {
   printf 'cask_args \' >> "${BREWFILE}"

@@ -104,8 +104,9 @@ init_hostname () {
 # Set Permissions on Install Destinations
 
 _dest='/usr/local/bin
-/Library/Fonts
+/Library/Desktop Pictures
 /Library/ColorPickers
+/Library/Fonts
 /Library/Input Methods
 /Library/PreferencePanes
 /Library/QuickLook
@@ -348,8 +349,8 @@ install_brewfile_brew_pkgs () {
 
 # Add Caskroom Options to Brewfile
 
-_args='fontdir	/Library/Fonts
-colorpickerdir	/Library/ColorPickers
+_args='colorpickerdir	/Library/ColorPickers
+fontdir	/Library/Fonts
 input_methoddir	/Library/Input Methods
 prefpanedir	/Library/PreferencePanes
 qlplugindir	/Library/QuickLook
