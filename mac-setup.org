@@ -482,58 +482,59 @@ install_brewfile_brew_pkgs () {
 
 **** _pkgs
 #+name: _pkgs
-|----------------------------+---------------------------------------------------------|
-| Homebrew Package Name      | Reference URL                                           |
-|----------------------------+---------------------------------------------------------|
-| aspell                     | http://aspell.net/                                      |
-| chromedriver               | https://sites.google.com/a/chromium.org/chromedriver/   |
-| coreutils                  | https://www.gnu.org/software/coreutils/                 |
-| duti                       | https://github.com/moretension/duti                     |
-| fasd                       | https://github.com/clvv/fasd                            |
-| fdupes                     | https://github.com/adrianlopezroche/fdupes              |
-| gawk                       | https://www.gnu.org/software/gawk/                      |
-| getmail                    | http://pyropus.ca/software/getmail/                     |
-| git                        | https://git-scm.com/                                    |
-| git-flow                   | http://nvie.com/posts/a-successful-git-branching-model/ |
-| git-lfs                    | https://git-lfs.github.com/                             |
-| gnu-sed                    | https://www.gnu.org/software/sed/                       |
-| gnupg                      | https://www.gnupg.org/                                  |
-| gpac                       | https://gpac.wp.imt.fr/                                 |
-| httpie                     | https://httpie.org/                                     |
-| hub                        | https://hub.github.com/                                 |
-| ievms                      | https://xdissent.github.io/ievms/                       |
-| imagemagick                | https://www.imagemagick.org/                            |
-| mas                        | https://github.com/argon/mas                            |
-| mercurial                  | https://www.mercurial-scm.org/                          |
-| mp4v2                      | https://code.google.com/archive/p/mp4v2/                |
-| mtr                        | https://www.bitwizard.nl/mtr/                           |
-| nmap                       | https://nmap.org/                                       |
-| node                       | https://nodejs.org/                                     |
-| nodenv                     | https://github.com/nodenv/nodenv                        |
-| openssl                    | https://www.openssl.org/                                |
-| p7zip                      | http://p7zip.sourceforge.net/                           |
-| perl-build                 | https://github.com/tokuhirom/Perl-Build                 |
-| php71                      | https://github.com/Homebrew/homebrew-php                |
-| pinentry-mac               | https://github.com/GPGTools/pinentry-mac                |
-| plenv                      | https://github.com/tokuhirom/plenv                      |
-| pyenv                      | https://github.com/pyenv/pyenv                          |
-| rbenv                      | https://github.com/rbenv/rbenv                          |
-| rsync                      | https://rsync.samba.org/                                |
-| selenium-server-standalone | http://www.seleniumhq.org/                              |
-| shellcheck                 | https://github.com/koalaman/shellcheck                  |
-| sqlite                     | https://sqlite.org                                      |
-| stow                       | https://www.gnu.org/software/stow/                      |
-| terminal-notifier          | https://github.com/julienXX/terminal-notifier           |
-| trash                      | http://hasseg.org/trash/                                |
-| unrar                      | http://www.rarlab.com/                                  |
-| vim                        | https://vim.sourceforge.io/                             |
-| yarn                       | https://yarnpkg.com/                                    |
-| youtube-dl                 | https://rg3.github.io/youtube-dl/                       |
-| zsh                        | https://www.zsh.org/                                    |
-| ptb/custom/dovecot         |                                                         |
-| ptb/custom/ffmpeg          |                                                         |
-| ptb/custom/nginx-full      |                                                         |
-|----------------------------+---------------------------------------------------------|
+|------------------------------+-----------------------------------------------------------|
+| Homebrew Package Name        | Reference URL                                             |
+|------------------------------+-----------------------------------------------------------|
+| aspell                       | http://aspell.net/                                        |
+| chromedriver                 | https://sites.google.com/a/chromium.org/chromedriver/     |
+| coreutils                    | https://www.gnu.org/software/coreutils/                   |
+| duti                         | https://github.com/moretension/duti                       |
+| fasd                         | https://github.com/clvv/fasd                              |
+| fdupes                       | https://github.com/adrianlopezroche/fdupes                |
+| gawk                         | https://www.gnu.org/software/gawk/                        |
+| getmail                      | http://pyropus.ca/software/getmail/                       |
+| git                          | https://git-scm.com/                                      |
+| git-flow                     | http://nvie.com/posts/a-successful-git-branching-model/   |
+| git-lfs                      | https://git-lfs.github.com/                               |
+| gnu-sed                      | https://www.gnu.org/software/sed/                         |
+| gnupg                        | https://www.gnupg.org/                                    |
+| gpac                         | https://gpac.wp.imt.fr/                                   |
+| httpie                       | https://httpie.org/                                       |
+| hub                          | https://hub.github.com/                                   |
+| ievms                        | https://xdissent.github.io/ievms/                         |
+| imagemagick                  | https://www.imagemagick.org/                              |
+| mas                          | https://github.com/argon/mas                              |
+| mercurial                    | https://www.mercurial-scm.org/                            |
+| mp4v2                        | https://code.google.com/archive/p/mp4v2/                  |
+| mtr                          | https://www.bitwizard.nl/mtr/                             |
+| nmap                         | https://nmap.org/                                         |
+| node                         | https://nodejs.org/                                       |
+| nodenv                       | https://github.com/nodenv/nodenv                          |
+| openssl                      | https://www.openssl.org/                                  |
+| p7zip                        | http://p7zip.sourceforge.net/                             |
+| perl-build                   | https://github.com/tokuhirom/Perl-Build                   |
+| php71                        | https://github.com/Homebrew/homebrew-php                  |
+| pinentry-mac                 | https://github.com/GPGTools/pinentry-mac                  |
+| plenv                        | https://github.com/tokuhirom/plenv                        |
+| pyenv                        | https://github.com/pyenv/pyenv                            |
+| rbenv                        | https://github.com/rbenv/rbenv                            |
+| rsync                        | https://rsync.samba.org/                                  |
+| selenium-server-standalone   | http://www.seleniumhq.org/                                |
+| shellcheck                   | https://github.com/koalaman/shellcheck                    |
+| sqlite                       | https://sqlite.org                                        |
+| stow                         | https://www.gnu.org/software/stow/                        |
+| terminal-notifier            | https://github.com/julienXX/terminal-notifier             |
+| trash                        | http://hasseg.org/trash/                                  |
+| unrar                        | http://www.rarlab.com/                                    |
+| vim                          | https://vim.sourceforge.io/                               |
+| yarn                         | https://yarnpkg.com/                                      |
+| youtube-dl                   | https://rg3.github.io/youtube-dl/                         |
+| zsh                          | https://www.zsh.org/                                      |
+| zsh-history-substring-search | https://github.com/zsh-users/zsh-history-substring-search |
+| ptb/custom/dovecot           |                                                           |
+| ptb/custom/ffmpeg            |                                                           |
+| ptb/custom/nginx-full        |                                                           |
+|------------------------------+-----------------------------------------------------------|
 
 *** Add Caskroom Options to Brewfile
 #+begin_src sh :var _args=_dest[5:10,0:1]
@@ -2775,6 +2776,8 @@ zle-keymap-select zle-line-finish zle-line-init () {
         printf "%b" '\e]Pl99cc99\e\x5c\e[6 q' ;;
   esac
 }
+
+source /usr/local/share/zsh-history-substring-search/zsh-history-substring-search.zsh
 #+end_src
 
 ** Personalize

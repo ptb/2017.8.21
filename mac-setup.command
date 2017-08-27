@@ -335,6 +335,7 @@ vim
 yarn
 youtube-dl
 zsh
+zsh-history-substring-search
 ptb/custom/dovecot
 ptb/custom/ffmpeg
 ptb/custom/nginx-full'
@@ -2265,6 +2266,8 @@ zle-keymap-select zle-line-finish zle-line-init () {
         printf "%b" '\e]Pl99cc99\e\x5c\e[6 q' ;;
   esac
 }
+
+source /usr/local/share/zsh-history-substring-search/zsh-history-substring-search.zsh
 EOF
   chmod +x "${ZDOTDIR:-$HOME}/.zshrc"
   . "${ZDOTDIR:-$HOME}/.zshrc"
