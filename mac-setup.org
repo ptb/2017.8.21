@@ -1323,6 +1323,7 @@ custom () {
   custom_git
   custom_gnupg
   custom_istatmenus
+  custom_meteorologist
   custom_moom
   custom_nvalt
   custom_safari
@@ -1334,7 +1335,7 @@ custom () {
   custom_vlc
   custom_zsh
 
-  which personalize
+  which personalize_all
 }
 #+end_src
 
@@ -1810,7 +1811,7 @@ custom_istatmenus () {
 }
 #+end_src
 
-***** _istatmenus
+**** _istatmenus
 #+name: _istatmenus
 |------------+-------------------------------+------------------------------------------+------------+---------------------+------|
 | Preference | Domain                        | Key                                      | Type       | Value               | Host |
@@ -1902,6 +1903,32 @@ custom_istatmenus () {
 |            | com.bjango.istatmenus5.extras | Time_TextSize                            | -int       | 14                  |      |
 |------------+-------------------------------+------------------------------------------+------------+---------------------+------|
 
+*** Customize Meteorologist
+#+begin_src sh :var _meteorologist=_meteorologist[3:-2,1:5]
+
+custom_meteorologist () {
+  config_defaults "${_meteorologist}"
+}
+#+end_src
+
+**** _meteorologist
+#+name: _meteorologist
+|------------+------------------------+----------------------------+---------+-------+------|
+| Preference | Domain                 | Key                        | Type    | Value | Host |
+|------------+------------------------+----------------------------+---------+-------+------|
+|            | com.heat.meteorologist | controlsInSubmenu          | -string |     0 |      |
+|            | com.heat.meteorologist | currentWeatherInSubmenu    | -string |     0 |      |
+|            | com.heat.meteorologist | displayCityName            | -string |     0 |      |
+|            | com.heat.meteorologist | displayHumidity            | -string |     0 |      |
+|            | com.heat.meteorologist | displayWeatherIcon         | -string |     1 |      |
+|            | com.heat.meteorologist | extendedForecastIcons      | -string |     1 |      |
+|            | com.heat.meteorologist | extendedForecastInSubmenu  | -string |     0 |      |
+|            | com.heat.meteorologist | extendedForecastSingleLine | -string |     1 |      |
+|            | com.heat.meteorologist | forecastDays               | -int    |     8 |      |
+|            | com.heat.meteorologist | viewExtendedForecast       | -string |     1 |      |
+|            | com.heat.meteorologist | weatherSource_1            | -int    |     3 |      |
+|------------+------------------------+----------------------------+---------+-------+------|
+
 *** Customize Moom
 #+begin_src sh :var _moom=_moom[3:-2,1:5]
 
@@ -1913,7 +1940,7 @@ custom_moom () {
 }
 #+end_src
 
-***** _moom
+**** _moom
 #+name: _moom
 |------------------------------------------------------------------------+---------------------+-------------------------------------------------------+------------+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------|
 | Preference                                                             | Domain              | Key                                                   | Type       | Value                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Host |
@@ -2001,6 +2028,135 @@ custom_nvalt () {
 |                                                          | net.elasticthreads.nv | TableSortColumn             | -string    | Date Modified                                                                                                                                                                                                              |      |
 | *View* ▶ *Show Note Previews in Title*                   | net.elasticthreads.nv | TableColumnsHaveBodyPreview | -bool      | true                                                                                                                                                                                                                       |      |
 |----------------------------------------------------------+-----------------------+-----------------------------+------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+------|
+
+*** Customize NZBGet
+#+begin_src sh :var _nzbget=_nzbget[3:-2,1:2]
+
+custom_nzbget () {
+  if which crudini > /dev/null; then
+    mkdir -p "${HOME}/Library/Application Support/NZBGet"
+    printf "%s\n" "${_nzbget}" | \
+    while IFS="$(printf '\t')" read key value; do
+      crudini --set "${HOME}/Library/Application Support/NZBGet/nzbget2.conf" "" "${key}" "${value}"
+    done
+  fi
+}
+#+end_src
+
+**** _nzbget
+#+name: _nzbget
+|----------------+---------------------+----------------------|
+| Preference     | Key                 | Value                |
+|----------------+---------------------+----------------------|
+| *News-Servers* | Server1.Active      | yes                  |
+| *Server1*      | Server1.Name        | ssl.astraweb.com     |
+|                | Server1.Level       | 0                    |
+|                | Server1.Optional    | no                   |
+|                | Server1.Group       | 0                    |
+|                | Server1.Host        | ssl.astraweb.com     |
+|                | Server1.Port        | 443                  |
+|                | Server1.JoinGroup   | no                   |
+|                | Server1.Encryption  | yes                  |
+|                | Server1.Connections | 6                    |
+|                | Server1.Retention   | 2677                 |
+|                | Server1.IpVersion   | auto                 |
+| *News-Servers* | Server2.Active      | yes                  |
+| *Server2*      | Server2.Name        | us.astraweb.com      |
+|                | Server2.Level       | 0                    |
+|                | Server2.Optional    | no                   |
+|                | Server2.Group       | 0                    |
+|                | Server2.Host        | ssl-us.astraweb.com  |
+|                | Server2.Port        | 443                  |
+|                | Server2.JoinGroup   | no                   |
+|                | Server2.Encryption  | yes                  |
+|                | Server2.Connections | 6                    |
+|                | Server2.Retention   | 2677                 |
+|                | Server2.IpVersion   | auto                 |
+| *News-Servers* | Server3.Active      | yes                  |
+| *Server3*      | Server3.Name        | eu.astraweb.com      |
+|                | Server3.Level       | 0                    |
+|                | Server3.Optional    | no                   |
+|                | Server3.Group       | 0                    |
+|                | Server3.Host        | ssl-eu.astraweb.com  |
+|                | Server3.Port        | 443                  |
+|                | Server3.JoinGroup   | no                   |
+|                | Server3.Encryption  | yes                  |
+|                | Server3.Connections | 6                    |
+|                | Server3.Retention   | 2677                 |
+|                | Server3.IpVersion   | auto                 |
+| *News-Servers* | Server4.Active      | yes                  |
+| *Server4*      | Server4.Name        | tweaknews.eu         |
+|                | Server4.Level       | 1                    |
+|                | Server4.Optional    | no                   |
+|                | Server4.Group       | 0                    |
+|                | Server4.Host        | news.tweaknews.eu    |
+|                | Server4.Port        | 443                  |
+|                | Server4.JoinGroup   | no                   |
+|                | Server4.Encryption  | yes                  |
+|                | Server4.Connections | 20                   |
+|                | Server4.Retention   | 2500                 |
+|                | Server4.IpVersion   | auto                 |
+| *News-Servers* | Server5.Active      | yes                  |
+| *Server5*      | Server5.Name        | news.newsdemon.com   |
+|                | Server5.Level       | 2                    |
+|                | Server5.Optional    | no                   |
+|                | Server5.Group       | 0                    |
+|                | Server5.Host        | news.newsdemon.com   |
+|                | Server5.Port        | 563                  |
+|                | Server5.JoinGroup   | no                   |
+|                | Server5.Encryption  | yes                  |
+|                | Server5.Connections | 20                   |
+|                | Server5.Retention   | 2678                 |
+|                | Server5.IpVersion   | auto                 |
+| *News-Servers* | Server6.Active      | yes                  |
+| *Server6*      | Server6.Name        | us.newsdemon.com     |
+|                | Server6.Level       | 2                    |
+|                | Server6.Optional    | no                   |
+|                | Server6.Group       | 0                    |
+|                | Server6.Host        | us.newsdemon.com     |
+|                | Server6.Port        | 563                  |
+|                | Server6.JoinGroup   | no                   |
+|                | Server6.Encryption  | yes                  |
+|                | Server6.Connections | 20                   |
+|                | Server6.Retention   | 2678                 |
+|                | Server6.IpVersion   | auto                 |
+| *News-Servers* | Server7.Active      | yes                  |
+| *Server7*      | Server7.Name        | eu.newsdemon.com     |
+|                | Server7.Level       | 2                    |
+|                | Server7.Optional    | no                   |
+|                | Server7.Group       | 0                    |
+|                | Server7.Host        | eu.newsdemon.com     |
+|                | Server7.Port        | 563                  |
+|                | Server7.JoinGroup   | no                   |
+|                | Server7.Encryption  | yes                  |
+|                | Server7.Connections | 20                   |
+|                | Server7.Retention   | 2678                 |
+|                | Server7.IpVersion   | auto                 |
+| *News-Servers* | Server8.Active      | yes                  |
+| *Server8*      | Server8.Name        | us.blocknews.net     |
+|                | Server8.Level       | 2                    |
+|                | Server8.Optional    | no                   |
+|                | Server8.Group       | 0                    |
+|                | Server8.Host        | usnews.blocknews.net |
+|                | Server8.Port        | 443                  |
+|                | Server8.JoinGroup   | no                   |
+|                | Server8.Encryption  | yes                  |
+|                | Server8.Connections | 20                   |
+|                | Server8.Retention   | 2600                 |
+|                | Server8.IpVersion   | auto                 |
+| *News-Servers* | Server9.Active      | yes                  |
+| *Server9*      | Server9.Name        | eu.blocknews.net     |
+|                | Server9.Level       | 2                    |
+|                | Server9.Optional    | no                   |
+|                | Server9.Group       | 0                    |
+|                | Server9.Host        | eunews.blocknews.net |
+|                | Server9.Port        | 443                  |
+|                | Server9.JoinGroup   | no                   |
+|                | Server9.Encryption  | yes                  |
+|                | Server9.Connections | 20                   |
+|                | Server9.Retention   | 2600                 |
+|                | Server9.IpVersion   | auto                 |
+|----------------+---------------------+----------------------|
 
 *** Customize Safari
 #+begin_src sh :var _safari=_safari[3:-2,1:5]
@@ -2778,7 +2934,7 @@ zle-keymap-select zle-line-finish zle-line-init () {
   esac
 }
 
-source /usr/local/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+. /usr/local/share/zsh-history-substring-search/zsh-history-substring-search.zsh
 bindkey '[A' history-substring-search-up
 bindkey '[B' history-substring-search-down
 #+end_src
