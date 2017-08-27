@@ -2788,28 +2788,16 @@ bindkey '[B' history-substring-search-down
 *** Define Function =personalize=
 #+begin_src sh
 personalize () {
-  personalize_airfoil4
-  personalize_bbedit10
+  echo "${1}" | openssl enc -aes-256-ecb -a -d -pass "pass:${CRYPTPASS}" | sh
+}
+#+end_src
+
+*** Define Function =personalize_all=
+#+begin_src sh
+personalize_all () {
   personalize_ccc4
-  personalize_expandrive5
-  personalize_flip4mac
-  personalize_sketchuppro8
-  personalize_istatmenus5
-  personalize_littlesnitch4
-  personalize_meteorologist3
   personalize_moom
-  personalize_nzbget
-  personalize_nzbvortex
-  personalize_pacifist
-  personalize_pcalc3
-  personalize_scrivener
-  personalize_sizeup
   personalize_steermouse5
-  personalize_sourcetree
-  personalize_tower2
-  personalize_transmit4
-  personalize_tune4mac
-  personalize_vmwarefusion8pro
 }
 #+end_src
 
@@ -2836,15 +2824,23 @@ personalize_bbedit10 () {
 |   |
 
 *** Personalize Carbon Copy Cloner 4
-#+begin_src sh :var _c=_c
+#+begin_src sh :var _ccc4_crypt=_ccc4_crypt
 
 personalize_ccc4 () {
-  true
+  personalize "${_ccc4_crypt}"
 }
 #+end_src
 
-#+name: _c
-|   |
+#+name: _ccc4_crypt
+| U2FsdGVkX1/MLZ+EavKN4ODNZY1H0LENk6AnfNBq/JmkRR4f3uSZHoo0c7mZbLdU |
+| 0V5ygQMCllFVHW0WgAQYyMMeihp6PQ+qjTNZvs05bBCm3ovV2ZJOaR5viJOMQj/v |
+| aiYazKPPLhR8kNSxWloOS/3xqvENuwCPSjVj9mZxp4U6pSA0swevHhhopr01sube |
+| 7ay3OykHFZGXAdkkPd64DthTSLTPnF5Yf0GIvLWlJwVJTZxDkb+4tiMRouE1gRPA |
+| 51Qah/fTE4sFHuvmoCrrAnRBfEuYH5DaWc2FWLWM2srqjd0+TA6N3xIipm0D7jjw |
+| urcxNanFv0oSBSJpwhYM4YAFGHvSHcbPk/orvtB1URN5+KmYPPjk8Ad2fF10PGBm |
+| +TlnRloE3sITbYmIzi3MKSdqerw5wf2x69ioNgF/c4xUHZtrVioSIcR2oIwVua8N |
+| 05OzDNG0XjI9bDo+bsevflV7cSg2YMhJElTlqQa7fUfQLUnP7+QJEeX1Azq2LdF6 |
+| HpEgFgV9Ruv9XHwHJ2lrJG+/qpYhbv+X2wTmmgnqtQY=                     |
 
 *** Personalize ExpanDrive 5
 #+begin_src sh :var _d=_d
@@ -2913,15 +2909,14 @@ personalize_meteorologist3 () {
 |   |
 
 *** Personalize Moom
-#+begin_src sh :var _j=_j
+#+begin_src sh :var _moom_crypt=_moom_crypt
 
 personalize_moom () {
-  echo "${_j}" | \
-  openssl enc -aes-256-ecb -a -d -pass "pass:${CRYPTPASS}" | sh
+  personalize "${_moom_crypt}"
 }
 #+end_src
 
-#+name: _j
+#+name: _moom_crypt
 | U2FsdGVkX18lU+JpUd5n3lZTfIBCHIyenbkWqcLZDtlQ0xNnzuOnHWEuVzMZTEMO |
 | n32zp+nIgCBYCQU8cj1CT/jOKfuQ0bYEqMXls05yi5SfsLuHciUfgOZtaZdIo0HI |
 | xi2ozsQaCX9tbxo9l2+l3AS5yE83TYvtWvg2QlTAkkOdPNnnHY7odDNCNICx+aZK |
@@ -3013,15 +3008,14 @@ personalize_sizeup () {
 |   |
 
 *** Personalize SteerMouse 5
-#+begin_src sh :var _q=_q
+#+begin_src sh :var _steermouse5_crypt=_steermouse5_crypt
 
 personalize_steermouse5 () {
-  echo "${_q}" | \
-  openssl enc -aes-256-ecb -a -d -pass "pass:${CRYPTPASS}" | sh
+  personalize "${_steermouse5_crypt}"
 }
 #+end_src
 
-#+name: _q
+#+name: _steermouse5_crypt
 | U2FsdGVkX19WKTqA4DlNJWTdwr/4bPHnYGl1FxCz1F33OCwXz3zRmV6bj6OLodFR |
 | y+rhwfvc0OGUB5a95/EM20AEPEL4PwExFI9srsmYiAPPlyF1ZjTwIt9Sj9uwwDXW |
 | SacPMAZ65W7TMLepPIynFgTIpcTEbnsE8yK5bEZ4VJdLdcKQ7er0aOLk8/nlclqV |

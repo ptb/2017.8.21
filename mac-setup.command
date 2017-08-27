@@ -2279,28 +2279,15 @@ EOF
 # Define Function =personalize=
 
 personalize () {
-  personalize_airfoil4
-  personalize_bbedit10
+  echo "${1}" | openssl enc -aes-256-ecb -a -d -pass "pass:${CRYPTPASS}" | sh
+}
+
+# Define Function =personalize_all=
+
+personalize_all () {
   personalize_ccc4
-  personalize_expandrive5
-  personalize_flip4mac
-  personalize_sketchuppro8
-  personalize_istatmenus5
-  personalize_littlesnitch4
-  personalize_meteorologist3
   personalize_moom
-  personalize_nzbget
-  personalize_nzbvortex
-  personalize_pacifist
-  personalize_pcalc3
-  personalize_scrivener
-  personalize_sizeup
   personalize_steermouse5
-  personalize_sourcetree
-  personalize_tower2
-  personalize_transmit4
-  personalize_tune4mac
-  personalize_vmwarefusion8pro
 }
 
 # Personalize Airfoil 4
@@ -2321,10 +2308,18 @@ personalize_bbedit10 () {
 
 # Personalize Carbon Copy Cloner 4
 
-_c=''
+_ccc4_crypt='U2FsdGVkX1/MLZ+EavKN4ODNZY1H0LENk6AnfNBq/JmkRR4f3uSZHoo0c7mZbLdU
+0V5ygQMCllFVHW0WgAQYyMMeihp6PQ+qjTNZvs05bBCm3ovV2ZJOaR5viJOMQj/v
+aiYazKPPLhR8kNSxWloOS/3xqvENuwCPSjVj9mZxp4U6pSA0swevHhhopr01sube
+7ay3OykHFZGXAdkkPd64DthTSLTPnF5Yf0GIvLWlJwVJTZxDkb+4tiMRouE1gRPA
+51Qah/fTE4sFHuvmoCrrAnRBfEuYH5DaWc2FWLWM2srqjd0+TA6N3xIipm0D7jjw
+urcxNanFv0oSBSJpwhYM4YAFGHvSHcbPk/orvtB1URN5+KmYPPjk8Ad2fF10PGBm
++TlnRloE3sITbYmIzi3MKSdqerw5wf2x69ioNgF/c4xUHZtrVioSIcR2oIwVua8N
+05OzDNG0XjI9bDo+bsevflV7cSg2YMhJElTlqQa7fUfQLUnP7+QJEeX1Azq2LdF6
+HpEgFgV9Ruv9XHwHJ2lrJG+/qpYhbv+X2wTmmgnqtQY='
 
 personalize_ccc4 () {
-  true
+  personalize "${_ccc4_crypt}"
 }
 
 # Personalize ExpanDrive 5
@@ -2377,7 +2372,7 @@ personalize_meteorologist3 () {
 
 # Personalize Moom
 
-_j='U2FsdGVkX18lU+JpUd5n3lZTfIBCHIyenbkWqcLZDtlQ0xNnzuOnHWEuVzMZTEMO
+_moom_crypt='U2FsdGVkX18lU+JpUd5n3lZTfIBCHIyenbkWqcLZDtlQ0xNnzuOnHWEuVzMZTEMO
 n32zp+nIgCBYCQU8cj1CT/jOKfuQ0bYEqMXls05yi5SfsLuHciUfgOZtaZdIo0HI
 xi2ozsQaCX9tbxo9l2+l3AS5yE83TYvtWvg2QlTAkkOdPNnnHY7odDNCNICx+aZK
 u5N9CGeB/Dg9yDtEUUZInmUG6wJ/lgPizNTRVVEfntKrjNGIy23nOHk5wdvuOYZP
@@ -2402,8 +2397,7 @@ u+XZ5aZkoM65B4s1HK0bO+Kr8pDxcvcf+O1a53043qPGoAP8l4M2xRHhkKbc2T6Z
 r1dm7UQuLktwMAY2m4B1bg=='
 
 personalize_moom () {
-  echo "${_j}" | \
-  openssl enc -aes-256-ecb -a -d -pass "pass:${CRYPTPASS}" | sh
+  personalize "${_moom_crypt}"
 }
 
 # Personalize NZBGet
@@ -2456,7 +2450,7 @@ personalize_sizeup () {
 
 # Personalize SteerMouse 5
 
-_q='U2FsdGVkX19WKTqA4DlNJWTdwr/4bPHnYGl1FxCz1F33OCwXz3zRmV6bj6OLodFR
+_steermouse5_crypt='U2FsdGVkX19WKTqA4DlNJWTdwr/4bPHnYGl1FxCz1F33OCwXz3zRmV6bj6OLodFR
 y+rhwfvc0OGUB5a95/EM20AEPEL4PwExFI9srsmYiAPPlyF1ZjTwIt9Sj9uwwDXW
 SacPMAZ65W7TMLepPIynFgTIpcTEbnsE8yK5bEZ4VJdLdcKQ7er0aOLk8/nlclqV
 hs/SvrRweQSgJPhe+aqM2vOaPHVMCjrC2toag/B2C7hgAe1tpxYSGGgcsEaT2d4C
@@ -2824,8 +2818,7 @@ qXXuY3Tv7tKzRH4CRN+xblZONKYv68/1diB8/ogl9Llbg0VtqEGppRxR0R5OWBWZ
 CQoeE4iYGE9QoCvVgbT1XIhMTB8hT8W/DP97DLI9NlENjEHh+7Pj5AGOgwjr177l'
 
 personalize_steermouse5 () {
-  echo "${_q}" | \
-  openssl enc -aes-256-ecb -a -d -pass "pass:${CRYPTPASS}" | sh
+  personalize "${_steermouse5_crypt}"
 }
 
 # Personalize SourceTree
