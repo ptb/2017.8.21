@@ -1049,6 +1049,7 @@ custom () {
   custom_meteorologist
   custom_moom
   custom_nvalt
+  custom_nzbget
   custom_safari
   custom_sieve
   custom_ssh
@@ -1771,7 +1772,7 @@ custom_nzbget () {
     mkdir -p "${HOME}/Library/Application Support/NZBGet"
     printf "%s\n" "${_nzbget}" | \
     while IFS="$(printf '\t')" read key value; do
-      crudini --set "${HOME}/Library/Application Support/NZBGet/nzbget2.conf" "" "${key}" "${value}"
+      crudini --set "${HOME}/Library/Application Support/NZBGet/nzbget.conf" "" "${key}" "${value}"
     done
   fi
 }
