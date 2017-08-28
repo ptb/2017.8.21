@@ -1019,7 +1019,7 @@ config_new_account () {
     "/System/Library/User Template/Non_localized/Library/Preferences/.GlobalPreferences.plist" \
     "com.apple.swipescrolldirection" -bool false
 
-  sudo sysadminctl -addUser "${u}" -fullName "${n}" -password - \
+  sudo sysadminctl -admin -addUser "${u}" -fullName "${n}" -password - \
     -shell "$(which zsh)" -picture "/Library/User Pictures/${e}.jpg"
 }
 
