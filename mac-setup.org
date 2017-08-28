@@ -1187,6 +1187,10 @@ config_openssl () {
 }
 #+end_src
 
+**** Configure Security & Privacy
+
+sudo spctl --master-disable
+
 **** Configure Energy Saver
 #+begin_src sh :var _energy=_energy[3:-2,1:3]
 
