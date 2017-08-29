@@ -1383,6 +1383,13 @@ config_new_account () {
     "/System/Library/User Template/Non_localized/Library/Preferences/.GlobalPreferences.plist" \
     "com.apple.swipescrolldirection" -bool false
 
+  sudo defaults write \
+    "/System/Library/User Template/Non_localized/Library/Preferences/com.apple.symbolichotkeys.plist" \
+    "AppleSymbolicHotKeys" -dict-add 64 '{ enabled = 0; value = { parameters = (32, 49, 1048576); type = standard; }; };'
+  sudo defaults write \
+    "/System/Library/User Template/Non_localized/Library/Preferences/com.apple.symbolichotkeys.plist" \
+    "AppleSymbolicHotKeys" -dict-add 65 '{ enabled = 0; value = { parameters = (32, 49, 1572864); type = standard; }; };'
+
   sudo sysadminctl -admin -addUser "${u}" -fullName "${n}" -password - \
     -shell "$(which zsh)" -picture "/Library/User Pictures/${e}.jpg"
 }
