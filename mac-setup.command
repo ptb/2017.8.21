@@ -1007,6 +1007,8 @@ config_guest () {
 # Configure Z-Shell
 
 config_zsh () {
+  chsh -s $(which zsh)
+  sudo chsh -s $(which zsh)
   grep -q "ZDOTDIR" "/etc/zshenv" || \
   sudo tee -a /etc/zshenv << EOF > /dev/null
 export ZDOTDIR="\${HOME}/.zsh"
@@ -2256,8 +2258,6 @@ custom_vlc () {
 # Customize Z-Shell
 
 custom_zsh () {
-  chsh -s $(which zsh)
-  sudo chsh -s $(which zsh)
   mkdir -m go= "${ZDOTDIR:-$HOME}" 2> /dev/null
   cat << EOF >! "${ZDOTDIR:-$HOME}/.zshrc"
 #!/bin/sh
