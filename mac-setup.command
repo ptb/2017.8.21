@@ -476,7 +476,6 @@ ptb/custom/composer
 ptb/custom/ipmenulet
 ptb/custom/pcalc-3
 ptb/custom/sketchup-pro
-ptb/custom/synergy
 railwaycat/emacsmacport/emacs-mac-spacemacs-icon'
 
 install_brewfile_cask_pkgs () {

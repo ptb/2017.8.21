@@ -675,7 +675,6 @@ install_brewfile_cask_pkgs () {
 | ptb/custom/ipmenulet                             | https://github.com/mcandre/IPMenulet                          |
 | ptb/custom/pcalc-3                               | http://www.pcalc.com/english/about.html                       |
 | ptb/custom/sketchup-pro                          | https://www.sketchup.com/products/sketchup-pro                |
-| ptb/custom/synergy                               | https://wincent.com/products/synergy                          |
 | railwaycat/emacsmacport/emacs-mac-spacemacs-icon | https://github.com/railwaycat/homebrew-emacsmacport           |
 |--------------------------------------------------+---------------------------------------------------------------|
 
