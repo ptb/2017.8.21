@@ -306,7 +306,7 @@ init_xcode () {
         ${dest}/Content.cpio
     fi
     cd /Applications && \
-      cpio -dimuv --file=${dest}/Content.cpio
+      cpio -dimu --file=${dest}/Content.cpio
     for pkg in /Applications/Xcode*.app/Contents/Resources/Packages/*.pkg; do
       sudo installer -pkg "$pkg" -target /
     done
@@ -605,14 +605,12 @@ install_brewfile_cask_pkgs () {
 | alfred                                           | https://www.alfredapp.com/                                    |
 | arduino                                          | https://www.arduino.cc/                                       |
 | atom                                             | https://atom.io/                                              |
-| autodmg                                          | https://github.com/MagerValp/AutoDMG                          |
 | bbedit                                           | https://www.barebones.com/products/bbedit/                    |
 | caffeine                                         | http://lightheadsw.com/caffeine/                              |
 | carbon-copy-cloner                               | https://bombich.com/                                          |
 | charles                                          | https://www.charlesproxy.com/                                 |
 | dash                                             | https://kapeli.com/dash                                       |
 | dropbox                                          | https://www.dropbox.com/                                      |
-| duet                                             | https://www.duetdisplay.com/                                  |
 | exifrenamer                                      | http://www.qdev.de/?location=mac/exifrenamer                  |
 | firefox                                          | https://www.mozilla.org/firefox/                              |
 | flux                                             | https://justgetflux.com/                                      |
@@ -629,12 +627,10 @@ install_brewfile_cask_pkgs () {
 | jubler                                           | http://www.jubler.org/                                        |
 | little-snitch                                    | https://www.obdev.at/products/littlesnitch/                   |
 | machg                                            | http://jasonfharris.com/machg/                                |
-| makemkv                                          | https://www.makemkv.com/                                      |
 | menubar-countdown                                | http://capablehands.net/menubarcountdown                      |
 | meteorologist                                    | http://heat-meteo.sourceforge.net/                            |
 | moom                                             | https://manytricks.com/moom/                                  |
 | mp4tools                                         | http://www.emmgunn.com/mp4tools-home/                         |
-| munki                                            | https://www.munki.org/munki/                                  |
 | musicbrainz-picard                               | https://picard.musicbrainz.org/                               |
 | namechanger                                      | https://mrrsoftware.com/namechanger/                          |
 | nvalt                                            | http://brettterpstra.com/projects/nvalt/                      |
@@ -878,7 +874,7 @@ install_ruby_sw () {
     tee "${HOME}/.gemrc" > /dev/null
 
     gem update --system
-    yes | gem update
+    gem update
     gem install bundler
 
     grep -q "${RBENV_ROOT}" "/etc/paths" || \
@@ -1313,7 +1309,7 @@ export LESS="-egiMQRS -x2 -z-2"
 *** Configure New Account
 #+begin_src sh
 config_new_account () {
-  e="$(ask 'New Account Email Address' 'OK' '')"
+  e="$(ask 'Create New macOS Account: Email Address' 'OK' '')"
   curl --output "/Library/User Pictures/${e}.jpg" --silent \
     "https://www.gravatar.com/avatar/$(md5 -qs ${e}).jpg?s=512"
 
@@ -1323,10 +1319,10 @@ config_new_account () {
   g="$(curl --location --silent ${g})"
 
   n="$(printf ${g} | sed -n 's/^.*"name": "\(.*\)".*/\1/p')"
-  n="$(ask 'New Account Real Name' 'OK' ${n})"
+  n="$(ask 'Create New macOS Account: Real Name' 'OK' ${n})"
 
   u="$(printf ${g} | sed -n 's/^.*"login": "\(.*\)".*/\1/p')"
-  u="$(ask 'New Account User Name' 'OK' ${u})"
+  u="$(ask 'Create New macOS Account: User Name' 'OK' ${u})"
 
   sudo defaults write \
     "/System/Library/User Template/Non_localized/Library/Preferences/.GlobalPreferences.plist" \
@@ -1385,7 +1381,7 @@ custom () {
 custom_githome () {
   git -C "${HOME}" init
 
-  a=$(ask "Existing Home Repository Path or URL" "Add Remote" "git@github.com:$(whoami)/dot.git")
+  a=$(ask "Existing Home Repository Path or URL" "Add Remote" "")
   if test -n "${a}"; then
     git -C "${HOME}" remote add origin "${a}"
     git -C "${HOME}" fetch origin master

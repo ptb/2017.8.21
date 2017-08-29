@@ -154,7 +154,7 @@ init_xcode () {
         ${dest}/Content.cpio
     fi
     cd /Applications && \
-      cpio -dimuv --file=${dest}/Content.cpio
+      cpio -dimu --file=${dest}/Content.cpio
     for pkg in /Applications/Xcode*.app/Contents/Resources/Packages/*.pkg; do
       sudo installer -pkg "$pkg" -target /
     done
@@ -406,14 +406,12 @@ adium
 alfred
 arduino
 atom
-autodmg
 bbedit
 caffeine
 carbon-copy-cloner
 charles
 dash
 dropbox
-duet
 exifrenamer
 firefox
 flux
@@ -430,12 +428,10 @@ iterm2
 jubler
 little-snitch
 machg
-makemkv
 menubar-countdown
 meteorologist
 moom
 mp4tools
-munki
 musicbrainz-picard
 namechanger
 nvalt
@@ -667,7 +663,7 @@ install_ruby_sw () {
     tee "${HOME}/.gemrc" > /dev/null
 
     gem update --system
-    yes | gem update
+    gem update
     gem install bundler
 
     grep -q "${RBENV_ROOT}" "/etc/paths" || \
@@ -1034,7 +1030,7 @@ EOF
 # Configure New Account
 
 config_new_account () {
-  e="$(ask 'New Account Email Address' 'OK' '')"
+  e="$(ask 'Create New macOS Account: Email Address' 'OK' '')"
   curl --output "/Library/User Pictures/${e}.jpg" --silent \
     "https://www.gravatar.com/avatar/$(md5 -qs ${e}).jpg?s=512"
 
@@ -1044,10 +1040,10 @@ config_new_account () {
   g="$(curl --location --silent ${g})"
 
   n="$(printf ${g} | sed -n 's/^.*"name": "\(.*\)".*/\1/p')"
-  n="$(ask 'New Account Real Name' 'OK' ${n})"
+  n="$(ask 'Create New macOS Account: Real Name' 'OK' ${n})"
 
   u="$(printf ${g} | sed -n 's/^.*"login": "\(.*\)".*/\1/p')"
-  u="$(ask 'New Account User Name' 'OK' ${u})"
+  u="$(ask 'Create New macOS Account: User Name' 'OK' ${u})"
 
   sudo defaults write \
     "/System/Library/User Template/Non_localized/Library/Preferences/.GlobalPreferences.plist" \
@@ -1101,7 +1097,7 @@ custom () {
 custom_githome () {
   git -C "${HOME}" init
 
-  a=$(ask "Existing Home Repository Path or URL" "Add Remote" "git@github.com:$(whoami)/dot.git")
+  a=$(ask "Existing Home Repository Path or URL" "Add Remote" "")
   if test -n "${a}"; then
     git -C "${HOME}" remote add origin "${a}"
     git -C "${HOME}" fetch origin master
