@@ -45,6 +45,7 @@ init () {
   init_hostname
   init_perms
   init_devtools
+  init_xcode
   init_updates
   init_mas_save
 
@@ -134,6 +135,29 @@ init_devtools () {
     fi
   else
     xcode-select --install
+  fi
+}
+
+# Install Xcode
+
+init_xcode () {
+  if test -f ${CACHES}/Xcode*.xip; then
+    dest="${CACHES}/Xcode"
+    if ! test -d "$dest"; then
+      pkgutil --expand ${CACHES}/Xcode*.xip "$dest"
+      curl --location --silent \
+        "https://gist.githubusercontent.com/pudquick/ff412bcb29c9c1fa4b8d/raw/24b25538ea8df8d0634a2a6189aa581ccc6a5b4b/parse_pbzx2.py" | \
+        python - "${dest}/Content"
+      find "${dest}" -name "*.xz" -print0 | \
+        xargs -0 -L 1 gunzip
+      cat ${dest}/Content.part* > \
+        ${dest}/Content.cpio
+    fi
+    cd /Applications && \
+      cpio -dimuv --file=${dest}/Content.cpio
+    for pkg in /Applications/Xcode*.app/Contents/Resources/Packages/*.pkg; do
+      sudo installer -pkg "$pkg" -target /
+    done
   fi
 }
 
