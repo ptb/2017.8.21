@@ -330,6 +330,7 @@ sqlite
 stow
 tag
 terminal-notifier
+the_silver_searcher
 trash
 unrar
 vim
@@ -1080,6 +1081,7 @@ custom_githome () {
 
 _atom='atom-beautify
 atom-css-comb
+atom-fuzzy-grep
 atom-jade
 atom-wallaby
 autoclose-html

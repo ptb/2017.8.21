@@ -525,6 +525,7 @@ install_brewfile_brew_pkgs () {
 | stow                         | https://www.gnu.org/software/stow/                        |
 | tag                          | https://github.com/jdberry/tag                            |
 | terminal-notifier            | https://github.com/julienXX/terminal-notifier             |
+| the_silver_searcher          | https://geoff.greer.fm/ag/                                |
 | trash                        | http://hasseg.org/trash/                                  |
 | unrar                        | http://www.rarlab.com/                                    |
 | vim                          | https://vim.sourceforge.io/                               |
@@ -1399,6 +1400,7 @@ EOF
 |--------------------------------+---------------------------------------------------------|
 | atom-beautify                  | https://atom.io/packages/atom-beautify                  |
 | atom-css-comb                  | https://atom.io/packages/atom-css-comb                  |
+| atom-fuzzy-grep                | https://atom.io/packages/atom-fuzzy-grep                                                        |
 | atom-jade                      | https://atom.io/packages/atom-jade                      |
 | atom-wallaby                   | https://atom.io/packages/atom-wallaby                   |
 | autoclose-html                 | https://atom.io/packages/autoclose-html                 |
