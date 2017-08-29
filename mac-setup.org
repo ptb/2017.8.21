@@ -433,6 +433,7 @@ install_macos_sw () {
   install_brewfile_cask_pkgs
   install_brewfile_mas_apps
   install_links
+  install_admin_req
 
   x="$(find '/Applications' -maxdepth 1 -name 'Xcode[^ ]*.app' -print -quit)"
   if test -n "${x}"; then
@@ -613,7 +614,6 @@ install_brewfile_cask_pkgs () {
 | dropbox                                          | https://www.dropbox.com/                                      |
 | exifrenamer                                      | http://www.qdev.de/?location=mac/exifrenamer                  |
 | firefox                                          | https://www.mozilla.org/firefox/                              |
-| flux                                             | https://justgetflux.com/                                      |
 | github-desktop                                   | https://desktop.github.com/                                   |
 | gitup                                            | http://gitup.co/                                              |
 | google-chrome                                    | https://www.google.com/chrome/                                |
@@ -741,6 +741,32 @@ install_links () {
 | /Applications/Xcode-beta.app/Contents/Applications           |
 | /Applications/Xcode-beta.app/Contents/Developer/Applications |
 |--------------------------------------------------------------|
+
+*** Mark Applications Requiring Administrator Account
+#+begin_src sh :var _admin_req=_admin_req[3:-2,0]
+
+install_admin_req () {
+  printf "%s\n" "${_admin_req}" | \
+  while IFS="$(printf '\t')" read app; do
+    sudo tag -a "Red, admin" "/Applications/${app}"
+  done
+}
+#+end_src
+
+**** _admin_req
+#+name: _admin_req
+|------------------------|
+| Admin Apps             |
+|------------------------|
+| Carbon Copy Cloner.app |
+| Charles.app            |
+| Composer.app           |
+| Dropbox.app            |
+| iStat Menus.app        |
+| Moom.app               |
+| VMware Fusion.app      |
+| Wireshark.app          |
+|------------------------|
 
 *** Install Node Software with =nodenv=
 #+begin_src sh
@@ -1192,6 +1218,14 @@ else
 fi
 #+end_src
 
+*** Configure iStat Menus
+#+begin_src sh
+config_istatmenus () {
+  test -d "/Applications/iStat Menus.app" && \
+  open "/Applications/iStat Menus.app"
+}
+#+end_src
+
 *** Configure Login Window
 #+begin_src sh :var _loginwindow=_loginwindow[3:-2,1:5]
 
@@ -1215,9 +1249,22 @@ config_openssl () {
 }
 #+end_src
 
-**** Configure Security & Privacy
+*** Configure System Preferences
+#+begin_src sh
+config_sysprefs () {
+  config_gatekeeper
+  config_energy
+  config_mas
+  config_guest
+}
+#+end_src
 
-sudo spctl --master-disable
+**** Configure Security & Privacy
+#+begin_src sh
+config_gatekeeper () {
+  sudo spctl --master-disable
+}
+#+end_src
 
 **** Configure Energy Saver
 #+begin_src sh :var _energy=_energy[3:-2,1:3]
@@ -1275,8 +1322,13 @@ config_guest () {
 *** Configure Z-Shell
 #+begin_src sh
 config_zsh () {
+  grep -q $(which zsh) /etc/shells ||
+  print "$(which zsh)\n" | \
+  sudo tee -a /etc/shells > /dev/null
+
   chsh -s $(which zsh)
   sudo chsh -s $(which zsh)
+
   grep -q "ZDOTDIR" "/etc/zshenv" || \
   sudo tee -a /etc/zshenv << EOF > /dev/null
 <<zshenv>>
@@ -1566,6 +1618,8 @@ EOF
   cat << EOF > "${HOME}/.emacs.d/private/ptb/packages.el"
 <<packages.el>>
 EOF
+
+  test -d /Applications/Emacs.app && open /Applications/Emacs.app
 }
 #+end_src
 
@@ -1986,8 +2040,8 @@ custom_meteorologist () {
 #+begin_src sh :var _moom=_moom[3:-2,1:5]
 
 custom_moom () {
-  killall Moom
-  defaults delete com.manytricks.Moom "Custom Controls"
+  killall Moom > /dev/null 2>&1
+  defaults delete com.manytricks.Moom "Custom Controls" > /dev/null 2>&1
   config_defaults "${_moom}"
   open "/Applications/Moom.app"
 }
@@ -2278,7 +2332,6 @@ custom_sysprefs () {
   custom_dock
   custom_dockapps
   custom_security
-  custom_modkeys
   custom_text
   custom_dictation
   custom_mouse
@@ -2461,17 +2514,6 @@ custom_security () {
 |                                                                          | com.apple.screensaver | askForPasswordDelay | -int |     5 |      |
 |--------------------------------------------------------------------------+-----------------------+---------------------+------+-------+------|
 
-**** Customize Caps Lock
-#+begin_src sh
-custom_modkeys () {
-  defaults -currentHost write -globalDomain \
-    "com.apple.keyboard.modifiermapping.1452-591-0" -array-add \
-      '{ HIDKeyboardModifierMappingDst = 0;
-        HIDKeyboardModifierMappingSrc = 30064771129;
-      }'
-}
-#+end_src
-
 **** Customize Text
 #+begin_src sh :var _text=_text[3:-2,1:5]
 custom_text () {
@@ -2591,7 +2633,7 @@ custom_clock () {
 #+begin_src sh :var _a11y=_a11y[3,1:5] :var _speech=_a11y[4:-2,1:5]
 
 custom_a11y () {
-  config_defaults "Acessibility" "${_a11y}"
+  config_defaults "${_a11y}"
 
   if test -d "/System/Library/Speech/Voices/Allison.SpeechVoice"; then
     config_defaults "${_speech}"
@@ -3011,6 +3053,7 @@ personalize_all () {
   personalize_littlesnitch4
   personalize_moom
   personalize_steermouse5
+  personalize_logout
 }
 #+end_src
 
@@ -3614,3 +3657,12 @@ personalize_vmwarefusion8pro () {
 
 #+name: _vmwarefusion8pro_crypt
 |   |
+
+*** Log Out Then Log Back In
+#+begin_src sh
+personalize_logout () {
+  if run "Log Out Then Log Back In?" "Cancel" "Log Out"; then
+    osascript -e 'tell app "loginwindow" to «event aevtrlgo»'
+  fi
+}
+#+end_src

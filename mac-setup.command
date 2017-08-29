@@ -263,6 +263,7 @@ install_macos_sw () {
   install_brewfile_cask_pkgs
   install_brewfile_mas_apps
   install_links
+  install_admin_req
 
   x="$(find '/Applications' -maxdepth 1 -name 'Xcode[^ ]*.app' -print -quit)"
   if test -n "${x}"; then
@@ -414,7 +415,6 @@ dash
 dropbox
 exifrenamer
 firefox
-flux
 github-desktop
 gitup
 google-chrome
@@ -531,6 +531,24 @@ install_links () {
   while IFS="$(printf '\t')" read link; do
     find "${link}" -maxdepth 1 -name "*.app" -type d -print0 2> /dev/null | \
     xargs -0 -I {} -L 1 ln -s "{}" "/Applications" 2> /dev/null
+  done
+}
+
+# Mark Applications Requiring Administrator Account
+
+_admin_req='Carbon Copy Cloner.app
+Charles.app
+Composer.app
+Dropbox.app
+iStat Menus.app
+Moom.app
+VMware Fusion.app
+Wireshark.app'
+
+install_admin_req () {
+  printf "%s\n" "${_admin_req}" | \
+  while IFS="$(printf '\t')" read app; do
+    sudo tag -a "Red, admin" "/Applications/${app}"
   done
 }
 
@@ -945,6 +963,13 @@ EOF
   rehash
 }
 
+# Configure iStat Menus
+
+config_istatmenus () {
+  test -d "/Applications/iStat Menus.app" && \
+  open "/Applications/iStat Menus.app"
+}
+
 # Configure Login Window
 
 _loginwindow='/Library/Preferences/com.apple.loginwindow
@@ -961,6 +986,21 @@ config_loginwindow () {
 
 config_openssl () {
   true
+}
+
+# Configure System Preferences
+
+config_sysprefs () {
+  config_gatekeeper
+  config_energy
+  config_mas
+  config_guest
+}
+
+# Configure Security & Privacy
+
+config_gatekeeper () {
+  sudo spctl --master-disable
 }
 
 # Configure Energy Saver
@@ -1002,8 +1042,13 @@ config_guest () {
 # Configure Z-Shell
 
 config_zsh () {
+  grep -q $(which zsh) /etc/shells ||
+  print "$(which zsh)\n" | \
+  sudo tee -a /etc/shells > /dev/null
+
   chsh -s $(which zsh)
   sudo chsh -s $(which zsh)
+
   grep -q "ZDOTDIR" "/etc/zshenv" || \
   sudo tee -a /etc/zshenv << EOF > /dev/null
 export ZDOTDIR="\${HOME}/.zsh"
@@ -1453,6 +1498,8 @@ EOF
   )
 )
 EOF
+
+  test -d /Applications/Emacs.app && open /Applications/Emacs.app
 }
 
 # Customize Finder
@@ -1652,8 +1699,8 @@ com.manytricks.Moom	Configuration Grid: Rows	-int	9
 com.manytricks.Moom	SUEnableAutomaticChecks	-bool	true	'
 
 custom_moom () {
-  killall Moom
-  defaults delete com.manytricks.Moom "Custom Controls"
+  killall Moom > /dev/null 2>&1
+  defaults delete com.manytricks.Moom "Custom Controls" > /dev/null 2>&1
   config_defaults "${_moom}"
   open "/Applications/Moom.app"
 }
@@ -1880,7 +1927,6 @@ custom_sysprefs () {
   custom_dock
   custom_dockapps
   custom_security
-  custom_modkeys
   custom_text
   custom_dictation
   custom_mouse
@@ -2011,16 +2057,6 @@ custom_security () {
   config_defaults "${_security}"
 }
 
-# Customize Caps Lock
-
-custom_modkeys () {
-  defaults -currentHost write -globalDomain \
-    "com.apple.keyboard.modifiermapping.1452-591-0" -array-add \
-      '{ HIDKeyboardModifierMappingDst = 0;
-        HIDKeyboardModifierMappingSrc = 30064771129;
-      }'
-}
-
 # Customize Text
 
 _text='-globalDomain	NSAutomaticCapitalizationEnabled	-bool	false	
@@ -2113,7 +2149,7 @@ com.apple.speech.voice.prefs	SelectedVoiceCreator	-int	1886745202
 com.apple.speech.voice.prefs	SelectedVoiceID	-int	184555197	'
 
 custom_a11y () {
-  config_defaults "Acessibility" "${_a11y}"
+  config_defaults "${_a11y}"
 
   if test -d "/System/Library/Speech/Voices/Allison.SpeechVoice"; then
     config_defaults "${_speech}"
@@ -2481,6 +2517,7 @@ personalize_all () {
   personalize_littlesnitch4
   personalize_moom
   personalize_steermouse5
+  personalize_logout
 }
 
 # Personalize Carbon Copy Cloner 4
@@ -3028,4 +3065,12 @@ personalize_tune4mac () {
 _vmwarefusion8pro_crypt=''
 personalize_vmwarefusion8pro () {
   personalize "${_vmwarefusion8pro_crypt}"
+}
+
+# Log Out Then Log Back In
+
+personalize_logout () {
+  if run "Log Out Then Log Back In?" "Cancel" "Log Out"; then
+    osascript -e 'tell app "loginwindow" to «event aevtrlgo»'
+  fi
 }
