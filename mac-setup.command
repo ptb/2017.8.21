@@ -158,6 +158,11 @@ init_xcode () {
     for pkg in /Applications/Xcode*.app/Contents/Resources/Packages/*.pkg; do
       sudo installer -pkg "$pkg" -target /
     done
+    x="$(find '/Applications' -maxdepth 1 -name 'Xcode[^ ]*.app' -print -quit)"
+    if test -n "${x}"; then
+      sudo xcode-select -s "${x}"
+      sudo xcodebuild -license accept
+    fi
   fi
 }
 
@@ -186,7 +191,7 @@ init_mas_save () {
 #!/bin/sh
 
 asdir="/Library/Caches/storedownloadd"
-as="\$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
+as="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
 sudir="/Library/Caches/softwareupdated"
 su="\$(sudo find "/private/var/folders" -name "com.apple.SoftwareUpdate" -type d -user _softwareupdate 2> /dev/null)"
 
@@ -272,7 +277,7 @@ install_macos_sw () {
 
 install_paths () {
   if ! grep -Fq "/usr/local/sbin" /etc/paths; then
-    sudo sed -i -e "/\/usr\/sbin/{x;s/$/\/usr\/local\/sbin/;G;}" /etc/paths
+    sudo sed -i "" -e "/\/usr\/sbin/{x;s/$/\/usr\/local\/sbin/;G;}" /etc/paths
   fi
 }
 
@@ -389,7 +394,8 @@ install_brewfile_cask_args () {
   while IFS="$(printf '\t')" read arg dir; do
     printf '\n  %s: "%s",' "${arg}" "${dir}" >> "${BREWFILE}"
   done
-  sed -i -e "$ s/,/$(printf '\n\n\n')/" "${BREWFILE}"
+  sed -i "" -e '$ s/,/\
+/' "${BREWFILE}"
 }
 
 # Add Homebrew Casks to Brewfile
@@ -488,6 +494,7 @@ install_brewfile_cask_pkgs () {
 # Add App Store Packages to Brewfile
 
 _mas='1Password	443987910
+Affinity Photo	824183456
 autoping	632347870
 Coffitivity	659901392
 Growl	467939042
@@ -557,7 +564,7 @@ install_node_sw () {
     rehash
 
     grep -q "${NODENV_ROOT}" "/etc/paths" || \
-    sudo sed -i -e "1i\\
+    sudo sed -i "" -e "1i\\
 ${NODENV_ROOT}/shims
 " "/etc/paths"
   fi
@@ -588,7 +595,7 @@ install_perl_sw () {
     rehash
 
     grep -q "${PLENV_ROOT}" "/etc/paths" || \
-    sudo sed -i -e "1i\\
+    sudo sed -i "" -e "1i\\
 ${PLENV_ROOT}/shims
 " "/etc/paths"
   fi
@@ -625,7 +632,7 @@ install_python_sw () {
     pip install --upgrade "pip" "setuptools"
 
     grep -q "${PYENV_ROOT}" "/etc/paths" || \
-    sudo sed -i -e "1i\\
+    sudo sed -i "" -e "1i\\
 ${PYENV_ROOT}/shims
 " "/etc/paths"
   fi
@@ -664,7 +671,7 @@ install_ruby_sw () {
     gem install bundler
 
     grep -q "${RBENV_ROOT}" "/etc/paths" || \
-    sudo sed -i -e "1i\\
+    sudo sed -i "" -e "1i\\
 ${RBENV_ROOT}/shims
 " "/etc/paths"
   fi
@@ -1092,10 +1099,26 @@ custom () {
 custom_githome () {
   git -C "${HOME}" init
 
-  a=$(ask "Existing Home Repository Path or URL" "Add Remote" "")
+  a=$(ask "Existing Home Repository Path or URL" "Add Remote" "git@github.com:$(whoami)/dot.git")
   if test -n "${a}"; then
     git -C "${HOME}" remote add origin "${a}"
-    git -C "${HOME}" pull origin master
+    git -C "${HOME}" fetch origin master
+  fi
+
+  if run "Encrypt and commit changes to Git and push to GitHub, automatically?" "No" "Add AutoKeep"; then
+    curl --location --silent \
+      "https://github.com/ptb/autokeep/raw/master/autokeep.command" | \
+      . /dev/stdin 0
+
+    autokeep_remote
+    autokeep_push
+    autokeep_gitignore
+    autokeep_post_commit
+    autokeep_launchagent
+    autokeep_crypt
+
+    git reset --hard
+    git checkout -f -b master FETCH_HEAD
   fi
 
   chmod -R go= "${HOME}" > /dev/null 2>&1
@@ -2233,6 +2256,8 @@ custom_vlc () {
 # Customize Z-Shell
 
 custom_zsh () {
+  chsh -s $(which zsh)
+  sudo chsh -s $(which zsh)
   mkdir -m go= "${ZDOTDIR:-$HOME}" 2> /dev/null
   cat << EOF >! "${ZDOTDIR:-$HOME}/.zshrc"
 #!/bin/sh
