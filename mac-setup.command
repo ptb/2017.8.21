@@ -154,7 +154,7 @@ init_xcode () {
         ${dest}/Content.cpio
     fi
     cd /Applications && \
-      cpio -dimu --file=${dest}/Content.cpio
+      sudo cpio -dimu --file=${dest}/Content.cpio
     for pkg in /Applications/Xcode*.app/Contents/Resources/Packages/*.pkg; do
       sudo installer -pkg "$pkg" -target /
     done
@@ -263,7 +263,6 @@ install_macos_sw () {
   install_brewfile_cask_pkgs
   install_brewfile_mas_apps
   install_links
-  install_admin_req
 
   x="$(find '/Applications' -maxdepth 1 -name 'Xcode[^ ]*.app' -print -quit)"
   if test -n "${x}"; then
@@ -272,6 +271,7 @@ install_macos_sw () {
   fi
 
   brew bundle --file="${BREWFILE}"
+  install_admin_req
 }
 
 # Add =/usr/local/bin/sbin= to Default Path
@@ -572,8 +572,12 @@ install_node_sw () {
     sudo tee -a "/etc/zshrc" > /dev/null
     . "/etc/zshrc"
 
-    nodenv install --skip-existing 8.3.0
-    nodenv global 8.3.0
+    git clone https://github.com/nodenv/node-build-update-defs.git \
+      "$(nodenv root)"/plugins/node-build-update-defs
+    nodenv update-version-defs
+
+    nodenv install --skip-existing 8.4.0
+    nodenv global 8.4.0
     rehash
 
     grep -q "${NODENV_ROOT}" "/etc/paths" || \
@@ -2068,11 +2072,7 @@ custom_text () {
 
 # Customize Dictation
 
-_dictation='com.apple.speech.recognition.AppleSpeechRecognition.prefs
-DictationIMMasterDictationEnabled
--bool
-true
-'
+_dictation='com.apple.speech.recognition.AppleSpeechRecognition.prefs	DictationIMMasterDictationEnabled	-bool	true	'
 
 custom_dictation () {
   config_defaults "${_dictation}"
@@ -2080,11 +2080,7 @@ custom_dictation () {
 
 # Customize Mouse
 
-_mouse='-globalDomain
-com.apple.swipescrolldirection
--bool
-false
-'
+_mouse='-globalDomain	com.apple.swipescrolldirection	-bool	false	'
 
 custom_mouse () {
   config_defaults "${_mouse}"
@@ -2139,11 +2135,7 @@ custom_clock () {
 
 # Customize Accessibility
 
-_a11y='com.apple.universalaccess
-reduceTransparency
--bool
-true
-'
+_a11y='com.apple.universalaccess	reduceTransparency	-bool	true	'
 _speech='com.apple.speech.voice.prefs	SelectedVoiceName	-string	Allison	
 com.apple.speech.voice.prefs	SelectedVoiceCreator	-int	1886745202	
 com.apple.speech.voice.prefs	SelectedVoiceID	-int	184555197	'

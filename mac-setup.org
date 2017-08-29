@@ -306,7 +306,7 @@ init_xcode () {
         ${dest}/Content.cpio
     fi
     cd /Applications && \
-      cpio -dimu --file=${dest}/Content.cpio
+      sudo cpio -dimu --file=${dest}/Content.cpio
     for pkg in /Applications/Xcode*.app/Contents/Resources/Packages/*.pkg; do
       sudo installer -pkg "$pkg" -target /
     done
@@ -433,7 +433,6 @@ install_macos_sw () {
   install_brewfile_cask_pkgs
   install_brewfile_mas_apps
   install_links
-  install_admin_req
 
   x="$(find '/Applications' -maxdepth 1 -name 'Xcode[^ ]*.app' -print -quit)"
   if test -n "${x}"; then
@@ -442,6 +441,7 @@ install_macos_sw () {
   fi
 
   brew bundle --file="${BREWFILE}"
+  install_admin_req
 }
 #+end_src
 
@@ -788,8 +788,12 @@ install_node_sw () {
     sudo tee -a "/etc/zshrc" > /dev/null
     . "/etc/zshrc"
 
-    nodenv install --skip-existing 8.3.0
-    nodenv global 8.3.0
+    git clone https://github.com/nodenv/node-build-update-defs.git \
+      "$(nodenv root)"/plugins/node-build-update-defs
+    nodenv update-version-defs
+
+    nodenv install --skip-existing 8.4.0
+    nodenv global 8.4.0
     rehash
 
     grep -q "${NODENV_ROOT}" "/etc/paths" || \
@@ -2532,7 +2536,7 @@ custom_text () {
 |----------------------------------------+---------------+--------------------------------------+-------+-------+------|
 
 **** Customize Dictation
-#+begin_src sh :var _dictation=_dictation[3:-2,1:5]
+#+begin_src sh :var _dictation=_dictation[2:3,1:5]
 
 custom_dictation () {
   config_defaults "${_dictation}"
@@ -2548,7 +2552,7 @@ custom_dictation () {
 |-------------------+-----------------------------------------------------------+-----------------------------------+-------+-------+------|
 
 **** Customize Mouse
-#+begin_src sh :var _mouse=_mouse[3:-2,1:5]
+#+begin_src sh :var _mouse=_mouse[2:3,1:5]
 
 custom_mouse () {
   config_defaults "${_mouse}"
@@ -2630,7 +2634,7 @@ custom_clock () {
 #+end_src
 
 **** Customize Accessibility
-#+begin_src sh :var _a11y=_a11y[3,1:5] :var _speech=_a11y[4:-2,1:5]
+#+begin_src sh :var _a11y=_a11y[2:3,1:5] :var _speech=_a11y[4:-2,1:5]
 
 custom_a11y () {
   config_defaults "${_a11y}"
