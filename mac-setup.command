@@ -701,7 +701,7 @@ config_default_apps () {
 config_desktop () {
   sudo rm -f "/Library/Caches/com.apple.desktop.admin.png"
 
-  base64 -D << EOF > "/Library/Caches/com.apple.desktop.admin.png"
+  base64 -D << EOF > "/Library/Desktop Pictures/Solid Colors/Solid Black.png"
 iVBORw0KGgoAAAANSUhEUgAAAIAAAACAAQAAAADrRVxmAAAAGElEQVR4AWOgMxgFo2AUjIJRMApGwSgAAAiAAAH3bJXBAAAAAElFTkSuQmCC
 EOF
 }
@@ -1829,7 +1829,7 @@ custom_ssh () {
 
 custom_sysprefs () {
   custom_general
-  custom_desktop "/Library/Caches/com.apple.desktop.admin.png"
+  custom_desktop "/Library/Desktop Pictures/Solid Colors/Solid Black.png"
   custom_screensaver
   custom_dock
   custom_dockapps
@@ -1879,13 +1879,7 @@ EOF
 custom_desktop () {
   osascript - "${1}" << EOF 2> /dev/null
     on run { _this }
-      tell application "System Events"
-        set a to POSIX file quoted form of _this
-        set b to a reference to every desktop
-        repeat with c in b
-          set picture of c to a
-        end repeat
-      end tell
+      tell app "System Events" to set picture of every desktop to POSIX file _this
     end run
 EOF
 }
