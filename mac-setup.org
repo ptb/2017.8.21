@@ -65,7 +65,7 @@ curl --location --silent \
 
 *** Features
 
-- *macOS High Sierra:* Tested with macOS High Sierra 10.13 Beta 6 (17A352a).
+- *macOS High Sierra:* Tested with macOS High Sierra 10.13 Beta 8 (17A358a).
 - *Completely Automated:* Homebrew, Cask, and =mas-cli= install everything.
 - *Latest Versions:* Includes Node, Perl, Python, and Ruby separate from macOS.
 - *Customized Terminal:* Colors and fonts decyphered into editable preferences.
