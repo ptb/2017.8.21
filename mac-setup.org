@@ -683,6 +683,10 @@ install_brewfile_cask_pkgs () {
 | ptb/custom/ipmenulet                             | https://github.com/mcandre/IPMenulet                          |
 | ptb/custom/pcalc-3                               | http://www.pcalc.com/english/about.html                       |
 | ptb/custom/sketchup-pro                          | https://www.sketchup.com/products/sketchup-pro                |
+| ptb/custom/text-to-speech-alex                   |                                                               |
+| ptb/custom/text-to-speech-allison                |                                                               |
+| ptb/custom/text-to-speech-samantha               |                                                               |
+| ptb/custom/text-to-speech-tom                    |                                                               |
 | railwaycat/emacsmacport/emacs-mac-spacemacs-icon | https://github.com/railwaycat/homebrew-emacsmacport           |
 |--------------------------------------------------+---------------------------------------------------------------|
 
@@ -1391,13 +1395,6 @@ config_new_account () {
   sudo defaults write \
     "/System/Library/User Template/Non_localized/Library/Preferences/.GlobalPreferences.plist" \
     "com.apple.swipescrolldirection" -bool false
-
-  sudo defaults write \
-    "/System/Library/User Template/Non_localized/Library/Preferences/com.apple.symbolichotkeys.plist" \
-    "AppleSymbolicHotKeys" -dict-add 64 '{ enabled = 0; value = { parameters = (32, 49, 1048576); type = standard; }; };'
-  sudo defaults write \
-    "/System/Library/User Template/Non_localized/Library/Preferences/com.apple.symbolichotkeys.plist" \
-    "AppleSymbolicHotKeys" -dict-add 65 '{ enabled = 0; value = { parameters = (32, 49, 1572864); type = standard; }; };'
 
   sudo sysadminctl -admin -addUser "${u}" -fullName "${n}" -password - \
     -shell "$(which zsh)" -picture "/Library/User Pictures/${e}.jpg"
@@ -2350,7 +2347,38 @@ custom_safari () {
 *** Customize Sieve
 #+begin_src sh
 custom_sieve () {
-  true
+  cat > "${HOME}/.sieve" << EOF
+require ["date", "fileinto", "imap4flags", "mailbox", "relational", "variables"];
+
+setflag "\\\\Seen";
+
+if date :is "date" "year" "1995" { fileinto :create "Archives.1995"; }
+if date :is "date" "year" "1996" { fileinto :create "Archives.1996"; }
+if date :is "date" "year" "1997" { fileinto :create "Archives.1997"; }
+if date :is "date" "year" "1998" { fileinto :create "Archives.1998"; }
+if date :is "date" "year" "1999" { fileinto :create "Archives.1999"; }
+if date :is "date" "year" "2000" { fileinto :create "Archives.2000"; }
+if date :is "date" "year" "2001" { fileinto :create "Archives.2001"; }
+if date :is "date" "year" "2002" { fileinto :create "Archives.2002"; }
+if date :is "date" "year" "2003" { fileinto :create "Archives.2003"; }
+if date :is "date" "year" "2004" { fileinto :create "Archives.2004"; }
+if date :is "date" "year" "2005" { fileinto :create "Archives.2005"; }
+if date :is "date" "year" "2006" { fileinto :create "Archives.2006"; }
+if date :is "date" "year" "2007" { fileinto :create "Archives.2007"; }
+if date :is "date" "year" "2008" { fileinto :create "Archives.2008"; }
+if date :is "date" "year" "2009" { fileinto :create "Archives.2009"; }
+if date :is "date" "year" "2010" { fileinto :create "Archives.2010"; }
+if date :is "date" "year" "2011" { fileinto :create "Archives.2011"; }
+if date :is "date" "year" "2012" { fileinto :create "Archives.2012"; }
+if date :is "date" "year" "2013" { fileinto :create "Archives.2013"; }
+if date :is "date" "year" "2014" { fileinto :create "Archives.2014"; }
+if date :is "date" "year" "2015" { fileinto :create "Archives.2015"; }
+if date :is "date" "year" "2016" { fileinto :create "Archives.2016"; }
+if date :is "date" "year" "2017" { fileinto :create "Archives.2017"; }
+if date :is "date" "year" "2018" { fileinto :create "Archives.2018"; }
+if date :is "date" "year" "2019" { fileinto :create "Archives.2019"; }
+if date :is "date" "year" "2020" { fileinto :create "Archives.2020"; }
+EOF
 }
 #+end_src
 
@@ -2639,9 +2667,41 @@ custom_sound () {
 **** Customize Login Items
 #+begin_src sh
 custom_loginitems () {
-  true
+  printf "%s\n" "${_loginitems}" | \
+  while IFS="$(printf '\t')" read app; do
+    if test -e "$app"; then
+      osascript - "$app" << EOF 2> /dev/null
+        on run { _this }
+          tell app "System Events"
+            make new login item with properties { path: _this, hidden: true }
+          end tell
+        end run
+EOF
+    fi
+  done
 }
 #+end_src
+
+|------------------------------------------------------------------------------------|
+| Login Items                                                                        |
+|------------------------------------------------------------------------------------|
+| /Applications/Alfred 3.app                                                         |
+| /Applications/autoping.app                                                         |
+| /Applications/Caffeine.app                                                         |
+| /Applications/Coffitivity.app                                                      |
+| /Applications/Dropbox.app                                                          |
+| /Applications/HardwareGrowler.app                                                  |
+| /Applications/I Love Stars.app                                                     |
+| /Applications/IPMenulet.app                                                        |
+| /Applications/iTunes.app/Contents/MacOS/iTunesHelper.app                           |
+| /Applications/Menubar Countdown.app                                                |
+| /Applications/Meteorologist.app                                                    |
+| /Applications/Moom.app                                                             |
+| /Applications/NZBGet.app                                                           |
+| /Applications/Plex Media Server.app                                                |
+| /Applications/Sonarr-Menu.app                                                      |
+| /Library/PreferencePanes/SteerMouse.prefPane/Contents/MacOS/SteerMouse Manager.app |
+|------------------------------------------------------------------------------------|
 
 **** Customize Siri
 #+begin_src sh
