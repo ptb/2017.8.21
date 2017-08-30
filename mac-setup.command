@@ -1152,6 +1152,7 @@ custom_githome () {
   git -C "${HOME}" init
 
   test -f "${CACHES}/Dropbox/.zshenv" && \
+    mkdir -p "${ZDOTDIR:-$HOME}" && \
     cp "${CACHES}/Dropbox/.zshenv" "${ZDOTDIR:-$HOME}" && \
     . "${ZDOTDIR:-$HOME}/.zshenv"
 
@@ -2572,6 +2573,7 @@ personalize_all () {
   personalize_istatmenus5
   personalize_littlesnitch4
   personalize_moom
+  personalize_sizeup
   personalize_steermouse5
   personalize_logout
 }
@@ -2712,7 +2714,7 @@ personalize_scrivener () {
 _sizeup_crypt=''
 
 personalize_sizeup () {
-  personalize "${_sizeup_crypt}"
+  # personalize "${_sizeup_crypt}"
   test -d "/Applications/SizeUp.app" && \
     open "/Applications/SizeUp.app"
 }
@@ -3089,7 +3091,7 @@ CQoeE4iYGE9QoCvVgbT1XIhMTB8hT8W/DP97DLI9NlENjEHh+7Pj5AGOgwjr177l'
 personalize_steermouse5 () {
   personalize "${_steermouse5_crypt}"
   test -d "/Library/PreferencePanes/SteerMouse.prefPane/Contents/MacOS/SteerMouse Manager.app" && \
-    open "/Library/PreferencePanes/SteerMouse.prefPane/Contents/MacOS/SteerMouse Manager.app"
+    osascript -e 'tell app "System Preferences" to reveal pane id "jp.plentycom.prefpane.SteerMouse"'
 }
 
 # Personalize SourceTree

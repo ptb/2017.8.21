@@ -1451,6 +1451,7 @@ custom_githome () {
   git -C "${HOME}" init
 
   test -f "${CACHES}/Dropbox/.zshenv" && \
+    mkdir -p "${ZDOTDIR:-$HOME}" && \
     cp "${CACHES}/Dropbox/.zshenv" "${ZDOTDIR:-$HOME}" && \
     . "${ZDOTDIR:-$HOME}/.zshenv"
 
@@ -3150,6 +3151,7 @@ personalize_all () {
   personalize_istatmenus5
   personalize_littlesnitch4
   personalize_moom
+  personalize_sizeup
   personalize_steermouse5
   personalize_logout
 }
@@ -3323,7 +3325,7 @@ personalize_scrivener () {
 #+begin_src sh :var _sizeup_crypt=_sizeup_crypt
 
 personalize_sizeup () {
-  personalize "${_sizeup_crypt}"
+  # personalize "${_sizeup_crypt}"
   test -d "/Applications/SizeUp.app" && \
     open "/Applications/SizeUp.app"
 }
@@ -3338,7 +3340,7 @@ personalize_sizeup () {
 personalize_steermouse5 () {
   personalize "${_steermouse5_crypt}"
   test -d "/Library/PreferencePanes/SteerMouse.prefPane/Contents/MacOS/SteerMouse Manager.app" && \
-    open "/Library/PreferencePanes/SteerMouse.prefPane/Contents/MacOS/SteerMouse Manager.app"
+    osascript -e 'tell app "System Preferences" to reveal pane id "jp.plentycom.prefpane.SteerMouse"'
 }
 #+end_src
 
