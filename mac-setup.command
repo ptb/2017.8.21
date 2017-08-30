@@ -270,6 +270,7 @@ install_macos_sw () {
     sudo xcodebuild -license accept
   fi
 
+  config_gatekeeper
   brew bundle --file="${BREWFILE}"
   sudo xattr -rd "com.apple.quarantine" "/Applications" > /dev/null 2>&1
 }
@@ -348,7 +349,6 @@ nodenv
 openssl
 p7zip
 perl-build
-php71
 pinentry-mac
 plenv
 pyenv
@@ -368,6 +368,7 @@ yarn
 youtube-dl
 zsh
 zsh-history-substring-search
+homebrew/php/php71
 ptb/custom/dovecot
 ptb/custom/ffmpeg
 ptb/custom/nginx-full'
@@ -412,6 +413,7 @@ caffeine
 carbon-copy-cloner
 charles
 dash
+docker-toolbox
 dropbox
 exifrenamer
 firefox
@@ -1270,9 +1272,6 @@ EOF
 @purple: #cc99cc;
 EOF
   fi
-
-  test -d "/Applications/Atom.app" && \
-    open "/Applications/Atom.app"
 }
 
 # Customize autoping
