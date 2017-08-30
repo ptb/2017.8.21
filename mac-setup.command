@@ -126,7 +126,7 @@ init_perms () {
 # Install Developer Tools
 
 init_devtools () {
-  p="${CACHES}/Command Line Tools (macOS High Sierra version 10.13).pkg"
+  p="${HOMEBREW_CACHE}/Cask/Command Line Tools (macOS High Sierra version 10.13).pkg"
   i="com.apple.pkg.CLTools_SDK_macOS1013"
 
   if test -f "${p}"; then
@@ -1125,6 +1125,7 @@ custom () {
   custom_githome
   custom_atom
   custom_autoping
+  custom_dropbox
   custom_emacs
   custom_finder
   custom_getmail
@@ -1270,6 +1271,9 @@ EOF
 @purple: #cc99cc;
 EOF
   fi
+
+  test -d "/Applications/Atom.app" && \
+    open "/Applications/Atom.app"
 }
 
 # Customize autoping
@@ -1284,6 +1288,13 @@ com.memset.autoping	ShowNotifications	-bool	true	'
 
 custom_autoping () {
   config_defaults "${_autoping}"
+}
+
+# Customize Dropbox
+
+custom_dropbox () {
+  test -d "/Applications/Dropbox.app" && \
+    open "/Applications/Dropbox.app"
 }
 
 # Customize Emacs
@@ -1514,7 +1525,8 @@ EOF
 )
 EOF
 
-  test -d /Applications/Emacs.app && open /Applications/Emacs.app
+  test -d "/Applications/Emacs.app" && \
+    open "/Applications/Emacs.app"
 }
 
 # Customize Finder
@@ -1549,13 +1561,13 @@ custom_finder () {
     }'
 }
 
-# Configure getmail
+# Customize getmail
 
 custom_getmail () {
   true
 }
 
-# Configure Git
+# Customize Git
 
 custom_git () {
   true
@@ -1717,7 +1729,8 @@ custom_moom () {
   killall Moom > /dev/null 2>&1
   defaults delete com.manytricks.Moom "Custom Controls" > /dev/null 2>&1
   config_defaults "${_moom}"
-  open "/Applications/Moom.app"
+  test -d "/Applications/Moom.app" && \
+    open "/Applications/Moom.app"
 }
 
 # Customize nvALT
@@ -2660,6 +2673,8 @@ _sizeup_crypt=''
 
 personalize_sizeup () {
   personalize "${_sizeup_crypt}"
+  test -d "/Applications/SizeUp.app" && \
+    open "/Applications/SizeUp.app"
 }
 
 # Personalize SteerMouse 5
@@ -3033,6 +3048,8 @@ CQoeE4iYGE9QoCvVgbT1XIhMTB8hT8W/DP97DLI9NlENjEHh+7Pj5AGOgwjr177l'
 
 personalize_steermouse5 () {
   personalize "${_steermouse5_crypt}"
+  test -d "/Library/PreferencePanes/SteerMouse.prefPane/Contents/MacOS/SteerMouse Manager.app" && \
+    open "/Library/PreferencePanes/SteerMouse.prefPane/Contents/MacOS/SteerMouse Manager.app"
 }
 
 # Personalize SourceTree

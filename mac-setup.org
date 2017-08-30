@@ -285,7 +285,7 @@ init_perms () {
 *** Install Developer Tools
 #+begin_src sh
 init_devtools () {
-  p="${CACHES}/Command Line Tools (macOS High Sierra version 10.13).pkg"
+  p="${HOMEBREW_CACHE}/Cask/Command Line Tools (macOS High Sierra version 10.13).pkg"
   i="com.apple.pkg.CLTools_SDK_macOS1013"
 
   if test -f "${p}"; then
@@ -1423,6 +1423,7 @@ custom () {
   custom_githome
   custom_atom
   custom_autoping
+  custom_dropbox
   custom_emacs
   custom_finder
   custom_getmail
@@ -1510,6 +1511,9 @@ EOF
 <<colors.less>>
 EOF
   fi
+
+  test -d "/Applications/Atom.app" && \
+    open "/Applications/Atom.app"
 }
 #+end_src
 
@@ -1612,6 +1616,14 @@ custom_autoping () {
 | *Connection Up/Down Alerts* ~on~ | com.memset.autoping | ShowNotifications    | -bool   | true       |      |
 |----------------------------------+---------------------+----------------------+---------+------------+------|
 
+*** Customize Dropbox
+#+begin_src sh
+custom_dropbox () {
+  test -d "/Applications/Dropbox.app" && \
+    open "/Applications/Dropbox.app"
+}
+#+end_src
+
 *** Customize Emacs
 #+begin_src sh
 custom_emacs () {
@@ -1642,7 +1654,8 @@ EOF
 <<packages.el>>
 EOF
 
-  test -d /Applications/Emacs.app && open /Applications/Emacs.app
+  test -d "/Applications/Emacs.app" && \
+    open "/Applications/Emacs.app"
 }
 #+end_src
 
@@ -1909,14 +1922,14 @@ custom_finder () {
 | *View* ▶ *Show Status Bar*                                     | com.apple.finder | ShowStatusBar                        | -bool   | true            |      |
 |----------------------------------------------------------------+------------------+--------------------------------------+---------+-----------------+------|
 
-*** Configure getmail
+*** Customize getmail
 #+begin_src sh
 custom_getmail () {
   true
 }
 #+end_src
 
-*** Configure Git
+*** Customize Git
 #+begin_src sh
 custom_git () {
   true
@@ -2066,7 +2079,8 @@ custom_moom () {
   killall Moom > /dev/null 2>&1
   defaults delete com.manytricks.Moom "Custom Controls" > /dev/null 2>&1
   config_defaults "${_moom}"
-  open "/Applications/Moom.app"
+  test -d "/Applications/Moom.app" && \
+    open "/Applications/Moom.app"
 }
 #+end_src
 
@@ -3249,6 +3263,8 @@ personalize_scrivener () {
 
 personalize_sizeup () {
   personalize "${_sizeup_crypt}"
+  test -d "/Applications/SizeUp.app" && \
+    open "/Applications/SizeUp.app"
 }
 #+end_src
 
@@ -3260,6 +3276,8 @@ personalize_sizeup () {
 
 personalize_steermouse5 () {
   personalize "${_steermouse5_crypt}"
+  test -d "/Library/PreferencePanes/SteerMouse.prefPane/Contents/MacOS/SteerMouse Manager.app" && \
+    open "/Library/PreferencePanes/SteerMouse.prefPane/Contents/MacOS/SteerMouse Manager.app"
 }
 #+end_src
 
