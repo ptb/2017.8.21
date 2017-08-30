@@ -574,7 +574,7 @@ install_node_sw () {
 
     git clone https://github.com/nodenv/node-build-update-defs.git \
       "$(nodenv root)"/plugins/node-build-update-defs
-    nodenv update-version-defs
+    nodenv update-version-defs > /dev/null
 
     nodenv install --skip-existing 8.4.0
     nodenv global 8.4.0
@@ -683,7 +683,7 @@ install_ruby_sw () {
       "gem: --no-document" | \
     tee "${HOME}/.gemrc" > /dev/null
 
-    gem update --system
+    gem update --system > /dev/null
     gem update
     gem install bundler
 
@@ -833,8 +833,8 @@ protocol lda {
 # verbose_ssl = yes
 EOF
 
-      MAILADM="$(ask 'Email Administrator Address' 'Set Email' "$(whoami)@$(hostname)")"
-      MAILSVR="$(ask 'Email Server DNS Hostname' 'Set Hostname' "$(hostname)")"
+      MAILADM="$(ask 'Email: Administrator Email?' 'Set Email' "$(whoami)@$(hostname)")"
+      MAILSVR="$(ask 'Email: Server Hostname for DNS?' 'Set Hostname' "$(hostname)")"
       SSL="$(brew --prefix openssl)"
       printf "%s\n" \
         "postmaster_address = '${MAILADM}'" \
@@ -844,7 +844,7 @@ EOF
 
       if test ! -f "/usr/local/etc/dovecot/cram-md5.pwd"; then
         while true; do
-          MAILUSR="$(ask 'Username for New Email Account?' 'Create Account' "$(whoami)")"
+          MAILUSR="$(ask 'Email: New Email Account: User Name?' 'Create Account' "$(whoami)")"
           test -n "${MAILUSR}" || break
           doveadm pw | \
           sed -e "s/^/${MAILUSR}:/" | \
@@ -1078,7 +1078,7 @@ EOF
 # Configure New Account
 
 config_new_account () {
-  e="$(ask 'Create New macOS Account: Email Address' 'OK' '')"
+  e="$(ask 'macOS: New macOS Account: Email Address?' 'OK' '')"
   curl --output "/Library/User Pictures/${e}.jpg" --silent \
     "https://www.gravatar.com/avatar/$(md5 -qs ${e}).jpg?s=512"
 
@@ -1088,10 +1088,10 @@ config_new_account () {
   g="$(curl --location --silent ${g})"
 
   n="$(printf ${g} | sed -n 's/^.*"name": "\(.*\)".*/\1/p')"
-  n="$(ask 'Create New macOS Account: Real Name' 'OK' ${n})"
+  n="$(ask 'macOS: New macOS Account: Real Name?' 'OK' ${n})"
 
   u="$(printf ${g} | sed -n 's/^.*"login": "\(.*\)".*/\1/p')"
-  u="$(ask 'Create New macOS Account: User Name' 'OK' ${u})"
+  u="$(ask 'macOS: New macOS Account: User Name?' 'OK' ${u})"
 
   sudo defaults write \
     "/System/Library/User Template/Non_localized/Library/Preferences/.GlobalPreferences.plist" \
