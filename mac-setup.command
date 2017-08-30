@@ -2163,6 +2163,22 @@ custom_sound () {
 
 # Customize Login Items
 
+_loginitems='/Applications/Alfred 3.app
+/Applications/autoping.app
+/Applications/Caffeine.app
+/Applications/Coffitivity.app
+/Applications/Dropbox.app
+/Applications/HardwareGrowler.app
+/Applications/I Love Stars.app
+/Applications/IPMenulet.app
+/Applications/iTunes.app/Contents/MacOS/iTunesHelper.app
+/Applications/Menubar Countdown.app
+/Applications/Meteorologist.app
+/Applications/Moom.app
+/Applications/NZBGet.app
+/Applications/Plex Media Server.app
+/Applications/Sonarr-Menu.app
+/Library/PreferencePanes/SteerMouse.prefPane/Contents/MacOS/SteerMouse Manager.app'
 custom_loginitems () {
   printf "%s\n" "${_loginitems}" | \
   while IFS="$(printf '\t')" read app; do

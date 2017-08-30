@@ -2668,7 +2668,7 @@ custom_sound () {
 |----------------------------------------------+---------------+---------------------------------+---------+------------------------------------+------|
 
 **** Customize Login Items
-#+begin_src sh
+#+begin_src sh :var _loginitems=_loginitems[3:-2,0]
 custom_loginitems () {
   printf "%s\n" "${_loginitems}" | \
   while IFS="$(printf '\t')" read app; do
