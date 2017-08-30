@@ -3131,6 +3131,7 @@ personalize_vmwarefusion8pro () {
 # Log Out Then Log Back In
 
 personalize_logout () {
+  sleep 60 && \
   if run "Log Out Then Log Back In?" "Cancel" "Log Out"; then
     osascript -e 'tell app "loginwindow" to «event aevtrlgo»'
   fi
