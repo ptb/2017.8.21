@@ -26,6 +26,12 @@ ask () {
 EOF
 }
 
+# Define Function =p=
+
+p () {
+  printf "\n\033[1m\033[34m%s\033[0m\n\n" "${1}"
+}
+
 # Define Function =run=
 
 run () {
@@ -142,6 +148,7 @@ init_devtools () {
 
 init_xcode () {
   if test -f ${HOMEBREW_CACHE}/Cask/xcode*.xip; then
+    p "Installing Xcode"
     dest="${HOMEBREW_CACHE}/Cask/xcode"
     if ! test -d "$dest"; then
       pkgutil --expand ${HOMEBREW_CACHE}/Cask/xcode*.xip "$dest"
@@ -255,6 +262,7 @@ install () {
 # Install macOS Software with =brew=
 
 install_macos_sw () {
+  p "Installing macOS Software"
   install_paths
   install_brew
   install_brewfile_taps
@@ -270,9 +278,9 @@ install_macos_sw () {
     sudo xcodebuild -license accept
   fi
 
-  config_gatekeeper
   brew bundle --file="${BREWFILE}"
   sudo xattr -rd "com.apple.quarantine" "/Applications" > /dev/null 2>&1
+  sudo chmod -R go=u-w "/Applications" > /dev/null 2>&1
 }
 
 # Add =/usr/local/bin/sbin= to Default Path
@@ -413,7 +421,6 @@ caffeine
 carbon-copy-cloner
 charles
 dash
-docker-toolbox
 dropbox
 exifrenamer
 firefox
@@ -544,6 +551,7 @@ install_links () {
 
 install_node_sw () {
   if which nodenv > /dev/null; then
+    p "Installing Node.js Software"
     sudo mkdir -p "/usr/local/node"
     sudo chown -R "$(whoami):admin" "/usr/local/node"
     test -f "/etc/zshenv" && \
@@ -579,6 +587,7 @@ ${NODENV_ROOT}/shims
 
 install_perl_sw () {
   if which plenv > /dev/null; then
+    p "Installing Perl 5 Software"
     sudo mkdir -p "/usr/local/perl"
     sudo chown -R "$(whoami):admin" "/usr/local/perl"
     test -f "/etc/zshenv" && \
@@ -610,6 +619,7 @@ ${PLENV_ROOT}/shims
 
 install_python_sw () {
   if which pyenv > /dev/null; then
+    p "Installing Python 2 & 3 Software"
     CFLAGS="-I$(brew --prefix openssl)/include" && export CFLAGS
     LDFLAGS="-L$(brew --prefix openssl)/lib" && export LDFLAGS
 
@@ -636,6 +646,13 @@ install_python_sw () {
 
     pip install --upgrade "pip" "setuptools"
 
+    # Reference: https://github.com/mdhiggins/sickbeard_mp4_automator
+    pip install --upgrade "babelfish" "guessit<2" "qtfaststart" "requests" "stevedore==1.19.1" "subliminal<2"
+    pip install --upgrade "requests-cache" "requests[security]"
+
+    # Reference: https://github.com/pixelb/crudini
+    pip install --upgrade "crudini"
+
     grep -q "${PYENV_ROOT}" "/etc/paths" || \
     sudo sed -i "" -e "1i\\
 ${PYENV_ROOT}/shims
@@ -647,6 +664,7 @@ ${PYENV_ROOT}/shims
 
 install_ruby_sw () {
   if which rbenv > /dev/null; then
+    p "Installing Ruby Software"
     sudo mkdir -p "/usr/local/ruby"
     sudo chown -R "$(whoami):admin" "/usr/local/ruby"
     test -f "/etc/zshenv" && \
@@ -672,7 +690,11 @@ install_ruby_sw () {
     tee "${HOME}/.gemrc" > /dev/null
 
     gem update --system > /dev/null
+
+    trash /usr/local/ruby/versions/2.4.1/bin/rdoc
+    trash /usr/local/ruby/versions/2.4.1/bin/ri
     gem update
+
     gem install bundler
 
     grep -q "${RBENV_ROOT}" "/etc/paths" || \
@@ -2354,6 +2376,8 @@ avcodec	avcodec-hw	vda'
 custom_vlc () {
   config_defaults "${_vlc_defaults}"
   if which crudini > /dev/null; then
+    test -d "${HOME}/Library/Preferences/org.videolan.vlc" || \
+      mkdir -p "${HOME}/Library/Preferences/org.videolan.vlc"
     printf "%s\n" "${_vlcrc}" | \
     while IFS="$(printf '\t')" read section key value; do
       crudini --set "${HOME}/Library/Preferences/org.videolan.vlc/vlcrc" "${section}" "${key}" "${value}"
