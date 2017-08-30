@@ -213,8 +213,8 @@ EOF
   grep -q "CACHES" "/etc/zshenv" 2> /dev/null || \
   printf "%s\n" \
     "export CACHES=\"${a}\"" \
-    "export HOMEBREW_CACHE=\"${a}Homebrew\"" \
-    "export BREWFILE=\"${a}Homebrew/Brewfile\"" | \
+    "export HOMEBREW_CACHE=\"${a}brew\"" \
+    "export BREWFILE=\"${a}brew/Brewfile\"" | \
   sudo tee -a "/etc/zshenv" > /dev/null
   . "/etc/zshenv"
 
@@ -293,10 +293,10 @@ init_devtools () {
 *** Install Xcode
 #+begin_src sh
 init_xcode () {
-  if test -f ${CACHES}/Xcode*.xip; then
-    dest="${CACHES}/Xcode"
+  if test -f ${HOMEBREW_CACHE}/Cask/xcode*.xip; then
+    dest="${HOMEBREW_CACHE}/Cask/xcode"
     if ! test -d "$dest"; then
-      pkgutil --expand ${CACHES}/Xcode*.xip "$dest"
+      pkgutil --expand ${HOMEBREW_CACHE}/Cask/xcode*.xip "$dest"
       curl --location --silent \
         "https://gist.githubusercontent.com/pudquick/ff412bcb29c9c1fa4b8d/raw/24b25538ea8df8d0634a2a6189aa581ccc6a5b4b/parse_pbzx2.py" | \
         python - "${dest}/Content"
