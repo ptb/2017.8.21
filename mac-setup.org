@@ -449,7 +449,7 @@ install_macos_sw () {
   fi
 
   brew bundle --file="${BREWFILE}"
-  install_admin_req
+  sudo xattr -rd "com.apple.quarantine" "/Applications" > /dev/null 2>&1 &
 }
 #+end_src
 
@@ -469,8 +469,8 @@ install_brew () {
     ruby -e \
       "$(curl -Ls 'https://github.com/Homebrew/install/raw/master/install')" \
       < /dev/null > /dev/null 2>&1
-    printf "" > "${BREWFILE}"
   fi
+  printf "" > "${BREWFILE}"
   brew analytics off
   brew update
   brew doctor
@@ -750,32 +750,6 @@ install_links () {
 | /Applications/Xcode-beta.app/Contents/Developer/Applications |
 |--------------------------------------------------------------|
 
-*** Mark Applications Requiring Administrator Account
-#+begin_src sh :var _admin_req=_admin_req[3:-2,0]
-
-install_admin_req () {
-  printf "%s\n" "${_admin_req}" | \
-  while IFS="$(printf '\t')" read app; do
-    sudo tag -a "Red, admin" "/Applications/${app}"
-  done
-}
-#+end_src
-
-**** _admin_req
-#+name: _admin_req
-|------------------------|
-| Admin Apps             |
-|------------------------|
-| Carbon Copy Cloner.app |
-| Charles.app            |
-| Composer.app           |
-| Dropbox.app            |
-| iStat Menus.app        |
-| Moom.app               |
-| VMware Fusion.app      |
-| Wireshark.app          |
-|------------------------|
-
 *** Install Node Software with =nodenv=
 #+begin_src sh
 install_node_sw () {
@@ -927,6 +901,7 @@ ${RBENV_ROOT}/shims
 *** Define Function =config=
 #+begin_src sh
 config () {
+  config_admin_req
   config_bbedit
   config_desktop
   config_dovecot
@@ -959,6 +934,32 @@ config_plist () {
   done
 }
 #+end_src
+
+*** Mark Applications Requiring Administrator Account
+#+begin_src sh :var _admin_req=_admin_req[3:-2,0]
+
+config_admin_req () {
+  printf "%s\n" "${_admin_req}" | \
+  while IFS="$(printf '\t')" read app; do
+    sudo tag -a "Red, admin" "/Applications/${app}"
+  done
+}
+#+end_src
+
+**** _admin_req
+#+name: _admin_req
+|------------------------|
+| Admin Apps             |
+|------------------------|
+| Carbon Copy Cloner.app |
+| Charles.app            |
+| Composer.app           |
+| Dropbox.app            |
+| iStat Menus.app        |
+| Moom.app               |
+| VMware Fusion.app      |
+| Wireshark.app          |
+|------------------------|
 
 *** Configure BBEdit
 #+begin_src sh

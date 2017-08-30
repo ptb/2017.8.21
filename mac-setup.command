@@ -271,7 +271,7 @@ install_macos_sw () {
   fi
 
   brew bundle --file="${BREWFILE}"
-  install_admin_req
+  sudo xattr -rd "com.apple.quarantine" "/Applications" > /dev/null 2>&1 &
 }
 
 # Add =/usr/local/bin/sbin= to Default Path
@@ -289,8 +289,8 @@ install_brew () {
     ruby -e \
       "$(curl -Ls 'https://github.com/Homebrew/install/raw/master/install')" \
       < /dev/null > /dev/null 2>&1
-    printf "" > "${BREWFILE}"
   fi
+  printf "" > "${BREWFILE}"
   brew analytics off
   brew update
   brew doctor
@@ -534,24 +534,6 @@ install_links () {
   done
 }
 
-# Mark Applications Requiring Administrator Account
-
-_admin_req='Carbon Copy Cloner.app
-Charles.app
-Composer.app
-Dropbox.app
-iStat Menus.app
-Moom.app
-VMware Fusion.app
-Wireshark.app'
-
-install_admin_req () {
-  printf "%s\n" "${_admin_req}" | \
-  while IFS="$(printf '\t')" read app; do
-    sudo tag -a "Red, admin" "/Applications/${app}"
-  done
-}
-
 # Install Node Software with =nodenv=
 
 install_node_sw () {
@@ -697,6 +679,7 @@ ${RBENV_ROOT}/shims
 # Define Function =config=
 
 config () {
+  config_admin_req
   config_bbedit
   config_desktop
   config_dovecot
@@ -724,6 +707,24 @@ config_plist () {
   while IFS="$(printf '\t')" read command entry type value; do
     ${4} /usr/libexec/PlistBuddy "${2}" \
       -c "${command} '${3}${entry}' ${type} '${value}'" 2> /dev/null
+  done
+}
+
+# Mark Applications Requiring Administrator Account
+
+_admin_req='Carbon Copy Cloner.app
+Charles.app
+Composer.app
+Dropbox.app
+iStat Menus.app
+Moom.app
+VMware Fusion.app
+Wireshark.app'
+
+config_admin_req () {
+  printf "%s\n" "${_admin_req}" | \
+  while IFS="$(printf '\t')" read app; do
+    sudo tag -a "Red, admin" "/Applications/${app}"
   done
 }
 
