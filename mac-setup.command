@@ -2183,10 +2183,10 @@ custom_loginitems () {
   printf "%s\n" "${_loginitems}" | \
   while IFS="$(printf '\t')" read app; do
     if test -e "$app"; then
-      osascript - "$app" << EOF 2> /dev/null
-        on run { _this }
+      osascript - "$app" << EOF > /dev/null
+        on run { _app }
           tell app "System Events"
-            make new login item with properties { path: _this, hidden: true }
+            make new login item with properties { hidden: true, path: _app }
           end tell
         end run
 EOF
