@@ -510,7 +510,7 @@ install_brewfile_mas_apps () {
   MASDIR="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
   sudo chown -R "$(whoami)" "${MASDIR}"
   rsync -a --delay-updates \
-    "${CACHES}/storedownloadd/" "${MASDIR}/"
+    "${CACHES}mas/" "${MASDIR}/"
 
   printf "%s\n" "${_mas}" | \
   while IFS="$(printf '\t')" read app id; do
