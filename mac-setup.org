@@ -1295,17 +1295,9 @@ config_openssl () {
 *** Configure System Preferences
 #+begin_src sh
 config_sysprefs () {
-  config_gatekeeper
   config_energy
   config_mas
   config_guest
-}
-#+end_src
-
-**** Configure Security & Privacy
-#+begin_src sh
-config_gatekeeper () {
-  sudo spctl --master-disable
 }
 #+end_src
 

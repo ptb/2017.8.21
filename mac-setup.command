@@ -1025,16 +1025,9 @@ config_openssl () {
 # Configure System Preferences
 
 config_sysprefs () {
-  config_gatekeeper
   config_energy
   config_mas
   config_guest
-}
-
-# Configure Security & Privacy
-
-config_gatekeeper () {
-  sudo spctl --master-disable
 }
 
 # Configure Energy Saver
