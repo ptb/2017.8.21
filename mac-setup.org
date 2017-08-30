@@ -912,6 +912,7 @@ config () {
   config_desktop
   config_dovecot
   config_emacs
+  config_sysprefs
   config_zsh
   config_new_account
   config_rm_sudoers
@@ -1406,9 +1407,11 @@ config_new_account () {
 *** Reinstate =sudo= Password
 #+begin_src sh
 config_rm_sudoers () {
+  sudo rm -f "/etc/sudoers.d/wheel" && \
   sudo dscl /Local/Default -delete /Groups/wheel GroupMembership "$(whoami)"
-  sudo rm -f "/etc/sudoers.d/wheel"
 
+  /usr/bin/read -n 1 -p "Press any key to continue.
+" -s
   if run "Log Out Then Log Back In?" "Cancel" "Log Out"; then
     osascript -e 'tell app "loginwindow" to «event aevtrlgo»'
   fi
@@ -2682,6 +2685,8 @@ EOF
 }
 #+end_src
 
+**** _loginitems
+#+name: _loginitems
 |------------------------------------------------------------------------------------|
 | Login Items                                                                        |
 |------------------------------------------------------------------------------------|
@@ -3339,7 +3344,8 @@ personalize_sizeup () {
 personalize_steermouse5 () {
   personalize "${_steermouse5_crypt}"
   test -d "/Library/PreferencePanes/SteerMouse.prefPane/Contents/MacOS/SteerMouse Manager.app" && \
-    osascript -e 'tell app "System Preferences" to reveal pane id "jp.plentycom.prefpane.SteerMouse"'
+    osascript -e 'tell app "System Preferences" to reveal pane id "jp.plentycom.prefpane.SteerMouse"' > /dev/null && \
+    osascript -e 'tell app "System Preferences" to activate'
 }
 #+end_src
 
@@ -3764,7 +3770,8 @@ personalize_vmwarefusion8pro () {
 *** Log Out Then Log Back In
 #+begin_src sh
 personalize_logout () {
-  sleep 60 && \
+  /usr/bin/read -n 1 -p "Press any key to continue.
+" -s
   if run "Log Out Then Log Back In?" "Cancel" "Log Out"; then
     osascript -e 'tell app "loginwindow" to «event aevtrlgo»'
   fi
