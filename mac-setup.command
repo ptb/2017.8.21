@@ -80,8 +80,8 @@ EOF
   grep -q "CACHES" "/etc/zshenv" 2> /dev/null || \
   printf "%s\n" \
     "export CACHES=\"${a}\"" \
-    "export HOMEBREW_CACHE=\"${a}brew\"" \
-    "export BREWFILE=\"${a}brew/Brewfile\"" | \
+    "export HOMEBREW_CACHE=\"${a}/brew\"" \
+    "export BREWFILE=\"${a}/brew/Brewfile\"" | \
   sudo tee -a "/etc/zshenv" > /dev/null
   . "/etc/zshenv"
 
@@ -510,7 +510,7 @@ install_brewfile_mas_apps () {
   MASDIR="$(getconf DARWIN_USER_CACHE_DIR)com.apple.appstore"
   sudo chown -R "$(whoami)" "${MASDIR}"
   rsync -a --delay-updates \
-    "${CACHES}mas/" "${MASDIR}/"
+    "${CACHES}/mas/" "${MASDIR}/"
 
   printf "%s\n" "${_mas}" | \
   while IFS="$(printf '\t')" read app id; do
@@ -1151,6 +1151,10 @@ custom () {
 
 custom_githome () {
   git -C "${HOME}" init
+
+  test -f "${CACHES}/Dropbox/.zshenv" && \
+    cp "${CACHES}/Dropbox/.zshenv" "${ZDOTDIR:-$HOME}" && \
+    . "${ZDOTDIR:-$HOME}/.zshenv"
 
   a=$(ask "Existing Home Repository Path or URL" "Add Remote" "")
   if test -n "${a}"; then
