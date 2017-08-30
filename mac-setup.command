@@ -76,7 +76,7 @@ init_cache () {
   grep -q "CACHES" "/etc/zshenv" 2> /dev/null || \
   a=$(osascript << EOF 2> /dev/null
     on run
-      return POSIX path of (choose folder with prompt "Select Installation Cache Location")
+      return text 1 through -2 of POSIX path of (choose folder with prompt "Select Installation Cache Location")
     end run
 EOF
 ) && \
@@ -482,6 +482,7 @@ caskroom/versions/transmit4
 ptb/custom/adobe-creative-cloud-2014
 ptb/custom/blankscreen
 ptb/custom/composer
+ptb/custom/enhanced-dictation
 ptb/custom/ipmenulet
 ptb/custom/pcalc-3
 ptb/custom/sketchup-pro

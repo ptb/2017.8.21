@@ -239,7 +239,7 @@ EOF
 **** =init_cache.applescript=
 #+begin_src applescript :noweb-ref init_cache.applescript
     on run
-      return POSIX path of (choose folder with prompt "Select Installation Cache Location")
+      return text 1 through -2 of POSIX path of (choose folder with prompt "Select Installation Cache Location")
     end run
 #+end_src
 
@@ -690,6 +690,7 @@ install_brewfile_cask_pkgs () {
 | ptb/custom/adobe-creative-cloud-2014             | https://www.adobe.com/creativecloud.html                      |
 | ptb/custom/blankscreen                           | http://www.wurst-wasser.net/wiki/index.php/Blank_Screen_Saver |
 | ptb/custom/composer                              | https://www.jamf.com/products/jamf-composer/                  |
+| ptb/custom/enhanced-dictation                    |                                                               |
 | ptb/custom/ipmenulet                             | https://github.com/mcandre/IPMenulet                          |
 | ptb/custom/pcalc-3                               | http://www.pcalc.com/english/about.html                       |
 | ptb/custom/sketchup-pro                          | https://www.sketchup.com/products/sketchup-pro                |
