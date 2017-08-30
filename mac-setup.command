@@ -1376,9 +1376,9 @@ EOF
 (setq
   default-frame-alist '(
     (top . 22)
-    (left . 1279)
-    (height . 48)
-    (width . 123)
+    (left . 1201)
+    (height . 50)
+    (width . 121)
     (vertical-scroll-bars . right))
   initial-frame-alist (copy-alist default-frame-alist)
 
