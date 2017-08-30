@@ -1955,7 +1955,7 @@ custom_sysprefs () {
   custom_screensaver
   custom_dock
   custom_dockapps
-  custom_security
+  # custom_security
   custom_text
   custom_dictation
   custom_mouse
