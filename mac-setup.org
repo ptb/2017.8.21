@@ -449,7 +449,7 @@ install_macos_sw () {
   fi
 
   brew bundle --file="${BREWFILE}"
-  sudo xattr -rd "com.apple.quarantine" "/Applications" > /dev/null 2>&1 &
+  sudo xattr -rd "com.apple.quarantine" "/Applications" > /dev/null 2>&1
 }
 #+end_src
 
@@ -1021,7 +1021,7 @@ EOF
 
       if test ! -f "/usr/local/etc/dovecot/cram-md5.pwd"; then
         while true; do
-          MAILUSR="$(ask 'Email: New Email Account: User Name?' 'Create Account' "$(whoami)")"
+          MAILUSR="$(ask 'New Email Account: User Name?' 'Create Account' "$(whoami)")"
           test -n "${MAILUSR}" || break
           doveadm pw | \
           sed -e "s/^/${MAILUSR}:/" | \
@@ -1377,7 +1377,7 @@ export LESS="-egiMQRS -x2 -z-2"
 *** Configure New Account
 #+begin_src sh
 config_new_account () {
-  e="$(ask 'macOS: New macOS Account: Email Address?' 'OK' '')"
+  e="$(ask 'New macOS Account: Email Address?' 'OK' '')"
   curl --output "/Library/User Pictures/${e}.jpg" --silent \
     "https://www.gravatar.com/avatar/$(md5 -qs ${e}).jpg?s=512"
 
@@ -1387,10 +1387,10 @@ config_new_account () {
   g="$(curl --location --silent ${g})"
 
   n="$(printf ${g} | sed -n 's/^.*"name": "\(.*\)".*/\1/p')"
-  n="$(ask 'macOS: New macOS Account: Real Name?' 'OK' ${n})"
+  n="$(ask 'New macOS Account: Real Name?' 'OK' ${n})"
 
   u="$(printf ${g} | sed -n 's/^.*"login": "\(.*\)".*/\1/p')"
-  u="$(ask 'macOS: New macOS Account: User Name?' 'OK' ${u})"
+  u="$(ask 'New macOS Account: User Name?' 'OK' ${u})"
 
   sudo defaults write \
     "/System/Library/User Template/Non_localized/Library/Preferences/.GlobalPreferences.plist" \
@@ -1455,7 +1455,7 @@ custom_githome () {
     cp "${CACHES}/Dropbox/.zshenv" "${ZDOTDIR:-$HOME}" && \
     . "${ZDOTDIR:-$HOME}/.zshenv"
 
-  a=$(ask "Existing Home Repository Path or URL" "Add Remote" "")
+  a=$(ask "Existing Git Home Repository Path or URL" "Add Remote" "")
   if test -n "${a}"; then
     git -C "${HOME}" remote add origin "${a}"
     git -C "${HOME}" fetch origin master
