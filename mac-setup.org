@@ -3300,26 +3300,26 @@ personalize_nzbget () {
 #+end_src
 
 #+name: _nzbget_crypt
-| U2FsdGVkX18benyJZnkWfTh8z4YNafpbDCDoUEZ6V51Wb388BsJB/gl3nNWM4BVP |
-| jFR+2rdLWtmjrIyCRRjiUUtU0mNkwsxobGfCWYVQxzNRFlfqIZEZZR2IUn0vDa4k |
-| HP2kKJYBsD03x5aK2Ap0ucf8KXhSMnVehoVDljBg8Kzh3MSfZZ8QuplXSbk573L0 |
-| d28dZ15lB4TyM8pxrfGsQFFBNHj4ViwjOac5l2DXOqrAz/3FNm/ut+4QIp69uT+c |
-| sjouzhm/dttBMOhKKFNgHfxqVbwTZg2WABSr7PiNGZev0wyHxaTINYyawtKHTQaN |
-| k1fS6pYREOpxoy/n4bfTgDPDVh/8S5vMcxHlIBPQ3UL9EKeEW6TEfbr8CP4A77Gg |
-| 8NqnIGQZlCeWd6e7q2TK7tZwLxMwhuz9A+V7nwVrFGRZAIqg8/ekjhZWolKiJr+C |
-| +xfKnFsPi/g/ObA92jNilOljGzf7wEksMuVSy+9SJv2WEMKHCR4UnpSe1ugvxUC0 |
-| JaFpMPNbxIXGzguAx7KxaDJE8s0FYmbsoTC9St8TVZJx5sNdD9RRD6g8jgQbPqSO |
-| XkbBJ93o1by1eahIA4Dyo2x24WPrIWYYjaPYrX33zrxQlSkhuS7oGPExkx7vsTkf |
-| cozu/4UnUQ9hKliwMiIMhIMtJ7HzWUOXVigo2MnZS3vQjdCYEn8BltJNzWaWw+qA |
-| 9z1ZAuH+2KJn8Iqia30VaF9yYoP+JoUJaXPIcOYuq8gKCTPJluHeo//Fz9GTNq0x |
-| 2m/NjZ0Krl5dKNig9NM/I7DAh5Q0s/pzt5BKpCSk6vKH0v9Uo4+zzT6xAM6vn1nZ |
-| 0OF+toD6JbcPdHrhCy58SqViiSB0GQnhIGOBj3ty8k4IS2u7WBkYMUn6sdQay/gr |
-| ZK/TpOv2QbTowBCByHcXSmOry1Pr8ARvauwRR4Mz+IpYjyJQA7k+d9sR06QJttgy |
-| K/Fdot9A+R6RlLwrxaVSSuso0K1wkMpLarmttDn7s1rECN+eSwyOzU9FmMGvgpg4 |
-| pX8woUGNBdM5fR8L66Yk12+f70LTmf/TyoXdzm0CGORHod2YXIYQyxs6C62CF5+o |
-| fZ3d/FshEmPMcZ0W/I1nKxvwmMJl//HTxFFsgeB2iUN/n9dEAyY5D7YR4dWJCz4d |
-| u6iiyCFeVcMVG+IZ0eEZS0ffd4wQmfyf/pEmQYJAeJi6uQDLGZ0v9aJpI+uPiarm |
-| 71bRHVxzqv0a8bzNE5/Fog==                                         |
+| U2FsdGVkX18JS7hBuu5P5eeTADOpOz+HabaX/DtndESoj1HX1YElFbxrsrovH9IE |
+| +m5jXFF9KgPHIt2ZjUw3H5KmHkix0GeO+ElBFwaGps8pGV6eh3ZqylUGVXc3+7Zt |
+| K0DA2PwxAmyiboiUT2MKwjwYk4lt25+aOUxr6/BV1lo7FwQ9PaPkrVKtZYUClDzH |
+| 6xLEp9vgAnQlHyTLtSF5XalbdtutBEInej20mGojHFniB4UW14FnH01KzBpCowGv |
+| zAA0d8nft1Ubx9wI6XrcBpYpUOX8teJj3hmS06ciiWE7RW/UB2YLXcvEx/hzS2Ye |
+| B+tQ5uapM8Ja/ISCcnyAKtNh1WcuKi50PtRo3mXKkxwjJP2pUMWOWe+bhHOX94Z4 |
+| yff6KjQTms6BkT0RSpBKzsB98Q/R3G/CNN8Z15u9bP1Owm/9RdkbqoEO2lEang3j |
+| vbJwttB2gmXOB68hh0plxoIEhXb32uJu+ULwFa3ho/5I1X93DgPQC4ab/K19vVhE |
+| 28aQCYUkDWkFW1Z0VBIKqRKP6cMDzEPpGnz0sxMhU8Ps6KR4Fmt+CGJEOxTvsRb/ |
+| D3Y7UeTTvsFxzmlsiPi/24w8pGAx4oXVPL7Q3DLvomdjBmE9EiJrYzCPOjjO/n4H |
+| 9YcqjnObUiN9fphZzjiw4knbpzXXvz41eXTPwSSUoBT3Gv+BjpzA2Lx8Q9l5u0aA |
+| Txm8dbTsddyGaaWPzJ/c6PAsuI9UqV1h01A4nmRVmk1Q0RPcAXON6IvM5gygtKcN |
+| mbfgOf+S1sLNTGXmOxlVV08edHAk1zP3aE/jNTYi2JBeopUC2+9i+3910MEjkbhx |
+| 7X0eytMoxHZCaEiLmORTPptouMhflRjbTHoxJJcLEee9p1xOgzxIfI4PzX1d4Jcs |
+| gAVpUhQJhfEvCZReHjMQloVDc9Or2kQ5uRIGg7ZD1MRZWsh6BhB/afSEBRibS/HU |
+| WQrmAWyFeIClaHIAK/Clbfqe40dV/RI592ROJ3Ng3wP7wpXgQAPotCskHFb2dMTm |
+| sNwM1eY1ZgZqtzbCTL4GRUrd2VpoZq417W0HKnr75wctEudn/AOEIp+2l0gOJRKv |
+| HBkzUYrfkbgTVcYDcFh8Yr9CurOA6aWQXVHiNvQmr46jQNqvE/dqQZoAbFrngtJH |
+| 4H/SgjvuDiocJitIqVUhNBdX5AtasEhByfzCxalZHGIBxEKdqXMugTaLTcj/nB2C |
+| TfdZnoTMryqJxLlF/pAEZA==                                         |
 
 *** Personalize NZBVortex
 #+begin_src sh :var _nzbvortex_crypt=_nzbvortex_crypt
