@@ -2583,6 +2583,7 @@ personalize_all () {
   personalize_nzbvortex
   personalize_pacifist
   personalize_pcalc3
+  personalize_scrivener
   personalize_sizeup
   personalize_steermouse5
   personalize_logout
@@ -2772,7 +2773,10 @@ personalize_pcalc3 () {
 
 # Personalize Scrivener
 
-_scrivener_crypt=''
+_scrivener_crypt='U2FsdGVkX1/tPt4XjHPDEtcu53cxgt0Q7GDNbNvu1VhXB+/ly+13tuMU9fA1QGm7
+7YBXZ89yhLY15/FzumwHY22T7cU6+y4ULRh5O4weZEX/EyOswJiMYd/MD+mNS+Cf
+dk5X6P/Y6OGPbFjL9GjfKcJi96UeZCxjf9Og39k3pqBLjTZ0iSaAUhKsTxVY9QAD
+UPrUmHuzPVrrkVQ5gArcWg=='
 
 personalize_scrivener () {
   personalize "${_scrivener_crypt}"
