@@ -1796,123 +1796,92 @@ custom_nvalt () {
 
 # Customize NZBGet
 
-_nzbget='Server1.Active	yes
-Server1.Name	ssl.astraweb.com
+# - $7.50/mth: http://www.news.astraweb.com/specials/2mospecial.html
+# - €13/100GB: https://www.tweaknews.eu/en/usenet-plans
+# - $17/100GB: https://www.newsdemon.com/usenet-access.php
+# - $20/200GB: https://billing.blocknews.net/signup.php
+
+
+_nzbget='ControlIP	127.0.0.1
+ControlPort	6789
+AuthorizedIP	127.0.0.1
 Server1.Level	0
-Server1.Optional	no
-Server1.Group	0
 Server1.Host	ssl.astraweb.com
 Server1.Port	443
-Server1.JoinGroup	no
 Server1.Encryption	yes
 Server1.Connections	6
-Server1.Retention	2677
-Server1.IpVersion	auto
-Server2.Active	yes
-Server2.Name	us.astraweb.com
+Server1.Retention	3000
 Server2.Level	0
-Server2.Optional	no
-Server2.Group	0
 Server2.Host	ssl-us.astraweb.com
 Server2.Port	443
-Server2.JoinGroup	no
 Server2.Encryption	yes
 Server2.Connections	6
-Server2.Retention	2677
-Server2.IpVersion	auto
-Server3.Active	yes
-Server3.Name	eu.astraweb.com
+Server2.Retention	3000
 Server3.Level	0
-Server3.Optional	no
-Server3.Group	0
 Server3.Host	ssl-eu.astraweb.com
 Server3.Port	443
-Server3.JoinGroup	no
 Server3.Encryption	yes
 Server3.Connections	6
-Server3.Retention	2677
-Server3.IpVersion	auto
-Server4.Active	yes
-Server4.Name	tweaknews.eu
+Server3.Retention	3000
 Server4.Level	1
-Server4.Optional	no
-Server4.Group	0
 Server4.Host	news.tweaknews.eu
 Server4.Port	443
-Server4.JoinGroup	no
 Server4.Encryption	yes
-Server4.Connections	20
+Server4.Connections	40
 Server4.Retention	2500
-Server4.IpVersion	auto
-Server5.Active	yes
-Server5.Name	news.newsdemon.com
 Server5.Level	2
-Server5.Optional	no
-Server5.Group	0
 Server5.Host	news.newsdemon.com
 Server5.Port	563
-Server5.JoinGroup	no
 Server5.Encryption	yes
-Server5.Connections	20
-Server5.Retention	2678
-Server5.IpVersion	auto
-Server6.Active	yes
-Server6.Name	us.newsdemon.com
+Server5.Connections	12
+Server5.Retention	3303
 Server6.Level	2
-Server6.Optional	no
-Server6.Group	0
 Server6.Host	us.newsdemon.com
 Server6.Port	563
-Server6.JoinGroup	no
 Server6.Encryption	yes
-Server6.Connections	20
-Server6.Retention	2678
-Server6.IpVersion	auto
-Server7.Active	yes
-Server7.Name	eu.newsdemon.com
+Server6.Connections	12
+Server6.Retention	3303
 Server7.Level	2
-Server7.Optional	no
-Server7.Group	0
 Server7.Host	eu.newsdemon.com
 Server7.Port	563
-Server7.JoinGroup	no
 Server7.Encryption	yes
-Server7.Connections	20
-Server7.Retention	2678
-Server7.IpVersion	auto
-Server8.Active	yes
-Server8.Name	us.blocknews.net
+Server7.Connections	12
+Server7.Retention	3303
 Server8.Level	2
-Server8.Optional	no
-Server8.Group	0
-Server8.Host	usnews.blocknews.net
-Server8.Port	443
-Server8.JoinGroup	no
+Server8.Host	nl.newsdemon.com
+Server8.Port	563
 Server8.Encryption	yes
-Server8.Connections	20
-Server8.Retention	2600
-Server8.IpVersion	auto
-Server9.Active	yes
-Server9.Name	eu.blocknews.net
+Server8.Connections	12
+Server8.Retention	3303
 Server9.Level	2
-Server9.Optional	no
-Server9.Group	0
-Server9.Host	eunews.blocknews.net
+Server9.Host	usnews.blocknews.net
 Server9.Port	443
-Server9.JoinGroup	no
 Server9.Encryption	yes
-Server9.Connections	20
-Server9.Retention	2600
-Server9.IpVersion	auto'
+Server9.Connections	16
+Server9.Retention	3240
+Server10.Level	2
+Server10.Host	eunews.blocknews.net
+Server10.Port	443
+Server10.Encryption	yes
+Server10.Connections	16
+Server10.Retention	3240
+Server11.Level	2
+Server11.Host	eunews2.blocknews.net
+Server11.Port	443
+Server11.Encryption	yes
+Server11.Connections	16
+Server11.Retention	3240'
 
 custom_nzbget () {
+  f="${HOME}/Library/Application Support/NZBGet/nzbget.conf"
+  mkdir -p "$(dirname $f)"
   if which crudini > /dev/null; then
-    mkdir -p "${HOME}/Library/Application Support/NZBGet"
     printf "%s\n" "${_nzbget}" | \
     while IFS="$(printf '\t')" read key value; do
-      crudini --set "${HOME}/Library/Application Support/NZBGet/nzbget.conf" "" "${key}" "${value}"
+      crudini --set "$f" "" "${key}" "${value}"
     done
   fi
+  sed -i "" -e "s/ = /=/g" "$f"
 }
 
 # Customize Safari
