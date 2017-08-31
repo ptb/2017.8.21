@@ -3798,16 +3798,6 @@ personalize_steermouse5 () {
 | qXXuY3Tv7tKzRH4CRN+xblZONKYv68/1diB8/ogl9Llbg0VtqEGppRxR0R5OWBWZ |
 | CQoeE4iYGE9QoCvVgbT1XIhMTB8hT8W/DP97DLI9NlENjEHh+7Pj5AGOgwjr177l |
 
-*** Personalize SourceTree
-#+begin_src sh :var _sourcetree_crypt=_sourcetree_crypt
-personalize_sourcetree () {
-  personalize "${_sourcetree_crypt}"
-}
-#+end_src
-
-#+name: _sourcetree_crypt
-|   |
-
 *** Personalize Tower 2
 #+begin_src sh :var _tower2_crypt=_tower2_crypt
 personalize_tower2 () {

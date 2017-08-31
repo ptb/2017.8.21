@@ -3194,13 +3194,6 @@ personalize_steermouse5 () {
     osascript -e 'tell app "System Preferences" to activate'
 }
 
-# Personalize SourceTree
-
-_sourcetree_crypt=''
-personalize_sourcetree () {
-  personalize "${_sourcetree_crypt}"
-}
-
 # Personalize Tower 2
 
 _tower2_crypt=''
