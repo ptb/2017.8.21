@@ -3142,6 +3142,7 @@ personalize_all () {
   personalize_istatmenus5
   personalize_littlesnitch4
   personalize_moom
+  personalize_nzbget
   personalize_sizeup
   personalize_steermouse5
   personalize_logout
@@ -3266,7 +3267,26 @@ personalize_nzbget () {
 #+end_src
 
 #+name: _nzbget_crypt
-|   |
+| U2FsdGVkX18benyJZnkWfTh8z4YNafpbDCDoUEZ6V51Wb388BsJB/gl3nNWM4BVP |
+| jFR+2rdLWtmjrIyCRRjiUUtU0mNkwsxobGfCWYVQxzNRFlfqIZEZZR2IUn0vDa4k |
+| HP2kKJYBsD03x5aK2Ap0ucf8KXhSMnVehoVDljBg8Kzh3MSfZZ8QuplXSbk573L0 |
+| d28dZ15lB4TyM8pxrfGsQFFBNHj4ViwjOac5l2DXOqrAz/3FNm/ut+4QIp69uT+c |
+| sjouzhm/dttBMOhKKFNgHfxqVbwTZg2WABSr7PiNGZev0wyHxaTINYyawtKHTQaN |
+| k1fS6pYREOpxoy/n4bfTgDPDVh/8S5vMcxHlIBPQ3UL9EKeEW6TEfbr8CP4A77Gg |
+| 8NqnIGQZlCeWd6e7q2TK7tZwLxMwhuz9A+V7nwVrFGRZAIqg8/ekjhZWolKiJr+C |
+| +xfKnFsPi/g/ObA92jNilOljGzf7wEksMuVSy+9SJv2WEMKHCR4UnpSe1ugvxUC0 |
+| JaFpMPNbxIXGzguAx7KxaDJE8s0FYmbsoTC9St8TVZJx5sNdD9RRD6g8jgQbPqSO |
+| XkbBJ93o1by1eahIA4Dyo2x24WPrIWYYjaPYrX33zrxQlSkhuS7oGPExkx7vsTkf |
+| cozu/4UnUQ9hKliwMiIMhIMtJ7HzWUOXVigo2MnZS3vQjdCYEn8BltJNzWaWw+qA |
+| 9z1ZAuH+2KJn8Iqia30VaF9yYoP+JoUJaXPIcOYuq8gKCTPJluHeo//Fz9GTNq0x |
+| 2m/NjZ0Krl5dKNig9NM/I7DAh5Q0s/pzt5BKpCSk6vKH0v9Uo4+zzT6xAM6vn1nZ |
+| 0OF+toD6JbcPdHrhCy58SqViiSB0GQnhIGOBj3ty8k4IS2u7WBkYMUn6sdQay/gr |
+| ZK/TpOv2QbTowBCByHcXSmOry1Pr8ARvauwRR4Mz+IpYjyJQA7k+d9sR06QJttgy |
+| K/Fdot9A+R6RlLwrxaVSSuso0K1wkMpLarmttDn7s1rECN+eSwyOzU9FmMGvgpg4 |
+| pX8woUGNBdM5fR8L66Yk12+f70LTmf/TyoXdzm0CGORHod2YXIYQyxs6C62CF5+o |
+| fZ3d/FshEmPMcZ0W/I1nKxvwmMJl//HTxFFsgeB2iUN/n9dEAyY5D7YR4dWJCz4d |
+| u6iiyCFeVcMVG+IZ0eEZS0ffd4wQmfyf/pEmQYJAeJi6uQDLGZ0v9aJpI+uPiarm |
+| 71bRHVxzqv0a8bzNE5/Fog==                                         |
 
 *** Personalize NZBVortex
 #+begin_src sh :var _nzbvortex_crypt=_nzbvortex_crypt
