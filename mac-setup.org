@@ -936,6 +936,8 @@ config () {
   config_desktop
   config_dovecot
   config_emacs
+  config_ipmenulet
+  config_istatmenus
   config_sysprefs
   config_zsh
   config_new_account
@@ -1262,6 +1264,17 @@ else
 fi
 #+end_src
 
+*** Configure IPMenulet
+#+begin_src sh
+config_ipmenulet () {
+  _ipm="/Applications/IPMenulet.app/Contents/Resources"
+  if test -d "$_ipm"; then
+    rm "${_ipm}/icon-19x19-black.png"
+    ln "${_ipm}/icon-19x19-white.png" "${_ipm}/icon-19x19-black.png"
+  fi
+}
+#+end_src
+
 *** Configure iStat Menus
 #+begin_src sh
 config_istatmenus () {
@@ -1269,22 +1282,6 @@ config_istatmenus () {
   open "/Applications/iStat Menus.app"
 }
 #+end_src
-
-*** Configure Login Window
-#+begin_src sh :var _loginwindow=_loginwindow[3:-2,1:5]
-
-config_loginwindow () {
-  config_defaults "${_loginwindow}" "sudo"
-}
-#+end_src
-
-**** _loginwindow
-#+name: _loginwindow
-|------------------------------------------------+--------------------------------------------+--------------+-------+-------+------|
-| Preference                                     | Domain                                     | Key          | Type  | Value | Host |
-|------------------------------------------------+--------------------------------------------+--------------+-------+-------+------|
-| *Display login window as:* ~Name and password~ | /Library/Preferences/com.apple.loginwindow | SHOWFULLNAME | -bool | true  |      |
-|------------------------------------------------+--------------------------------------------+--------------+-------+-------+------|
 
 *** Configure OpenSSL
 #+begin_src sh
@@ -1297,8 +1294,9 @@ config_openssl () {
 #+begin_src sh
 config_sysprefs () {
   config_energy
-  config_mas
   config_guest
+  config_loginwindow
+  config_mas
 }
 #+end_src
 
@@ -1331,6 +1329,29 @@ config_energy () {
 | *UPS:* ~off~ *Shut down the computer when the UPS battery level is below:*           | -u   | haltlevel    |    -1 |
 |--------------------------------------------------------------------------------------+------+--------------+-------|
 
+**** Configure Guest Users
+#+begin_src sh
+config_guest () {
+  sudo sysadminctl -guestAccount off
+}
+#+end_src
+
+**** Configure Login Window
+#+begin_src sh :var _loginwindow=_loginwindow[3:-2,1:5]
+
+config_loginwindow () {
+  config_defaults "${_loginwindow}" "sudo"
+}
+#+end_src
+
+**** _loginwindow
+#+name: _loginwindow
+|------------------------------------------------+--------------------------------------------+--------------+-------+-------+------|
+| Preference                                     | Domain                                     | Key          | Type  | Value | Host |
+|------------------------------------------------+--------------------------------------------+--------------+-------+-------+------|
+| *Display login window as:* ~Name and password~ | /Library/Preferences/com.apple.loginwindow | SHOWFULLNAME | -bool | true  |      |
+|------------------------------------------------+--------------------------------------------+--------------+-------+-------+------|
+
 **** Configure App Store
 #+begin_src sh :var _swupdate=_swupdate[3:-2,1:5]
 
@@ -1347,13 +1368,6 @@ config_mas () {
 | ~on~ *Install app updates*   | /Library/Preferences/com.apple.commerce | AutoUpdate                | -bool | true  |      |
 | ~on~ *Install macOS updates* | /Library/Preferences/com.apple.commerce | AutoUpdateRestartRequired | -bool | true  |      |
 |------------------------------+-----------------------------------------+---------------------------+-------+-------+------|
-
-**** Configure Guest Users
-#+begin_src sh
-config_guest () {
-  sudo sysadminctl -guestAccount off
-}
-#+end_src
 
 *** Configure Z-Shell
 #+begin_src sh

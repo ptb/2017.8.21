@@ -713,6 +713,8 @@ config () {
   config_desktop
   config_dovecot
   config_emacs
+  config_ipmenulet
+  config_istatmenus
   config_sysprefs
   config_zsh
   config_new_account
@@ -998,23 +1000,21 @@ EOF
   rehash
 }
 
+# Configure IPMenulet
+
+config_ipmenulet () {
+  _ipm="/Applications/IPMenulet.app/Contents/Resources"
+  if test -d "$_ipm"; then
+    rm "${_ipm}/icon-19x19-black.png"
+    ln "${_ipm}/icon-19x19-white.png" "${_ipm}/icon-19x19-black.png"
+  fi
+}
+
 # Configure iStat Menus
 
 config_istatmenus () {
   test -d "/Applications/iStat Menus.app" && \
   open "/Applications/iStat Menus.app"
-}
-
-# Configure Login Window
-
-_loginwindow='/Library/Preferences/com.apple.loginwindow
-SHOWFULLNAME
--bool
-true
-'
-
-config_loginwindow () {
-  config_defaults "${_loginwindow}" "sudo"
 }
 
 # Configure OpenSSL
@@ -1027,8 +1027,9 @@ config_openssl () {
 
 config_sysprefs () {
   config_energy
-  config_mas
   config_guest
+  config_loginwindow
+  config_mas
 }
 
 # Configure Energy Saver
@@ -1052,6 +1053,24 @@ config_energy () {
   done
 }
 
+# Configure Guest Users
+
+config_guest () {
+  sudo sysadminctl -guestAccount off
+}
+
+# Configure Login Window
+
+_loginwindow='/Library/Preferences/com.apple.loginwindow
+SHOWFULLNAME
+-bool
+true
+'
+
+config_loginwindow () {
+  config_defaults "${_loginwindow}" "sudo"
+}
+
 # Configure App Store
 
 _swupdate='/Library/Preferences/com.apple.commerce	AutoUpdate	-bool	true	
@@ -1059,12 +1078,6 @@ _swupdate='/Library/Preferences/com.apple.commerce	AutoUpdate	-bool	true
 
 config_mas () {
   config_defaults "${_swupdate}" "sudo"
-}
-
-# Configure Guest Users
-
-config_guest () {
-  sudo sysadminctl -guestAccount off
 }
 
 # Configure Z-Shell
