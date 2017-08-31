@@ -2577,6 +2577,7 @@ personalize_all () {
   personalize_sketchuppro8
   personalize_istatmenus5
   personalize_littlesnitch4
+  personalize_meteorologist3
   personalize_moom
   personalize_nzbget
   personalize_sizeup
@@ -2639,7 +2640,14 @@ personalize_littlesnitch4 () {
 
 # Personalize Meteorologist 3
 
-_meteorologist3_crypt=''
+_meteorologist3_crypt='U2FsdGVkX19gjPI4DdUhV25638tJvTh2zGck1vrs/MrQJI1ghBVzZu4YK5I3U4fR
+96YI2iy5YqVws5f9fPWKYPsEy7Y58Ppl10sHLo/QLmYbWWCPR7HU5sHITnAbtnid
+wjgJtltscMlbSyn1ekyUz2yFM18I2bdKHklHo68UZet/1f8LnyJSBUhaL9l7sYVK
+lw1J7xu9A2djc0s7tQYcondLL/sa1OWKXk4kI9IlzD09vTjmmx9U7g+arUV4Z9cB
+uDkvQFd2W92+G5Da7NdgJJTrgV9hYH+uWznGG/rnTeIpPjyBMEZbIDtOtiq5j1m4
++K2JieiExcX8CUSKPxBQbH/clmRT8dgr+C9BSDi7iJ2yTIvOU6wRGHvNUN9WrlD4
+L/0eW8p6B2E74SkvHjmmD7o0UcrWgS1DO0C4dcM8p3FcvZ7Tj1QPwX6i1roTqAQ5
+SbeZNE8UsDnaAfFeVtZNElaH3g5XpdONa7x3Q/L56rpANFW9x96HRCAe6zvl6sAj'
 
 personalize_meteorologist3 () {
   personalize "${_meteorologist3_crypt}"
