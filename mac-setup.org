@@ -3151,6 +3151,7 @@ personalize_all () {
   personalize_sizeup
   personalize_steermouse5
   personalize_tower2
+  personalize_transmit4
   personalize_logout
 }
 #+end_src
@@ -3841,7 +3842,9 @@ personalize_transmit4 () {
 #+end_src
 
 #+name: _transmit4_crypt
-|   |
+| U2FsdGVkX1/A63DIwdmh9ZT09vTHrkKyLuzKUoAwLXVzz8W9KGmBUqIUCw0qBEU7 |
+| ybcj/Pce96IEQX/T+7dcDuMhZ9+XLFmkgjDWbygTSDyqK1JOf5VSfRbHpFv3IIDT |
+| UJzgFiz9bchSACQ39qVigQ==                                         |
 
 *** Personalize Tune4mac
 #+begin_src sh :var _tune4mac_crypt=_tune4mac_crypt

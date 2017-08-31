@@ -2587,6 +2587,7 @@ personalize_all () {
   personalize_sizeup
   personalize_steermouse5
   personalize_tower2
+  personalize_transmit4
   personalize_logout
 }
 
@@ -3228,7 +3229,9 @@ personalize_tower2 () {
 
 # Personalize Transmit 4
 
-_transmit4_crypt=''
+_transmit4_crypt='U2FsdGVkX1/A63DIwdmh9ZT09vTHrkKyLuzKUoAwLXVzz8W9KGmBUqIUCw0qBEU7
+ybcj/Pce96IEQX/T+7dcDuMhZ9+XLFmkgjDWbygTSDyqK1JOf5VSfRbHpFv3IIDT
+UJzgFiz9bchSACQ39qVigQ=='
 personalize_transmit4 () {
   personalize "${_transmit4_crypt}"
 }
