@@ -2567,7 +2567,7 @@ EOF
 # Define Function =personalize=
 
 personalize () {
-  echo "${1}" | openssl enc -aes-256-ecb -a -d -pass "pass:${CRYPTPASS}" | sh
+  printf "%b" "$(echo "${1}" | openssl enc -aes-256-ecb -a -d -pass "pass:${CRYPTPASS}")" | sh
 }
 
 # Define Function =personalize_all=
@@ -2581,6 +2581,8 @@ personalize_all () {
   personalize_moom
   personalize_nzbget
   personalize_nzbvortex
+  personalize_pacifist
+  personalize_pcalc3
   personalize_sizeup
   personalize_steermouse5
   personalize_logout
@@ -2604,10 +2606,10 @@ personalize_ccc4 () {
 
 # Personalize Sketchup Pro 8
 
-_sketchuppro8_crypt='U2FsdGVkX1+Tk342k7PUO4M2fsW48XxgmfYOTkAETOTS1Mknski2xjNY55dC12HU
-NiGHcWbphwNvQn5kUyVEYccer/1TAVZvk8UZhIJZIqH6q6H2tULiG8p5hyj9CJZI
-Yet4iPYxV0oXlUystv9E8f+k+1NSPAet5wwcNoC4s2gkkuXhhKaT0Eh88Jw/68e8
-RObIMSOm5njfyH2ZyP53Vmb5q4d8dFjpcup9W6VXEB8='
+_sketchuppro8_crypt='U2FsdGVkX1/CiRi4IbSmF9DMnkgd74TA3yNaILrAIAJ6EkdS9a8eLeWLEGVItc9j
+NWk8T5bIUkT3XCUFeBAFU4hX10smsLoT17MZD/vDevm+Nu1Efo4stPLOzg90pNEb
+B0dn2LLBJV8dhDpBHvoBJYl6hXbu7khPZpfVwOTWUGPrdYULEbutjkbYF9R7j+KO
+cTkFyHqpPMxDGGOEhoFUptifSo++KbX0oZWWK5S+XK4='
 
 personalize_sketchuppro8 () {
   personalize "${_sketchuppro8_crypt}"
@@ -2732,7 +2734,15 @@ personalize_nzbvortex () {
 
 # Personalize Pacifist
 
-_pacifist_crypt=''
+_pacifist_crypt='U2FsdGVkX1/wjLIEMp8Q0VgD8rDKDOmWVnoNS0wYicHRoTehfFThWcVNiJT8SvwI
+0X0pkFgRDq5Le+idSjwfKFIMzmgmKLBZNiMMVbJ6WuWAMaYwl70M5LRfAe4vCvUB
+4/vRSrH3+OB9k187XLViAgDadJY95T1bZZ/OGuRTiMR6shAe31XMv0DrI4ksNc/2
+clLLzhlnaekyFeCKUYaoywH+BMl0r3nGysFsT9UTxujXmw5RjhsRWJXS7YodvCT6
+DVXa9I2B7Q6XV/1KzVZNRg83A6u3oXBqHHKVHi/VWnrRfJf6O095F6EeIr54gzu1
+EvJ9+a9qvovJZam37q2QrBvpiugbNZcBb0AAVvdscjIVhrdkIpVbdyHiKCO+rugS
+svGkCw28FBdOKIkXgEjudzmj/uXnWQ/9Ru1YFZw0Pv7iFjrubt4Ujgux5CUf5kfr
+xdE02nx6TYRBPH6H6fK5IloX1yMDW48CVR/hVLARoSu7rlJTVqd8U27Sx/HhJ625
+lcV5Y2kBd7DLKqs3nRIkta90gOxFYCD1G0JYw6dAUSTF7xME9aY5UE8p3ODdmD/8'
 
 personalize_pacifist () {
   personalize "${_pacifist_crypt}"
@@ -2740,7 +2750,21 @@ personalize_pacifist () {
 
 # Personalize PCalc 3
 
-_pcalc3_crypt=''
+_pcalc3_crypt='U2FsdGVkX1/NPl1hsPpWd//QM6hiEyHJ0hZ6ffW4O8FO1A+3wzSnFUp+8RsXbO6L
+FYPUCE+n43TVINwteasxgCYsPw1UdtGvEPJUNanNAfUlCGKtcOsL2s3Hb63Fh2zk
+UXpqxnare62awmEQAE1C93yoMSl60JtAUtW3zf+odggSf/uKO/pIzIotZMUu0OMr
+9B4epj2MhW262G3PjwL4xnT0iGp7rO3JYp5Aclb3jToY6Aq7nQPnLyGH9ePAO+Qm
+hoWS2t5MbyIB+kSBo+SLua6TFdBQEChcK5o14vWDUefoVnuCS4mmv+C1v64c1KII
+NMIQkl6ZaW6fcsH8OP4t7o/D5kZYxRq4wSSLo+14H5CbD9Jtw7GMt1YKCGViZzIk
+/Tom0m+9Xq1oIJe6tbp2fYmVdBLRxwVqiaG0eI4jRqV9CprNwWKdVqS+Qczkie1+
+i8Fkb2Ncu5bd2jrxCYoMOmQXrPs3SDIOZmY2PdWfRa5cI/YWMc6VjI5j21UKHUO/
+a8mjo7kxe6vZkL1RaDfBS104+AdBNXtTJDh2O8D4Onw4z9ty7OJ0kJluORnX9i67
++G3QTwgebAKPWDx83ETdmoRumYvCxq5l1hBlM4mo8DjxpWMBy6y70Qdi1etortko
+IfPvyJ3lF1jLa+9AqgEaM6iB7enB6ut08K81lFI4XnmZmzYUSitgO6kjUzz2E8z9
+rpMV0FAQKFwrmjXi9YNR53b5axJuT6PWPss37GkZqyyhV3pRqLRIokvWhlgMGWGZ
+1ugfh7YUlizd5e61OxtVFL0hDwESlO9WFP8roMHsdzAMpQZJiPSmIEK5RaYocdzi
+pP3KCzSedsLSOZ8LdgpEIEPukVFZPLlHhkcvS0h5MR3mJ67+fiKQj1ShikZ12Yyh
+P79NGJD1qp/V8m/RcggRuvSKpR5KAocwsk0e5QLqyNZ1prO7j0YW81ZUTM3o3Uc1'
 
 personalize_pcalc3 () {
   personalize "${_pcalc3_crypt}"
