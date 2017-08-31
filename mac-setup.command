@@ -2580,6 +2580,7 @@ personalize_all () {
   personalize_meteorologist3
   personalize_moom
   personalize_nzbget
+  personalize_nzbvortex
   personalize_sizeup
   personalize_steermouse5
   personalize_logout
@@ -2715,7 +2716,15 @@ personalize_nzbget () {
 
 # Personalize NZBVortex
 
-_nzbvortex_crypt=''
+_nzbvortex_crypt='U2FsdGVkX1+307HjJGIf7rdVkS4iA3amckwax3cNni3YYdUjVoOa8Dzldh2o4zVc
+Xv7Wt0rUR434pPu+IeYH+vLqSU4KDibBPT2TZNyv3bcLKNot91E1TWmdEPrxiIPx
+ZTw6G9ZJlAUdZPK1PL8SN/32wcuQfRyX6d1NHiQ/rsleIedUvcb1Q2L1MJldD9ZU
+vfIE2TZVQA73h2DQsY/HeZXsGudOVhF1A8S5pFP6goocJ8lgmBF0rS0Z2HZ3h8Po
+eBMXudhMltv6kApIB2bj39GsECL5fbZUilX83o7tjn89x/eMra4EXwPv7aAlz9dg
+qr58SoELeC0BySdYr69KiPD13l3KsHRtQv6FBUKPt7iqlw2Ck9JDtpArSKbPXSfE
+efEfu9JIqd3C0A7nNyzapJhjNx5SQLDsu3HbtXvRvztE4BIj2yjLUywWH7BynEEx
+74tVEmEKmHcXVpOm11qxtKznkRole4RF97V3FT36juAYQ++2xambRxsd8APDKnQx
+x4+uaXLi4A3X2hkxweE4Aw=='
 
 personalize_nzbvortex () {
   personalize "${_nzbvortex_crypt}"
