@@ -3384,14 +3384,40 @@ personalize_scrivener () {
 #+begin_src sh :var _sizeup_crypt=_sizeup_crypt
 
 personalize_sizeup () {
-  # personalize "${_sizeup_crypt}"
+  personalize "${_sizeup_crypt}"
   test -d "/Applications/SizeUp.app" && \
     open "/Applications/SizeUp.app"
 }
 #+end_src
 
 #+name: _sizeup_crypt
-|   |
+| U2FsdGVkX1/5orle7q9WUYhaIgZFfM6G+vKsevlp7WxvCSoL/7VGdaXNfGr8yzjy |
+| tVfmgCAgnLH1kSGY9Xl90/iTaFJOfITzmRpmirqBzUIQVBojWyANkX9JghEnQaZ/ |
+| RWP/uZJ/ftxcc+dH1c/crUayobF/vhqHKuEno5IA9WAa9hdjRYvym59+Sbm2dA+3 |
+| +Dd8c2SawJ5MwxUWWxUn9lIg4tRtNdoh75ls7JQfvSIalINDidTxd+f43mRmOlzU |
+| 6Dzr2tRLuY6jeLE8JJCsqS1tUI1ADuI7kvrTioAg6pdFYaAqLt3SUjDw0VRZlaE4 |
+| 4GtZ+jPZFxoQe9tKpjwcEKXWxQ1aaIZwYDpsPHhdG6BPWHyyuJiAWYhuVUbQA7Zy |
+| IcRdQklOJ/25rzzYVCze6qZP/3oKg4CRcZ1nTurb0QG3hC5VKuYOB5UEBlejI0lp |
+| iweSpFdwopuXne13bKLfhJGDHz9u1/0f+WW0hVr6SFImbb1jN31GjRpv0yoZH+ia |
+| i5cr32WPHj+qYCkA2lWu0rCNUOb1SoG/CvPtqgM+0EzPIU3kokdZP8hLTVIAfo7i |
+| UCN1fiNMEYE5hVYf4pPe83EK2QDW1BcVApFn0XI2X9YlEecJTnPKLhD6TR+tUWa9 |
+| Qjcni9YYoiVniehkRRJcaIy0iii7h295iUcMApduC9PoN4mwtuNOmzT5L32f+ak2 |
+| esIgdF8T4KMQcPrbbu2/+8FLWwLlnlVSe7meaBsxEJW5W7xC6A4kEpownQOMRjJm |
+| Zn2y+i49ZwTA2oClXFX3JpIg0P8qvdGM7Fn5OX/0ZqsIe1GsAg2Lbw9/obq2pj0L |
+| peb+6JRTXI7gRgygNCIMbihBvEj+ndp+Nu8XUNQGjgm4lknqkulP/xtoi0k45FT0 |
+| 1duVXZSOm5heXzTFn0z7FnKNmGCZEXVUDC0gbTPLKeCaKFHsxNTfQ/sY4h/THqRO |
+| h5mziRVzPwrOkzl6lzKESTQbvSDwmc2wl5BgMMlwrQGe5F9xrs2sUkhLdpfGG2QL |
+| uPhw1AQdRrqH4yU7SAXSpvZFCw3yl7LqEPIDwIn8VuIHfStHYo0ZR1nrMAJkD7Ys |
+| +G/E8593amGUWCrAtJWCXlXvlDCcmhMKYPoQHYWQH3JEtkof1J4FFBZ5e85jiLhw |
+| KmZj/JA9hvCghBffMEFZUfg2SdrgkPo4XW51qvDyIvCiOVOBgWQ7yRYCSW2LoRyF |
+| mihR7MTU30P7GOIf0x6kThAN5yXdWQRNrS/JxjUBk4NqWzfi3svXmZOIVZUbjo7O |
+| Sq89IECDpn/5kYeYmMGwEG1j4L5U9PcEHjelZfnQEIIcZZbcONQXXVHk8w1zd/fF |
+| wilkne44R/twnneP4QOmU8MTrX7zo10nZo1Sbxigh0tz4I1HoLAKPYAyIIH+NBqw |
+| 6FrT8NAo+FQJf87MIYcnftIuX7s/8+9N7mNrVzMeWfWs66L+uNy5yVmYxr1sA2/B |
+| 6T+GRoKusYmjLe7ZeRVY5M1L7W6/HqWOJmW0ojRFz1yDtaymlqExuGirq2F88UM8 |
+| 6hnJYMJkeYOj0Yn77JT1MIRx2vVuk6JxwmlxGPQwU58os63JNXbRYlc0jJTLu6yo |
+| yUFjmw1tO7/oKMbqHoxKCKz4gcm3fWx9PF9ewNgTorbVoAE1vpz8B2EKcJtAkjwk |
+| n+XJeNEkZsfZi66sDCzAs7TMQsBq67QLhyBqguhK5vQ=                     |
 
 *** Personalize SteerMouse 5
 #+begin_src sh :var _steermouse5_crypt=_steermouse5_crypt
