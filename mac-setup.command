@@ -2611,6 +2611,19 @@ compaudit | \
 
 compinit -u
 
+#-- zsh-syntax-highlighting ------------------------------------
+
+. "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+
+#-- zsh-history-substring-search -------------------------------
+
+. "$(brew --prefix)/share/zsh-history-substring-search/zsh-history-substring-search.zsh"
+
+HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND="fg=default,underline" && \
+  export HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND
+HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND="fg=red,underline" && \
+  export HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND
+
 #-- Zle --------------------------------------------------------
 
 zmodload zsh/zle
@@ -2618,8 +2631,15 @@ zmodload zsh/zle
 bindkey -d
 bindkey -v
 
-bindkey '\C-A' beginning-of-line
-bindkey '\C-E' end-of-line
+for k in "vicmd" "viins"; do
+  bindkey -M $k '\C-A' beginning-of-line
+  bindkey -M $k '\C-E' end-of-line
+  bindkey -M $k '\C-U' kill-whole-line
+  bindkey -M $k '\e[3~' delete-char
+  bindkey -M $k '\e[A' history-substring-search-up
+  bindkey -M $k '\e[B' history-substring-search-down
+  bindkey -M $k '\x7f' backward-delete-char
+done
 
 for f in \
   "zle-keymap-select" \
@@ -2641,36 +2661,20 @@ do
   zle -N $f
 done
 
-#-- zsh-syntax-highlighting ------------------------------------
-
-. "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-
-#-- zsh-history-substring-search -------------------------------
-
-. "$(brew --prefix)/share/zsh-history-substring-search/zsh-history-substring-search.zsh"
-
-HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND="fg=default,underline" && \
-  export HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_FOUND
-HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND="fg=red,underline" && \
-  export HISTORY_SUBSTRING_SEARCH_HIGHLIGHT_NOT_FOUND
-
-bindkey '[A' history-substring-search-up
-bindkey '[B' history-substring-search-down
-
 #-- prompt_ptb_setup -------------------------------------------
 
 prompt_ptb_setup () {
   I="$(printf '%b' '%{\e[3m%}')"
   i="$(printf '%b' '%{\e[0m%}')"
-  PROMPT="%F{004}$I%d$i %(!.%F{001}.%F{002})%n %B❯%b%f "
-  export PROMPT
+  PROMPT="%F{004}$I%d$i %(!.%F{001}.%F{002})%n %B❯%b%f " && \
+    export PROMPT
 }
 
 prompt_ptb_setup
 
 prompt_ptb_precmd () {
-  test -n "$(git rev-parse --git-dir 2> /dev/null)" && \\
-  RPROMPT="%F{000}$(git rev-parse --abbrev-ref HEAD)%f" && \\
+  test -n "$(git rev-parse --git-dir 2> /dev/null)" && \
+  RPROMPT="%F{000}$(git rev-parse --abbrev-ref HEAD)%f" && \
   export RPROMPT
 }
 
