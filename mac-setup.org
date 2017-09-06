@@ -3232,12 +3232,18 @@ prompt_ptb_setup () {
   I="$(printf '%b' '%{\e[3m%}')"
   i="$(printf '%b' '%{\e[0m%}')"
   PROMPT="%F{004}$I%d$i %(!.%F{001}.%F{002})%n %B❯%b%f " && \
-    export PROMPT
+  export PROMPT
 }
 
 prompt_ptb_setup
 
 prompt_ptb_precmd () {
+  if test "$(uname -s)" = "Darwin"; then
+    print -Pn "\e]7;file://%M\${PWD// /%%20}\a"
+    print -Pn "\e]2;%n@%m\a"
+    print -Pn "\e]1;%~\a"
+  fi
+
   test -n "$(git rev-parse --git-dir 2> /dev/null)" && \
   RPROMPT="%F{000}$(git rev-parse --abbrev-ref HEAD)%f" && \
   export RPROMPT
